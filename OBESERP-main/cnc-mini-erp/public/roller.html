@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Rol Yönetimi</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=Tw99F9-ksazB22EmqBL4Y8AaZtuS2IquoKa6ChtfixcQtKhIQQnO-DWRFkbWPsC177BALjhNsBC5WQpLTte7yhsfCp9Oy8UMNr4gw1ndXkwAcnI-FUxVNfhu9M88_ObbusQTtY7y-Ikq6DDGzSHmkKJjqww9CNg7uuJdUn93K1boEmMm0UCTzAN4zV8EEMK8G4wyRm-EJNtpq1sMU4r25gKjeK2fDmDBPIN8lkqRAqMDiLtOIzSQnaa_JhvrtBrrw-ZzgaQzlYwUnN5bWRO9jq4kk9_vZT95ahV_wuByVO2peHfpMBrf17iqRwtaRbc7" charset="UTF-8"></script><style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #172033;
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #071428;
+      color: #fff;
+      transition: .3s;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: #071428;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #2f7cff;
+      border-radius: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: #4b8cff;
+    }
+
+    .sidebar.collapsed {
+      width: 82px;
+    }
+
+    .sidebar-header {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}
+
+    .logo-text h2 {
+      font-size: 21px;
+      letter-spacing: .5px;
+    }
+
+    .logo-text span {
+      color: #3f8cff;
+    }
+
+    .logo-text p {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #9ca8ba;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .sidebar.collapsed .logo-text,
+    .sidebar.collapsed .menu-title,
+    .sidebar.collapsed .menu a span,
+    .sidebar.collapsed .sidebar-footer-info {
+      display: none;
+    }
+
+    .menu {
+      padding: 22px 14px 120px 14px;
+    }
+
+    .menu-title {
+      color: #7f8da3;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      margin: 14px 12px 10px;
+    }
+
+    .menu a {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #c9d2e3;
+      text-decoration: none;
+      padding: 0 15px;
+      border-radius: 13px;
+      margin-bottom: 7px;
+      transition: .25s;
+      white-space: nowrap;
+    }
+
+    .menu a i {
+      width: 22px;
+      text-align: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: rgba(47,124,255,.16);
+      color: #fff;
+    }
+
+    .menu a.active {
+      border: 1px solid rgba(47,124,255,.45);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-footer i {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(47,124,255,.18);
+      color: #3f8cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer-info h4 {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-footer-info p {
+      color: #9ca8ba;
+      font-size: 12px;
+    }
+
+    .main {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      transition: .3s;
+      min-height: 100vh;
+    }
+
+    .main.expanded {
+      margin-left: 82px;
+      width: calc(100% - 82px);
+    }
+
+    .topbar {
+      height: 78px;
+      background: #fff;
+      border-bottom: 1px solid #e5eaf2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .menu-toggle {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      background: #f1f5fb;
+      color: #172033;
+      cursor: pointer;
+      font-size: 18px;
+      transition: .25s;
+    }
+
+    .menu-toggle:hover {
+      background: #e8eef7;
+    }
+
+    .page-title h1 {
+      font-size: 23px;
+      margin-bottom: 4px;
+    }
+
+    .page-title p {
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      border-radius: 13px;
+      cursor: pointer;
+      color: #48576b;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 16px;
+      padding: 7px 12px 7px 7px;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1464ff, #3f8cff);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .user-info h4 {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .user-info p {
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .hero-card {
+      background:
+        linear-gradient(135deg, rgba(7,20,40,.96), rgba(16,48,95,.92)),
+        url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=1400&q=80");
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      border-radius: 24px;
+      padding: 30px 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .hero-card h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .hero-card p {
+      color: #c9d2e3;
+      max-width: 760px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-badge {
+      height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: rgba(47,124,255,.18);
+      border: 1px solid rgba(47,124,255,.38);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 22px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .panel-header h3 {
+      font-size: 18px;
+    }
+
+    .panel-header p {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .panel-body {
+      padding: 22px 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: #27364a;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #dce3ee;
+      border-radius: 12px;
+      padding: 0 14px;
+      outline: none;
+      background: #fff;
+      color: #172033;
+      font-size: 14px;
+      transition: .25s;
+    }
+
+    .form-control:focus {
+      border-color: #2f7cff;
+      box-shadow: 0 0 0 4px rgba(47,124,255,.12);
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .25s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .primary-btn {
+      background: #2f7cff;
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(47,124,255,.24);
+    }
+
+    .secondary-btn {
+      background: #f1f5fb;
+      color: #263548;
+      border: 1px solid #e2e8f2;
+    }
+
+    .danger-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .role-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 440px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .role-card {
+      border: 1px solid #e5eaf2;
+      background: #fbfcfe;
+      border-radius: 16px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .role-card:hover,
+    .role-card.active {
+      border-color: rgba(47,124,255,.5);
+      background: #eef5ff;
+    }
+
+    .role-card h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .role-card p {
+      color: #7a8799;
+      font-size: 12px;
+    }
+
+    .role-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .role-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .role-delete {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid #fecaca;
+      background: #fff1f2;
+      color: #dc2626;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .permissions-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .selected-role-box {
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .selected-role-box i {
+      color: #2f7cff;
+      font-size: 18px;
+    }
+
+    .selected-role-box h4 {
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .selected-role-box p {
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .permission-groups {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .permission-group {
+      border: 1px solid #e5eaf2;
+      background: #fbfcfe;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .permission-group-title {
+      padding: 15px 16px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+    }
+
+    .permission-group-title h4 {
+      font-size: 14px;
+    }
+
+    .permission-group-title button {
+      border: none;
+      background: #eef5ff;
+      color: #2f7cff;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .permission-items {
+      padding: 10px;
+    }
+
+    .permission-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px;
+      border-radius: 13px;
+      transition: .2s;
+      cursor: pointer;
+    }
+
+    .permission-item:hover {
+      background: #f1f5fb;
+    }
+
+    .permission-item input {
+      width: 17px;
+      height: 17px;
+      accent-color: #2f7cff;
+      flex-shrink: 0;
+    }
+
+    .permission-item i {
+      width: 24px;
+      text-align: center;
+      color: #2f7cff;
+      flex-shrink: 0;
+    }
+
+    .permission-item strong {
+      display: block;
+      font-size: 13px;
+      color: #263548;
+      margin-bottom: 3px;
+    }
+
+    .permission-item span {
+      display: block;
+      font-size: 11px;
+      color: #7a8799;
+    }
+
+    .empty-state {
+      padding: 28px;
+      text-align: center;
+      color: #7a8799;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: #fbfcfe;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 999;
+      background: #071428;
+      color: #fff;
+      border-radius: 16px;
+      padding: 15px 18px;
+      box-shadow: 0 18px 40px rgba(7,20,40,.24);
+      display: none;
+      max-width: 360px;
+      font-size: 14px;
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideIn .2s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 1200px) {
+      .grid,
+      .permission-groups {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar.collapsed {
+        width: 280px;
+      }
+
+      .main,
+      .main.expanded {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .user-info {
+        display: none;
+      }
+
+      .hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .content {
+        padding: 18px;
+      }
+
+      .topbar {
+        padding: 0 18px;
+      }
+
+      .page-title p {
+        display: none;
+      }
+
+      .panel-header,
+      .panel-body {
+        padding: 18px;
+      }
+    }
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+       <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+        <div class="logo-text">
+          <h2>OBES <span>ERP</span></h2>
+          <p>AKILLI ÜRETİM</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+      </nav>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="page-title">
+            <h1>Rol Yönetimi</h1>
+            <p>Rolleri oluşturun ve sayfa erişimlerini yönetin.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="icon-btn">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge" id="notificationCount">0</span>
+          </button>
+
+          <div class="user-menu">
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <h4 id="topUserName">Yükleniyor...</h4>
+              <p id="topUserRole">-</p>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+
+        <div class="hero-card">
+          <div>
+            <h2>Yetkileri tek panelden yönet</h2>
+            <p>
+              Süper Admin olarak yeni rol açabilir, mevcut rolleri listeleyebilir ve her rolün hangi sayfalara erişeceğini belirleyebilirsin.
+            </p>
+          </div>
+          <div class="hero-badge">
+            <i class="fa-solid fa-lock"></i>
+            Sadece Süper Admin
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <div class="panel" style="margin-bottom:20px;">
+              <div class="panel-header">
+                <div>
+                  <h3>Yeni Rol Oluştur</h3>
+                  <p>Örn: depo, kalite, muhasebe</p>
+                </div>
+              </div>
+
+              <div class="panel-body">
+                <form onsubmit="createRole(event)">
+                  <div class="form-group">
+                    <label>Rol Kodu</label>
+                    <input class="form-control" id="roleKey" type="text" placeholder="Örn: warehouse" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Rol Adı</label>
+                    <input class="form-control" id="roleName" type="text" placeholder="Örn: Depo Sorumlusu" required>
+                  </div>
+
+                  <button type="submit" class="primary-btn" style="width:100%;">
+                    <i class="fa-solid fa-plus"></i>
+                    Rol Oluştur
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h3>Rol Listesi</h3>
+                  <p>Yetki vermek için bir rol seç</p>
+                </div>
+              </div>
+
+              <div class="panel-body">
+                <div class="role-list" id="roleList">
+                  <div class="empty-state">Roller yükleniyor...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Sayfa Yetkileri</h3>
+                <p>Seçili role hangi HTML sayfaları açık olacak belirle</p>
+              </div>
+              <button class="secondary-btn" type="button" onclick="loadPermissions()">
+                <i class="fa-solid fa-rotate"></i>
+                Yenile
+              </button>
+            </div>
+
+            <div class="panel-body">
+              <div class="permissions-toolbar">
+                <div class="selected-role-box">
+                  <i class="fa-solid fa-user-shield"></i>
+                  <div>
+                    <h4 id="selectedRoleName">Rol seçilmedi</h4>
+                    <p id="selectedRoleKey">Sol listeden rol seç</p>
+                  </div>
+                </div>
+
+                <div class="button-row" style="margin:0;">
+                  <button class="secondary-btn" type="button" onclick="selectAllPermissions(true)">
+                    <i class="fa-solid fa-check-double"></i>
+                    Tümünü Seç
+                  </button>
+                  <button class="secondary-btn" type="button" onclick="selectAllPermissions(false)">
+                    <i class="fa-solid fa-xmark"></i>
+                    Temizle
+                  </button>
+                  <button class="primary-btn" type="button" onclick="savePermissions()">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Yetkileri Kaydet
+                  </button>
+                </div>
+              </div>
+
+              <div id="permissionGroups" class="permission-groups">
+                <div class="empty-state">Yetki görmek için rol seç.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+const DEFAULT_PAGES = [
+  { pageKey:"anasayfa", pageName:"Anasayfa", pageUrl:"anasayfa.html", moduleGroup:"Genel", icon:"fa-chart-pie" },
+  { pageKey:"musteriler", pageName:"Müşteriler", pageUrl:"musteriler.html", moduleGroup:"Genel", icon:"fa-users" },
+  { pageKey:"teklifler", pageName:"Teklifler", pageUrl:"teklifler.html", moduleGroup:"Genel", icon:"fa-file-signature" },
+  { pageKey:"isemirleri", pageName:"İş Emirleri", pageUrl:"isemirleri.html", moduleGroup:"Genel", icon:"fa-industry" },
+  { pageKey:"satissiparisleri", pageName:"Satış Siparişleri", pageUrl:"satissiparisleri.html", moduleGroup:"Genel", icon:"fa-cart-plus" },
+  { pageKey:"musteriportali", pageName:"Müşteri Portalı", pageUrl:"musteriportali.html", moduleGroup:"Genel", icon:"fa-globe" },
+
+  { pageKey:"uretim", pageName:"Üretim", pageUrl:"uretim.html", moduleGroup:"Üretim", icon:"fa-gears" },
+  { pageKey:"uretimtakip", pageName:"Üretim Takip", pageUrl:"üretimtakip.html", moduleGroup:"Üretim", icon:"fa-chart-line" },
+  { pageKey:"uretimplanlama", pageName:"Üretim Planlama", pageUrl:"uretimplanlama.html", moduleGroup:"Üretim", icon:"fa-calendar-days" },
+  { pageKey:"meslite", pageName:"MES Lite", pageUrl:"meslite.html", moduleGroup:"Üretim", icon:"fa-microchip" },
+  { pageKey:"oee", pageName:"OEE", pageUrl:"oee.html", moduleGroup:"Üretim", icon:"fa-gauge-high" },
+  { pageKey:"operatorperformans", pageName:"Operatör Performans", pageUrl:"operatorperformans.html", moduleGroup:"Üretim", icon:"fa-user-clock" },
+  { pageKey:"takimyonetimi", pageName:"Takım Yönetimi", pageUrl:"takimyonetimi.html", moduleGroup:"Üretim", icon:"fa-screwdriver" },
+  { pageKey:"operasyonlar", pageName:"Operasyonlar", pageUrl:"operasyonlar.html", moduleGroup:"Üretim", icon:"fa-list-check" },
+  { pageKey:"urunrotalari", pageName:"Ürün Rotaları", pageUrl:"urunrotalari.html", moduleGroup:"Üretim", icon:"fa-route" },
+  { pageKey:"isemrioperasyonlari", pageName:"İş Emri Operasyonları", pageUrl:"isemrioperasyonlari.html", moduleGroup:"Üretim", icon:"fa-diagram-project" },
+
+  { pageKey:"stokyonetimi", pageName:"Stok Yönetimi", pageUrl:"stokyonetimi.html", moduleGroup:"Stok / Depo", icon:"fa-boxes-stacked" },
+  { pageKey:"stokhareketleri", pageName:"Stok Hareketleri", pageUrl:"stokhareketleri.html", moduleGroup:"Stok / Depo", icon:"fa-right-left" },
+  { pageKey:"depolar", pageName:"Depolar", pageUrl:"depolar.html", moduleGroup:"Stok / Depo", icon:"fa-warehouse" },
+  { pageKey:"depolartransfer", pageName:"Depolar Transfer", pageUrl:"depolartransfer.html", moduleGroup:"Stok / Depo", icon:"fa-truck-ramp-box" },
+  { pageKey:"transferfisleri", pageName:"Transfer Fişleri", pageUrl:"transferfisleri.html", moduleGroup:"Stok / Depo", icon:"fa-file-export" },
+  { pageKey:"transferonaylari", pageName:"Transfer Onayları", pageUrl:"transferonaylari.html", moduleGroup:"Stok / Depo", icon:"fa-circle-check" },
+  { pageKey:"malkabul", pageName:"Mal Kabul", pageUrl:"malkabul.html", moduleGroup:"Stok / Depo", icon:"fa-dolly" },
+  { pageKey:"sayimyonetimi", pageName:"Sayım Yönetimi", pageUrl:"sayimyonetimi.html", moduleGroup:"Stok / Depo", icon:"fa-clipboard-list" },
+  { pageKey:"barkodetiket", pageName:"Barkod Etiket", pageUrl:"barkodetiket.html", moduleGroup:"Stok / Depo", icon:"fa-barcode" },
+  { pageKey:"lotseritakip", pageName:"Lot Seri Takip", pageUrl:"lotseritakip.html", moduleGroup:"Stok / Depo", icon:"fa-tags" },
+  { pageKey:"serilot", pageName:"Seri Lot", pageUrl:"serilot.html", moduleGroup:"Stok / Depo", icon:"fa-qrcode" },
+
+  { pageKey:"bom", pageName:"Ürün Reçeteleri", pageUrl:"bom.html", moduleGroup:"MRP / Planlama", icon:"fa-sitemap" },
+  { pageKey:"mrp", pageName:"MRP", pageUrl:"mrp.html", moduleGroup:"MRP / Planlama", icon:"fa-calculator" },
+  { pageKey:"mrpsatinalmatalebi", pageName:"MRP Satın Alma Talebi", pageUrl:"mrpsatinalmatalebi.html", moduleGroup:"MRP / Planlama", icon:"fa-list-check" },
+  { pageKey:"mrpsatinalmasiparisleri", pageName:"MRP Satın Alma Siparişleri", pageUrl:"mrpsatinalmasiparisleri.html", moduleGroup:"MRP / Planlama", icon:"fa-cart-arrow-down" },
+
+  { pageKey:"makinebakim", pageName:"Makine Bakım", pageUrl:"makinebakim.html", moduleGroup:"Bakım", icon:"fa-screwdriver-wrench" },
+  { pageKey:"bakimplanlama", pageName:"Bakım Planlama", pageUrl:"bakimplanlama.html", moduleGroup:"Bakım", icon:"fa-calendar-check" },
+  { pageKey:"makinedurus", pageName:"Makine Duruş", pageUrl:"makinedurus.html", moduleGroup:"Bakım", icon:"fa-circle-pause" },
+
+  { pageKey:"kalitekontrol", pageName:"Kalite Kontrol", pageUrl:"kalitekontrol.html", moduleGroup:"Kalite", icon:"fa-clipboard-check" },
+  { pageKey:"kalite", pageName:"Kalite", pageUrl:"kalite.html", moduleGroup:"Kalite", icon:"fa-medal" },
+  { pageKey:"kalibrasyon", pageName:"Kalibrasyon", pageUrl:"kalibrasyon.html", moduleGroup:"Kalite", icon:"fa-ruler-combined" },
+  { pageKey:"firehurda", pageName:"Fire / Hurda", pageUrl:"firehurda.html", moduleGroup:"Kalite", icon:"fa-recycle" },
+
+  { pageKey:"tedarikciler", pageName:"Tedarikçiler", pageUrl:"tedarikciler.html", moduleGroup:"Satın Alma", icon:"fa-truck" },
+  { pageKey:"satinalmatalepleri", pageName:"Satın Alma Talepleri", pageUrl:"satinalmatalepleri.html", moduleGroup:"Satın Alma", icon:"fa-file-circle-plus" },
+  { pageKey:"satinalmaonay", pageName:"Satın Alma Onayları", pageUrl:"satinalmaonay.html", moduleGroup:"Satın Alma", icon:"fa-circle-check" },
+  { pageKey:"satinalmasiparisleri", pageName:"Satın Alma Siparişleri", pageUrl:"satinalmasiparisleri.html", moduleGroup:"Satın Alma", icon:"fa-cart-shopping" },
+
+  { pageKey:"cariler", pageName:"Cariler", pageUrl:"cariler.html", moduleGroup:"Finans", icon:"fa-address-book" },
+  { pageKey:"carihareketler", pageName:"Cari Hareketleri", pageUrl:"carihareketler.html", moduleGroup:"Finans", icon:"fa-money-bill-transfer" },
+  { pageKey:"cariekstre", pageName:"Cari Ekstre", pageUrl:"cariekstre.html", moduleGroup:"Finans", icon:"fa-file-invoice-dollar" },
+  { pageKey:"kasa", pageName:"Kasa", pageUrl:"kasa.html", moduleGroup:"Finans", icon:"fa-cash-register" },
+  { pageKey:"kasahareketleri", pageName:"Kasa Hareketleri", pageUrl:"kasahareketleri.html", moduleGroup:"Finans", icon:"fa-money-check-dollar" },
+  { pageKey:"kasaekstreleri", pageName:"Kasa Ekstreleri", pageUrl:"kasaekstreleri.html", moduleGroup:"Finans", icon:"fa-receipt" },
+  { pageKey:"bankalar", pageName:"Bankalar", pageUrl:"bankalar.html", moduleGroup:"Finans", icon:"fa-building-columns" },
+  { pageKey:"bankahareketleri", pageName:"Banka Hareketleri", pageUrl:"bankahareketleri.html", moduleGroup:"Finans", icon:"fa-building-circle-check" },
+  { pageKey:"bankaekstre", pageName:"Banka Ekstre", pageUrl:"bankaekstre.html", moduleGroup:"Finans", icon:"fa-file-lines" },
+  { pageKey:"tahsilatlar", pageName:"Tahsilatlar", pageUrl:"tahsilatlar.html", moduleGroup:"Finans", icon:"fa-wallet" },
+  { pageKey:"faturalar", pageName:"Faturalar", pageUrl:"faturalar.html", moduleGroup:"Finans", icon:"fa-file-invoice" },
+  { pageKey:"faturacikti", pageName:"Fatura Çıktı", pageUrl:"faturacikti.html", moduleGroup:"Finans", icon:"fa-print" },
+  { pageKey:"maliyethesaplama", pageName:"Maliyet Hesaplama", pageUrl:"maliyethesaplama.html", moduleGroup:"Finans", icon:"fa-coins" },
+
+  { pageKey:"calisanlar", pageName:"Çalışanlar", pageUrl:"calisanlar.html", moduleGroup:"İnsan Kaynakları", icon:"fa-user-group" },
+  { pageKey:"ikizinler", pageName:"İzin Yönetimi", pageUrl:"ikizinler.html", moduleGroup:"İnsan Kaynakları", icon:"fa-calendar-check" },
+  { pageKey:"ikmaas", pageName:"Maaş & Avans", pageUrl:"ikmaas.html", moduleGroup:"İnsan Kaynakları", icon:"fa-money-check" },
+  { pageKey:"ikmesai", pageName:"Mesai Takibi", pageUrl:"ikmesai.html", moduleGroup:"İnsan Kaynakları", icon:"fa-business-time" },
+  { pageKey:"ikevrak", pageName:"Evrak Yönetimi", pageUrl:"ikevrak.html", moduleGroup:"İnsan Kaynakları", icon:"fa-folder-open" },
+
+  { pageKey:"sevkiyat", pageName:"Sevkiyat", pageUrl:"sevkiyat.html", moduleGroup:"Lojistik", icon:"fa-truck-fast" },
+  { pageKey:"sevkiyatbarkod", pageName:"Sevkiyat Barkod", pageUrl:"sevkiyatbarkod.html", moduleGroup:"Lojistik", icon:"fa-barcode" },
+
+  { pageKey:"dokuman", pageName:"Doküman", pageUrl:"dokuman.html", moduleGroup:"Doküman", icon:"fa-file" },
+  { pageKey:"dokumanyonetimi", pageName:"Doküman Yönetimi", pageUrl:"dokumanyonetimi.html", moduleGroup:"Doküman", icon:"fa-folder-tree" },
+
+  { pageKey:"kullanicilar", pageName:"Kullanıcılar", pageUrl:"kullanicilar.html", moduleGroup:"Yönetim", icon:"fa-users-gear" },
+  { pageKey:"roller", pageName:"Rol Yönetimi", pageUrl:"roller.html", moduleGroup:"Yönetim", icon:"fa-user-shield" },
+  { pageKey:"ayarlar", pageName:"Ayarlar", pageUrl:"ayarlar.html", moduleGroup:"Yönetim", icon:"fa-gear" },
+  { pageKey:"bildirimler", pageName:"Bildirimler", pageUrl:"bildirimler.html", moduleGroup:"Yönetim", icon:"fa-bell" },
+  { pageKey:"notification", pageName:"Notification", pageUrl:"notification.html", moduleGroup:"Yönetim", icon:"fa-bell" },
+  { pageKey:"log", pageName:"Log Kayıtları", pageUrl:"log.html", moduleGroup:"Yönetim", icon:"fa-clock-rotate-left" }
+];
+
+    let roles = [];
+    let selectedRole = null;
+    let selectedPermissions = new Set();
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+
+      if (window.innerWidth <= 850) {
+        sidebar.classList.toggle("mobile-open");
+      } else {
+        sidebar.classList.toggle("collapsed");
+        main.classList.toggle("expanded");
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      const sidebar = document.getElementById("sidebar");
+      const toggle = document.querySelector(".menu-toggle");
+
+      if (
+        window.innerWidth <= 850 &&
+        sidebar.classList.contains("mobile-open") &&
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)
+      ) {
+        sidebar.classList.remove("mobile-open");
+      }
+    });
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2600);
+    }
+
+    function getUser() {
+      try {
+        return JSON.parse(localStorage.getItem("user")) || null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function getUserRole() {
+      const user = getUser();
+      return localStorage.getItem("userRole") || user?.role || "";
+    }
+
+    function setTopUser() {
+      const user = getUser();
+
+      if (!user) {
+        window.location.href = "giris.html";
+        return;
+      }
+
+      document.getElementById("topUserName").textContent = user.fullName || user.username || "Kullanıcı";
+      document.getElementById("topUserRole").textContent = user.role || "-";
+      document.getElementById("userAvatar").textContent = (user.fullName || user.username || "-").trim().charAt(0).toUpperCase();
+    }
+
+    function checkSuperAdmin() {
+      const role = getUserRole();
+
+      if (role !== "superadmin") {
+        appAlert("Bu sayfaya sadece Süper Admin erişebilir.");
+        window.location.href = "anasayfa.html";
+      }
+    }
+
+    function headers() {
+      return {
+        "Content-Type": "application/json",
+        "x-user-role": getUserRole()
+      };
+    }
+
+    async function apiGet(url) {
+      const response = await fetch(url, {
+        headers: headers()
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    async function apiPost(url, body) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    async function apiDelete(url) {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: headers()
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    async function loadRoles() {
+      const roleList = document.getElementById("roleList");
+      roleList.innerHTML = `<div class="empty-state">Roller yükleniyor...</div>`;
+
+      try {
+        const data = await apiGet("/api/admin/roles");
+        roles = data.roles || [];
+        renderRoles();
+
+        if (!selectedRole && roles.length > 0) {
+          selectRole(roles[0].id);
+        }
+      } catch (err) {
+        console.error(err);
+        roleList.innerHTML = `<div class="empty-state">Roller alınamadı: ${err.message}</div>`;
+      }
+    }
+
+    function renderRoles() {
+      const roleList = document.getElementById("roleList");
+
+      if (!roles.length) {
+        roleList.innerHTML = `<div class="empty-state">Henüz rol bulunmuyor.</div>`;
+        return;
+      }
+
+      roleList.innerHTML = roles.map(role => {
+        const isActive = selectedRole && String(selectedRole.id) === String(role.id);
+        const roleKey = role.role_key || role.roleKey || "";
+        const roleName = role.role_name || role.roleName || roleKey;
+        const protectedRole = ["superadmin", "admin", "user"].includes(roleKey);
+
+        return `
+          <div class="role-card ${isActive ? "active" : ""}" onclick="selectRole(${role.id})">
+            <div class="role-left">
+              <div class="role-icon"><i class="fa-solid fa-user-shield"></i></div>
+              <div>
+                <h4>${roleName}</h4>
+                <p>${roleKey}</p>
+              </div>
+            </div>
+            ${protectedRole ? "" : `
+              <button class="role-delete" type="button" onclick="deleteRole(event, ${role.id})" title="Rolü sil">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            `}
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selectRole(roleId) {
+      selectedRole = roles.find(role => String(role.id) === String(roleId));
+
+      if (!selectedRole) return;
+
+      const roleKey = selectedRole.role_key || selectedRole.roleKey || "";
+      const roleName = selectedRole.role_name || selectedRole.roleName || roleKey;
+
+      document.getElementById("selectedRoleName").textContent = roleName;
+      document.getElementById("selectedRoleKey").textContent = roleKey;
+
+      renderRoles();
+      loadPermissions();
+    }
+
+    async function createRole(event) {
+      event.preventDefault();
+
+      const roleKey = document.getElementById("roleKey").value.trim().toLowerCase().replace(/\s+/g, "_");
+      const roleName = document.getElementById("roleName").value.trim();
+
+      if (!roleKey || !roleName) {
+        showToast("Rol kodu ve rol adı zorunludur.");
+        return;
+      }
+
+      try {
+        await apiPost("/api/admin/roles", { roleKey, roleName });
+
+        document.getElementById("roleKey").value = "";
+        document.getElementById("roleName").value = "";
+
+        showToast("Rol başarıyla oluşturuldu.");
+        await loadRoles();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function deleteRole(event, roleId) {
+      event.stopPropagation();
+
+      if (!(await appConfirm("Bu rolü silmek istediğine emin misin?"))) return;
+
+      try {
+        await apiDelete(`/api/admin/roles/${roleId}`);
+
+        if (selectedRole && String(selectedRole.id) === String(roleId)) {
+          selectedRole = null;
+          selectedPermissions.clear();
+          document.getElementById("selectedRoleName").textContent = "Rol seçilmedi";
+          document.getElementById("selectedRoleKey").textContent = "Sol listeden rol seç";
+          document.getElementById("permissionGroups").innerHTML = `<div class="empty-state">Yetki görmek için rol seç.</div>`;
+        }
+
+        showToast("Rol silindi.");
+        await loadRoles();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function loadPermissions() {
+      const container = document.getElementById("permissionGroups");
+
+      if (!selectedRole) {
+        container.innerHTML = `<div class="empty-state">Yetki görmek için rol seç.</div>`;
+        return;
+      }
+
+      container.innerHTML = `<div class="empty-state">Yetkiler yükleniyor...</div>`;
+
+      try {
+        const data = await apiGet(`/api/admin/roles/${selectedRole.id}/permissions`);
+        const permissions = data.permissions || [];
+
+        selectedPermissions = new Set(
+          permissions
+            .filter(p => Number(p.canAccess || p.can_access || 0) === 1)
+            .map(p => p.pageKey || p.page_key)
+        );
+
+        renderPermissions();
+      } catch (err) {
+        console.warn("Backend yetki endpointi yoksa varsayılan liste gösterilecek:", err.message);
+        selectedPermissions = new Set();
+        renderPermissions();
+      }
+    }
+
+    function groupedPages() {
+      return DEFAULT_PAGES.reduce((groups, page) => {
+        if (!groups[page.moduleGroup]) groups[page.moduleGroup] = [];
+        groups[page.moduleGroup].push(page);
+        return groups;
+      }, {});
+    }
+
+    function renderPermissions() {
+      const container = document.getElementById("permissionGroups");
+      const groups = groupedPages();
+
+      container.innerHTML = Object.keys(groups).map(groupName => {
+        const pages = groups[groupName];
+
+        return `
+          <div class="permission-group">
+            <div class="permission-group-title">
+              <h4>${groupName}</h4>
+              <button type="button" onclick="toggleGroup('${groupName}')">Grubu Seç</button>
+            </div>
+            <div class="permission-items">
+              ${pages.map(page => `
+                <label class="permission-item">
+                  <input
+                    type="checkbox"
+                    class="permission-check"
+                    value="${page.pageKey}"
+                    data-page-name="${page.pageName}"
+                    data-page-url="${page.pageUrl}"
+                    data-module-group="${page.moduleGroup}"
+                    ${selectedPermissions.has(page.pageKey) ? "checked" : ""}
+                  >
+                  <i class="fa-solid ${page.icon}"></i>
+                  <div>
+                    <strong>${page.pageName}</strong>
+                    <span>${page.pageUrl}</span>
+                  </div>
+                </label>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selectAllPermissions(value) {
+      document.querySelectorAll(".permission-check").forEach(input => {
+        input.checked = value;
+      });
+    }
+
+    function toggleGroup(groupName) {
+      const groupInputs = Array.from(document.querySelectorAll(`.permission-check[data-module-group="${groupName}"]`));
+      const allChecked = groupInputs.every(input => input.checked);
+
+      groupInputs.forEach(input => {
+        input.checked = !allChecked;
+      });
+    }
+
+    async function savePermissions() {
+      if (!selectedRole) {
+        showToast("Önce bir rol seçmelisin.");
+        return;
+      }
+
+      const permissions = Array.from(document.querySelectorAll(".permission-check:checked")).map(input => ({
+        pageKey: input.value,
+        pageName: input.dataset.pageName,
+        pageUrl: input.dataset.pageUrl,
+        moduleGroup: input.dataset.moduleGroup
+      }));
+
+      try {
+        await apiPost(`/api/admin/roles/${selectedRole.id}/permissions`, { permissions });
+        showToast("Rol yetkileri güncellendi.");
+        await loadPermissions();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+document.addEventListener("DOMContentLoaded", async () => {
+  setTopUser();
+  checkSuperAdmin();
+
+  try {
+    await apiPost("/api/admin/pages/sync", { pages: DEFAULT_PAGES });
+  } catch (err) {
+    console.warn("Sayfa senkronizasyonu yapılamadı:", err.message);
+  }
+
+  await loadRoles();
+});
+  </script>
+<script>
+async function checkPagePermission() {
+
+    const user =
+        JSON.parse(localStorage.getItem("user") || "{}");
+
+let roleKey =
+    localStorage.getItem("userRole") || user.role || "";
+
+roleKey = String(roleKey)
+    .trim()
+    .toLowerCase()
+    .replace("yönetici", "admin")
+    .replace("yonetici", "admin")
+    .replace("süper admin", "superadmin")
+    .replace("super admin", "superadmin");
+    const currentPage =
+        "/" +
+        window.location.pathname.split("/").pop();
+
+    const response = await fetch(
+        `/api/auth/can-access?roleKey=${roleKey}&pageUrl=${currentPage}`
+    );
+
+    const data = await response.json();
+
+    if (!data.canAccess) {
+
+        appAlert(
+            "Bu sayfaya erişim yetkiniz bulunmamaktadır."
+        );
+
+        window.location.href = "anasayfa.html";
+    }
+}
+
+checkPagePermission();
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBES ERP - Satış Siparişleri</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-track{background:#071428}
+.sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+.sidebar.collapsed{width:82px}
+.sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}.logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px}
+.sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+.menu{padding:22px 14px 110px}
+.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+.menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+.menu a i{width:22px;text-align:center;font-size:17px}
+.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+.menu a.active{border:1px solid rgba(47,124,255,.45)}
+.sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+.sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+.sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+.main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}
+.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+.topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:18px}
+.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer;font-size:18px}
+.page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.search-box{width:320px;height:44px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:13px;display:flex;align-items:center;padding:0 14px}
+.search-box i{color:#8793a6;margin-right:10px}.search-box input{border:none;outline:none;background:transparent;width:100%;font-size:14px}
+.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+.content{padding:28px}
+.hero{background:linear-gradient(135deg,rgba(7,20,40,.96),rgba(16,48,95,.92));color:#fff;border-radius:24px;padding:30px;display:flex;justify-content:space-between;gap:24px;margin-bottom:26px}
+.hero h2{font-size:28px;margin-bottom:10px}.hero p{color:#c9d2e3;line-height:1.6;max-width:720px}
+.primary-btn,.secondary-btn{height:46px;padding:0 18px;border-radius:12px;border:none;font-weight:800;cursor:pointer;transition:.25s}
+.primary-btn{background:#2f7cff;color:#fff}.secondary-btn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px}
+.stat-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:22px;box-shadow:0 12px 32px rgba(31,54,91,.06)}
+.stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.stat-icon{width:48px;height:48px;border-radius:15px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.stat-card h3{font-size:28px;margin-bottom:6px}.stat-card p{color:#7a8799;font-size:14px}
+.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+.panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-header h3{font-size:18px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:16px 24px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}
+th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}
+td{color:#263548}
+.status{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.status.open{background:#eef5ff;color:#2563eb}
+.status.done{background:#eaf8ef;color:#15803d}
+.status.cancel{background:#fee2e2;color:#dc2626}
+.status.wait{background:#fff7e6;color:#b76b00}
+.action-btn{width:34px;height:34px;border:1px solid #e2e8f2;background:#fff;border-radius:10px;cursor:pointer;color:#48576b;margin-right:5px}
+.action-btn:hover{background:#eef5ff;color:#2f7cff}
+.empty-row{text-align:center;color:#7a8799;padding:26px}
+.modal{position:fixed;inset:0;background:rgba(7,20,40,.55);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+.modal.show{display:flex}
+.modal-box{width:1050px;max-width:100%;max-height:92vh;background:#fff;border-radius:22px;overflow:auto}
+.modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between}
+.close-btn{width:38px;height:38px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+.modal-body{padding:24px}.modal-footer{padding:18px 24px;border-top:1px solid #edf1f7;display:flex;justify-content:flex-end;gap:10px}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.form-group{display:flex;flex-direction:column;gap:7px}
+.form-group label{font-size:12px;font-weight:800;color:#48576b}
+.form-group input,.form-group select,.form-group textarea{border:1px solid #dbe5f2;border-radius:12px;padding:0 12px;outline:none;background:#fff}
+.form-group input,.form-group select{height:42px}
+.form-group textarea{height:82px;padding-top:10px;resize:none}
+.line-card{border:1px solid #e5eaf2;border-radius:18px;padding:16px;margin-bottom:12px;background:#fbfcfe}
+.line-grid{display:grid;grid-template-columns:1.3fr 1.5fr .6fr .6fr .8fr .4fr;gap:10px;align-items:end}
+.line-grid input{height:40px;border:1px solid #dbe5f2;border-radius:12px;padding:0 10px;outline:none}
+.line-grid label{font-size:11px;font-weight:800;color:#7a8799;margin-bottom:6px;display:block}
+.save-btn{height:42px;padding:0 18px;border:none;border-radius:12px;background:#2f7cff;color:#fff;font-weight:800;cursor:pointer}
+.cancel-btn{height:42px;padding:0 18px;border:1px solid #dbe5f2;border-radius:12px;background:#fff;font-weight:800;cursor:pointer}
+.total-box{display:flex;justify-content:flex-end;margin-top:14px;font-size:18px;font-weight:900;color:#172033}
+@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}.search-box{display:none}.form-grid{grid-template-columns:repeat(2,1fr)}.line-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero{flex-direction:column}}
+@media(max-width:560px){.content{padding:18px}.topbar{padding:0 18px}.stats-grid,.form-grid{grid-template-columns:1fr}.page-title p{display:none}}
+/* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+    <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+  </div>
+
+  <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+  </div>
+      </nav>
+</aside>
+
+<main class="main" id="main">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="page-title">
+      <h1>Satış Siparişleri</h1>
+      <p>Teklif sonrası müşteri siparişlerini ve sipariş satırlarını yönetin.</p>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="searchInput" onkeyup="renderOrders()" placeholder="Sipariş veya müşteri ara...">
+    </div>
+    <button class="icon-btn" onclick="window.location.href='bildirimler.html'">
+      <i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span>
+    </button>
+    <div class="user-menu">
+      <div class="avatar" id="userAvatar">-</div>
+      <div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </div>
+</header>
+
+<section class="content">
+  <div class="hero">
+    <div>
+      <h2>Satış Siparişi Yönetimi</h2>
+      <p>Tekliften sonra müşteri siparişini aç, satırlarını gir, toplam tutarı hesapla ve durumu takip et.</p>
+    </div>
+    <div>
+      <button class="primary-btn" onclick="openOrderModal()"><i class="fa-solid fa-plus"></i> Yeni Sipariş</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-cart-shopping"></i></div></div><h3 id="totalOrders">0</h3><p>Toplam Sipariş</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div></div><h3 id="openOrders">0</h3><p>Açık Sipariş</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-check"></i></div></div><h3 id="closedOrders">0</h3><p>Tamamlanan</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div></div><h3 id="totalAmount">₺0</h3><p>Toplam Tutar</p></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3>Sipariş Listesi</h3>
+      <button class="primary-btn" onclick="loadOrders()"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Sipariş No</th>
+            <th>Müşteri</th>
+            <th>Sipariş Tarihi</th>
+            <th>Termin</th>
+            <th>Tutar</th>
+            <th>Durum</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable">
+          <tr><td colspan="7" class="empty-row">Veriler yükleniyor...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+<!-- SİPARİŞ MODALI -->
+<div class="modal" id="orderModal">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h3>Yeni Satış Siparişi</h3>
+      <button class="close-btn" onclick="closeOrderModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Sipariş No</label>
+          <input id="order_no">
+        </div>
+
+        <div class="form-group">
+          <label>Müşteri</label>
+          <select id="customer_id"></select>
+        </div>
+
+        <div class="form-group">
+          <label>Sipariş Tarihi</label>
+          <input type="date" id="order_date">
+        </div>
+
+        <div class="form-group">
+          <label>Teslim Tarihi</label>
+          <input type="date" id="delivery_date">
+        </div>
+
+        <div class="form-group">
+          <label>Durum</label>
+          <select id="status">
+            <option>Açık</option>
+            <option>Üretimde</option>
+            <option>Tamamlandı</option>
+            <option>İptal</option>
+          </select>
+        </div>
+
+      </div>
+
+      <hr style="margin:20px 0">
+
+      <button class="primary-btn" onclick="addLine()">
+        <i class="fa-solid fa-plus"></i>
+        Sipariş Satırı Ekle
+      </button>
+
+      <div id="linesContainer"></div>
+
+      <div class="total-box">
+        Toplam:
+        <span id="grandTotal">₺0</span>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeOrderModal()">Vazgeç</button>
+      <button class="save-btn" onclick="saveOrder()">Kaydet</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+let orders = [];
+let customers = [];
+
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("collapsed");
+    document.getElementById("main").classList.toggle("expanded");
+}
+
+function formatMoney(v){
+    return "₺" + Number(v || 0).toLocaleString("tr-TR");
+}
+
+async function loadCustomers(){
+
+    try{
+
+        const res =
+        await fetch("/api/customers");
+
+        const data =
+        await res.json();
+
+        customers =
+        data.data || [];
+
+        document.getElementById("customer_id").innerHTML =
+        customers.map(c => `
+            <option value="${c.id}">
+                ${c.company_name}
+            </option>
+        `).join("");
+
+    }catch(err){
+        console.error(err);
+    }
+}
+
+async function loadOrders(){
+
+    try{
+
+        const res =
+        await fetch("/api/sales-orders");
+
+        const data =
+        await res.json();
+
+        orders =
+        data.data || [];
+
+        renderOrders();
+        renderStats();
+
+    }catch(err){
+        console.error(err);
+    }
+}
+
+function renderStats(){
+
+    document.getElementById("totalOrders").textContent =
+    orders.length;
+
+    document.getElementById("openOrders").textContent =
+    orders.filter(x => x.status === "Açık").length;
+
+    document.getElementById("closedOrders").textContent =
+    orders.filter(x => x.status === "Tamamlandı").length;
+
+    const total =
+    orders.reduce((a,b)=>a + Number(b.total_amount || 0),0);
+
+    document.getElementById("totalAmount").textContent =
+    formatMoney(total);
+}
+
+function renderOrders(){
+
+    const search =
+    document.getElementById("searchInput")
+    .value
+    .toLowerCase();
+
+    const filtered =
+    orders.filter(x =>
+        (x.order_no || "")
+        .toLowerCase()
+        .includes(search)
+        ||
+        (x.company_name || "")
+        .toLowerCase()
+        .includes(search)
+    );
+
+    const tbody =
+    document.getElementById("ordersTable");
+
+    if(filtered.length === 0){
+
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="7" class="empty-row">
+                Kayıt bulunamadı.
+            </td>
+        </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML =
+    filtered.map(x => {
+
+        let cls = "open";
+
+        if(x.status === "Tamamlandı")
+            cls = "done";
+
+        if(x.status === "İptal")
+            cls = "cancel";
+
+        if(x.status === "Üretimde")
+            cls = "wait";
+
+        return `
+        <tr>
+            <td>${x.order_no}</td>
+            <td>${x.company_name || "-"}</td>
+            <td>${x.order_date || "-"}</td>
+            <td>${x.delivery_date || "-"}</td>
+            <td>${formatMoney(x.total_amount)}</td>
+            <td>
+                <span class="status ${cls}">
+                    ${x.status}
+                </span>
+            </td>
+            <td>
+                <button class="action-btn"
+                    onclick="showOrder(${x.id})">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </td>
+        </tr>
+        `;
+    }).join("");
+}
+
+function openOrderModal(){
+
+    document.getElementById("orderModal")
+    .classList.add("show");
+
+    document.getElementById("order_date").value =
+    new Date().toISOString().substring(0,10);
+
+    document.getElementById("linesContainer").innerHTML = "";
+
+    document.getElementById("grandTotal").textContent =
+    "₺0";
+}
+
+function closeOrderModal(){
+
+    document.getElementById("orderModal")
+    .classList.remove("show");
+}
+
+function addLine(){
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "line-card";
+
+    div.innerHTML = `
+    <div class="line-grid">
+
+      <div>
+        <label>Parça</label>
+        <input class="part_name">
+      </div>
+
+      <div>
+        <label>Açıklama</label>
+        <input class="description">
+      </div>
+
+      <div>
+        <label>Miktar</label>
+        <input class="qty" type="number" value="1">
+      </div>
+
+      <div>
+        <label>Fiyat</label>
+        <input class="price" type="number" value="0">
+      </div>
+
+      <div>
+        <label>Tutar</label>
+        <input class="line_total" readonly>
+      </div>
+
+      <div>
+        <button class="action-btn"
+          onclick="this.closest('.line-card').remove();calculateTotal();">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
+    </div>
+    `;
+
+    document
+      .getElementById("linesContainer")
+      .appendChild(div);
+
+    div.querySelector(".qty")
+       .addEventListener("input",calculateTotal);
+
+    div.querySelector(".price")
+       .addEventListener("input",calculateTotal);
+
+    calculateTotal();
+}
+
+function calculateTotal(){
+
+    let total = 0;
+
+    document
+    .querySelectorAll(".line-card")
+    .forEach(card => {
+
+        const qty =
+        Number(card.querySelector(".qty").value || 0);
+
+        const price =
+        Number(card.querySelector(".price").value || 0);
+
+        const rowTotal =
+        qty * price;
+
+        card.querySelector(".line_total")
+            .value = rowTotal.toFixed(2);
+
+        total += rowTotal;
+    });
+
+    document.getElementById("grandTotal")
+      .textContent =
+      formatMoney(total);
+}
+
+async function saveOrder(){
+
+    const lines = [];
+
+    document
+    .querySelectorAll(".line-card")
+    .forEach(card => {
+
+        lines.push({
+
+            part_name:
+            card.querySelector(".part_name").value,
+
+            description:
+            card.querySelector(".description").value,
+
+            quantity:
+            Number(card.querySelector(".qty").value || 0),
+
+            unit_price:
+            Number(card.querySelector(".price").value || 0)
+
+        });
+
+    });
+
+    const body = {
+
+        order_no:
+        document.getElementById("order_no").value,
+
+        customer_id:
+        document.getElementById("customer_id").value,
+
+        order_date:
+        document.getElementById("order_date").value,
+
+        delivery_date:
+        document.getElementById("delivery_date").value,
+
+        status:
+        document.getElementById("status").value,
+
+        lines
+
+    };
+
+    const res =
+    await fetch("/api/sales-orders",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(body)
+
+    });
+
+    const data =
+    await res.json();
+
+    if(data.success){
+
+        appAlert("Sipariş oluşturuldu.");
+
+        closeOrderModal();
+        loadOrders();
+
+    }else{
+
+        appAlert(data.message);
+    }
+}
+
+async function showOrder(id){
+
+    const res =
+    await fetch(`/api/sales-orders/${id}`);
+
+    const data =
+    await res.json();
+
+    console.log(data);
+
+    appAlert(
+      "Sipariş detayları konsola yazdırıldı."
+    );
+}
+
+document.addEventListener(
+"DOMContentLoaded",
+async () => {
+
+    await loadCustomers();
+    await loadOrders();
+
+});
+
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

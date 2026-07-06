@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Dashboard Designer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+    .sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-track{background:#071428}.sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px;letter-spacing:.5px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px 120px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}.menu-toggle:hover{background:#e8eef7}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}.user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}
+    .hero-card{background:linear-gradient(135deg,rgba(7,20,40,.96),rgba(16,48,95,.92)),url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=1400&q=80");background-size:cover;background-position:center;color:#fff;border-radius:24px;padding:30px 34px;display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:24px;overflow:hidden}
+    .hero-card h2{font-size:28px;margin-bottom:10px}.hero-card p{color:#c9d2e3;max-width:760px;line-height:1.6;font-size:14px}.hero-badge{height:46px;padding:0 18px;border-radius:999px;background:rgba(47,124,255,.18);border:1px solid rgba(47,124,255,.38);display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;white-space:nowrap}
+    .designer-grid{display:grid;grid-template-columns:320px 1fr;gap:20px}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+    .panel-header{padding:21px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.panel-header h3{font-size:18px}.panel-header p{margin-top:4px;font-size:12px;color:#7a8799}.panel-body{padding:22px 24px}
+    .widget-list{display:flex;flex-direction:column;gap:10px;max-height:620px;overflow:auto;padding-right:4px}
+    .widget-card{border:1px solid #e5eaf2;background:#fbfcfe;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.25s}
+    .widget-card:hover{border-color:rgba(47,124,255,.45);background:#eef5ff;transform:translateY(-1px)}
+    .widget-icon{width:42px;height:42px;border-radius:13px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .widget-card h4{font-size:13px;margin-bottom:4px}.widget-card p{font-size:12px;color:#7a8799}
+    .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+    .form-control{height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;color:#172033;font-size:14px;transition:.25s}
+    .form-control:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+    .primary-btn,.secondary-btn,.danger-btn{height:44px;padding:0 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-size:13px;white-space:nowrap}
+    .primary-btn{background:#2f7cff;color:#fff;box-shadow:0 12px 24px rgba(47,124,255,.24)}.secondary-btn{background:#f1f5fb;color:#263548;border:1px solid #e2e8f2}.danger-btn{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}.primary-btn:hover,.secondary-btn:hover,.danger-btn:hover{transform:translateY(-1px)}
+    .canvas{min-height:680px;background:#f8fbff;border:1px dashed #b8c6d9;border-radius:22px;padding:18px;display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(110px,auto);gap:14px}
+    .canvas.empty{display:flex;align-items:center;justify-content:center;color:#7a8799;text-align:center}
+    .dashboard-widget{background:#fff;border:1px solid #e5eaf2;border-radius:18px;box-shadow:0 10px 28px rgba(31,54,91,.06);padding:16px;position:relative;overflow:hidden}
+    .dashboard-widget[data-size="small"]{grid-column:span 3}.dashboard-widget[data-size="medium"]{grid-column:span 6}.dashboard-widget[data-size="large"]{grid-column:span 12}
+    .dw-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.dw-title{display:flex;align-items:center;gap:10px}.dw-title i{width:36px;height:36px;border-radius:12px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center}.dw-title h4{font-size:14px}.dw-title p{font-size:11px;color:#7a8799;margin-top:2px}
+    .dw-actions{display:flex;gap:6px}.mini-btn{width:32px;height:32px;border-radius:10px;border:1px solid #e2e8f2;background:#fff;color:#48576b;cursor:pointer}.mini-btn:hover{background:#eef5ff;color:#2f7cff}.mini-btn.delete:hover{background:#fee2e2;color:#dc2626;border-color:#fecaca}
+    .fake-kpi{font-size:30px;font-weight:900;color:#172033;margin-top:12px}.fake-sub{font-size:12px;color:#7a8799;margin-top:4px}.fake-chart{height:130px;border-radius:14px;background:linear-gradient(135deg,#eef5ff,#f8fbff);display:flex;align-items:center;justify-content:center;color:#2f7cff;font-weight:900;margin-top:10px}
+    .fake-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}.fake-list div{height:34px;border-radius:11px;background:#f5f8fc;display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:12px;color:#64748b}
+    .toast{position:fixed;right:24px;bottom:24px;z-index:999;background:#071428;color:#fff;border-radius:16px;padding:15px 18px;box-shadow:0 18px 40px rgba(7,20,40,.24);display:none;max-width:380px;font-size:14px}.toast.show{display:block;animation:slideIn .2s ease-out}@keyframes slideIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+    @media(max-width:1200px){.designer-grid{grid-template-columns:1fr}.dashboard-widget[data-size="small"]{grid-column:span 6}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero-card{flex-direction:column;align-items:flex-start}.canvas{grid-template-columns:1fr}.dashboard-widget,.dashboard-widget[data-size="small"],.dashboard-widget[data-size="medium"],.dashboard-widget[data-size="large"]{grid-column:span 1}}
+    @media(max-width:560px){.content{padding:18px}.topbar{padding:0 18px}.page-title p{display:none}.panel-header,.panel-body{padding:18px}}
+  </style>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header"><div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div><div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div></div>
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+        <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+        <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+        <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+        <div class="menu-title">ÜRETİM</div>
+        <a href="uretim.html"><i class="fa-solid fa-gears"></i><span>Üretim</span></a>
+        <a href="uretimtakip.html"><i class="fa-solid fa-chart-line"></i><span>Üretim Takip</span></a>
+        <a href="stokyonetimi.html"><i class="fa-solid fa-boxes-stacked"></i><span>Stok Yönetimi</span></a>
+        <a href="makinebakim.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Makine Bakım</span></a>
+        <a href="kalitekontrol.html"><i class="fa-solid fa-clipboard-check"></i><span>Kalite Kontrol</span></a>
+        <div class="menu-title">YÖNETİM</div>
+        <a href="kullanicilar.html"><i class="fa-solid fa-users-gear"></i><span>Kullanıcılar</span></a>
+        <a href="roller.html"><i class="fa-solid fa-user-shield"></i><span>Rol Yönetimi</span></a>
+        <a href="yetkimatrisi.html"><i class="fa-solid fa-table-cells-large"></i><span>Yetki Matrisi</span></a>
+        <a href="workflow.html"><i class="fa-solid fa-diagram-project"></i><span>Workflow</span></a>
+        <a href="notificationcenter.html"><i class="fa-solid fa-bell"></i><span>Notification Center</span></a>
+        <a href="dashboarddesigner.html" class="active"><i class="fa-solid fa-grip"></i><span>Dashboard Designer</span></a>
+        <a href="log.html"><i class="fa-solid fa-clock-rotate-left"></i><span>Sistem Logları</span></a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+      </nav>
+      <div class="sidebar-footer"><i class="fa-solid fa-shield-halved"></i><div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div></div>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left"><button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button><div class="page-title"><h1>Dashboard Designer</h1><p>Kullanıcı bazlı no-code dashboard tasarlayın.</p></div></div>
+        <div class="topbar-right">
+          <button class="icon-btn" onclick="loadLayout()" title="Yenile"><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="icon-btn" title="Bildirimler"><i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span></button>
+          <div class="user-menu"><div class="avatar" id="userAvatar">-</div><div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div><i class="fa-solid fa-chevron-down"></i></div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="hero-card"><div><h2>No-Code Dashboard Tasarımcısı</h2><p>KPI kartı, grafik, liste, makine durumu, workflow ve bildirim widget'larını seçerek kişisel dashboard tasarla. Layout SQLite içinde kullanıcı bazlı saklanır.</p></div><div class="hero-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Designer Mode</div></div>
+
+        <div class="designer-grid">
+          <div class="panel"><div class="panel-header"><div><h3>Widget Kataloğu</h3><p>Eklemek için widget'a tıkla.</p></div></div><div class="panel-body"><div class="widget-list" id="widgetCatalog"><div class="empty-state">Widget'lar yükleniyor...</div></div></div></div>
+
+          <div class="panel">
+            <div class="panel-header"><div><h3>Dashboard Alanı</h3><p>Widget ekle, boyutlandır, kaydet.</p></div></div>
+            <div class="panel-body">
+              <div class="toolbar">
+                <input class="form-control" id="dashboardName" value="Ana Dashboard" placeholder="Dashboard adı">
+                <button class="primary-btn" onclick="saveLayout()"><i class="fa-solid fa-floppy-disk"></i> Kaydet</button>
+                <button class="secondary-btn" onclick="loadLayout()"><i class="fa-solid fa-rotate"></i> Yükle</button>
+                <button class="danger-btn" onclick="resetLayout()"><i class="fa-solid fa-trash"></i> Sıfırla</button>
+              </div>
+              <div class="canvas empty" id="dashboardCanvas"><div><i class="fa-solid fa-grip" style="font-size:34px;margin-bottom:12px;color:#94a3b8;"></i><p>Sol taraftan widget seçerek dashboard oluşturmaya başla.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let catalog = [];
+    let layoutWidgets = [];
+
+    function toggleSidebar(){const s=document.getElementById("sidebar");const m=document.getElementById("main");if(window.innerWidth<=850)s.classList.toggle("mobile-open");else{s.classList.toggle("collapsed");m.classList.toggle("expanded")}}
+    function showToast(message){const t=document.getElementById("toast");t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)}
+    function getUser(){try{return JSON.parse(localStorage.getItem("user")||"{}")}catch{return {}}}
+    function normalizeRole(role){return String(role||"").trim().toLowerCase().replace("yönetici","admin").replace("yonetici","admin").replace("süper admin","superadmin").replace("super admin","superadmin")}
+    function authHeaders(){const u=getUser();return{"Content-Type":"application/json","x-user-id":u.id||localStorage.getItem("userId")||"","x-user-name":u.username||u.fullName||u.full_name||localStorage.getItem("fullName")||"","x-user-role":normalizeRole(localStorage.getItem("userRole")||u.role||"")}}
+    function setTopUser(){const u=getUser();const n=u.fullName||u.full_name||u.username||localStorage.getItem("fullName")||"Kullanıcı";const r=u.role||localStorage.getItem("userRole")||"-";document.getElementById("topUserName").textContent=n;document.getElementById("topUserRole").textContent=r;document.getElementById("userAvatar").textContent=String(n).trim().charAt(0).toUpperCase()}
+    async function apiGet(url){const r=await fetch(url,{headers:authHeaders()});const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.message||"API hatası");return d}
+    async function apiPost(url,body){const r=await fetch(url,{method:"POST",headers:authHeaders(),body:JSON.stringify(body)});const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.message||"API hatası");return d}
+    async function apiDelete(url){const r=await fetch(url,{method:"DELETE",headers:authHeaders()});const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.message||"API hatası");return d}
+    function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+
+    async function loadCatalog(){const list=document.getElementById("widgetCatalog");list.innerHTML=`<div class="empty-state">Widget'lar yükleniyor...</div>`;try{const d=await apiGet("/api/dashboard-designer/widgets");catalog=d.data||[];renderCatalog()}catch(e){list.innerHTML=`<div class="empty-state">${escapeHtml(e.message)}</div>`}}
+    function renderCatalog(){const list=document.getElementById("widgetCatalog");if(!catalog.length){list.innerHTML=`<div class="empty-state">Widget bulunamadı.</div>`;return}list.innerHTML=catalog.map(w=>`<div class="widget-card" onclick="addWidget('${escapeHtml(w.widget_key)}')"><div class="widget-icon"><i class="fa-solid ${escapeHtml(w.icon||"fa-cube")}"></i></div><div><h4>${escapeHtml(w.widget_name)}</h4><p>${escapeHtml(w.widget_type)} • ${escapeHtml(w.module_key||"genel")}</p></div></div>`).join("")}
+    function addWidget(key){const d=catalog.find(w=>w.widget_key===key);if(!d)return;layoutWidgets.push({id:Date.now()+"_"+Math.floor(Math.random()*9999),widgetKey:d.widget_key,widgetName:d.widget_name,widgetType:d.widget_type,moduleKey:d.module_key,icon:d.icon,size:d.widget_type==="chart"?"medium":"small"});renderCanvas()}
+    function removeWidget(id){layoutWidgets=layoutWidgets.filter(w=>w.id!==id);renderCanvas()}
+    function resizeWidget(id){const w=layoutWidgets.find(x=>x.id===id);if(!w)return;if(w.size==="small")w.size="medium";else if(w.size==="medium")w.size="large";else w.size="small";renderCanvas()}
+    function moveWidget(id,dir){const i=layoutWidgets.findIndex(w=>w.id===id);if(i<0)return;const ni=dir==="up"?i-1:i+1;if(ni<0||ni>=layoutWidgets.length)return;const temp=layoutWidgets[i];layoutWidgets[i]=layoutWidgets[ni];layoutWidgets[ni]=temp;renderCanvas()}
+    function fakeKpiValue(key){if(key==="kpi_oee")return"%82";if(key==="kpi_work_orders")return"18";if(key==="kpi_stock_critical")return"7";if(key==="kpi_pending_workflow")return"4";return"0"}
+    function widgetBody(w){if(w.widgetType==="kpi")return`<div class="fake-kpi">${fakeKpiValue(w.widgetKey)}</div><div class="fake-sub">Canlı veri bağlantısı sonraki aşamada bağlanır.</div>`;if(w.widgetType==="chart")return`<div class="fake-chart"><i class="fa-solid fa-chart-line"></i>&nbsp; Grafik Alanı</div>`;if(w.widgetType==="calendar")return`<div class="fake-list"><div><span>08:30 Üretim Planı</span><b>Aktif</b></div><div><span>10:00 Bakım</span><b>Planlı</b></div><div><span>14:30 Kalite Kontrol</span><b>Bekliyor</b></div></div>`;return`<div class="fake-list"><div><span>Son kayıt</span><b>Yeni</b></div><div><span>Bekleyen işlem</span><b>3</b></div><div><span>Durum</span><b>Aktif</b></div></div>`}
+    function renderCanvas(){const c=document.getElementById("dashboardCanvas");if(!layoutWidgets.length){c.className="canvas empty";c.innerHTML=`<div><i class="fa-solid fa-grip" style="font-size:34px;margin-bottom:12px;color:#94a3b8;"></i><p>Sol taraftan widget seçerek dashboard oluşturmaya başla.</p></div>`;return}c.className="canvas";c.innerHTML=layoutWidgets.map(w=>`<div class="dashboard-widget" data-size="${escapeHtml(w.size)}"><div class="dw-head"><div class="dw-title"><i class="fa-solid ${escapeHtml(w.icon||"fa-cube")}"></i><div><h4>${escapeHtml(w.widgetName)}</h4><p>${escapeHtml(w.moduleKey||"genel")} • ${escapeHtml(w.size)}</p></div></div><div class="dw-actions"><button class="mini-btn" onclick="moveWidget('${w.id}','up')" title="Sola/Yukarı"><i class="fa-solid fa-arrow-left"></i></button><button class="mini-btn" onclick="moveWidget('${w.id}','down')" title="Sağa/Aşağı"><i class="fa-solid fa-arrow-right"></i></button><button class="mini-btn" onclick="resizeWidget('${w.id}')" title="Boyut"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button class="mini-btn delete" onclick="removeWidget('${w.id}')" title="Sil"><i class="fa-solid fa-trash"></i></button></div></div>${widgetBody(w)}</div>`).join("")}
+    async function saveLayout(){try{await apiPost("/api/dashboard-designer/layout",{dashboardKey:"main",dashboardName:document.getElementById("dashboardName").value||"Ana Dashboard",widgets:layoutWidgets});showToast("Dashboard kaydedildi.")}catch(e){showToast(e.message)}}
+    async function loadLayout(){try{const d=await apiGet("/api/dashboard-designer/layout?dashboardKey=main");layoutWidgets=d.widgets||[];if(d.data?.dashboard_name)document.getElementById("dashboardName").value=d.data.dashboard_name;renderCanvas()}catch(e){showToast(e.message)}}
+    async function resetLayout(){if(!confirm("Dashboard tasarımını sıfırlamak istiyor musun?"))return;try{await apiDelete("/api/dashboard-designer/layout?dashboardKey=main");layoutWidgets=[];renderCanvas();showToast("Dashboard sıfırlandı.")}catch(e){showToast(e.message)}}
+    document.addEventListener("DOMContentLoaded",async()=>{setTopUser();await loadCatalog();await loadLayout()});
+  </script>
+</body>
+</html>

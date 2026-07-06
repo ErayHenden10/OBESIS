@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>OBES ERP - ERP Replay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px 120px}
+    .menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s}
+    .menu a i{width:22px;text-align:center;font-size:17px}
+    .menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+    .menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}
+    .main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}
+    .menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+
+    .content{padding:28px}
+    .hero-card{background:linear-gradient(135deg,rgba(7,20,40,.96),rgba(16,48,95,.92)),url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=1400&q=80");background-size:cover;background-position:center;color:#fff;border-radius:24px;padding:30px 34px;display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:24px}
+    .hero-card h2{font-size:28px;margin-bottom:10px}
+    .hero-card p{color:#c9d2e3;max-width:780px;line-height:1.6;font-size:14px}
+    .hero-badge{height:46px;padding:0 18px;border-radius:999px;background:rgba(47,124,255,.18);border:1px solid rgba(47,124,255,.38);display:flex;align-items:center;gap:10px;font-weight:800}
+
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+    .stat-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:20px;box-shadow:0 12px 32px rgba(31,54,91,.06)}
+    .stat-card i{width:42px;height:42px;border-radius:14px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+    .stat-card h3{font-size:25px;margin-bottom:4px}
+    .stat-card p{font-size:13px;color:#7a8799}
+
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden;margin-bottom:20px}
+    .panel-header{padding:21px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .panel-header h3{font-size:18px}.panel-header p{font-size:12px;color:#7a8799;margin-top:4px}
+    .panel-body{padding:22px 24px}
+    .filters{display:grid;grid-template-columns:180px 140px 140px auto;gap:12px;align-items:end}
+    .form-group label{display:block;font-size:13px;font-weight:800;color:#27364a;margin-bottom:8px}
+    .form-control{width:100%;height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;color:#172033;font-size:14px}
+    .primary-btn,.secondary-btn{height:44px;padding:0 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;white-space:nowrap}
+    .primary-btn{background:#2f7cff;color:#fff;box-shadow:0 12px 24px rgba(47,124,255,.24)}
+    .secondary-btn{background:#f1f5fb;color:#263548;border:1px solid #e2e8f2}
+
+    .replay-layout{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    .timeline{position:relative;padding-left:26px}
+    .timeline:before{content:"";position:absolute;left:8px;top:4px;bottom:4px;width:3px;background:#dbeafe;border-radius:999px}
+    .event-item{position:relative;background:#fbfcfe;border:1px solid #e5eaf2;border-radius:18px;padding:16px 16px 16px 18px;margin-bottom:12px;cursor:pointer;transition:.25s}
+    .event-item:hover,.event-item.active{border-color:rgba(47,124,255,.45);background:#eef5ff}
+    .event-item:before{content:"";position:absolute;left:-24px;top:21px;width:13px;height:13px;border-radius:999px;background:#2f7cff;border:3px solid #fff;box-shadow:0 0 0 3px #dbeafe}
+    .event-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+    .event-title{font-weight:900;color:#172033}
+    .event-time{font-size:12px;color:#7a8799}
+    .event-desc{font-size:13px;color:#64748b;line-height:1.5}
+    .pill{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;background:#f1f5f9;color:#475569;display:inline-flex;align-items:center;gap:6px}
+    .source-event_bus{background:#dcfce7;color:#15803d}
+    .source-audit_log{background:#e0f2fe;color:#0369a1}
+    .detail-box{background:#fbfcfe;border:1px solid #e5eaf2;border-radius:18px;padding:18px;position:sticky;top:104px}
+    .detail-box h3{margin-bottom:8px}
+    .detail-row{padding:10px 0;border-bottom:1px solid #edf1f7}
+    .detail-row small{display:block;color:#7a8799;font-size:11px;font-weight:900;text-transform:uppercase;margin-bottom:4px}
+    .detail-row span{font-size:14px;color:#172033}
+    pre{background:#071428;color:#c9d2e3;border-radius:14px;padding:14px;overflow:auto;font-size:12px;max-height:260px}
+    .empty-state{padding:32px;text-align:center;color:#7a8799;border:1px dashed #cbd5e1;border-radius:18px;background:#fbfcfe}
+    .toast{position:fixed;right:24px;bottom:24px;z-index:999;background:#071428;color:#fff;border-radius:16px;padding:15px 18px;box-shadow:0 18px 40px rgba(7,20,40,.24);display:none;max-width:380px;font-size:14px}
+    .toast.show{display:block}
+
+    @media(max-width:1200px){.replay-layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero-card{flex-direction:column;align-items:flex-start}.stats,.filters{grid-template-columns:1fr}}
+  </style>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+      <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+    </div>
+
+    <nav class="menu">
+      <div class="menu-title">GENEL</div>
+      <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+      <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+      <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+      <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+
+      <div class="menu-title">ÜRETİM</div>
+      <a href="uretim.html"><i class="fa-solid fa-gears"></i><span>Üretim</span></a>
+      <a href="uretimtakip.html"><i class="fa-solid fa-chart-line"></i><span>Üretim Takip</span></a>
+      <a href="stokyonetimi.html"><i class="fa-solid fa-boxes-stacked"></i><span>Stok Yönetimi</span></a>
+      <a href="kalitekontrol.html"><i class="fa-solid fa-clipboard-check"></i><span>Kalite Kontrol</span></a>
+
+      <div class="menu-title">YÖNETİM</div>
+      <a href="workflow.html"><i class="fa-solid fa-diagram-project"></i><span>Workflow</span></a>
+      <a href="eventcenter.html"><i class="fa-solid fa-bolt"></i><span>Event Center</span></a>
+      <a href="erpreplay.html" class="active"><i class="fa-solid fa-film"></i><span>ERP Replay</span></a>
+      <a href="kpidesigner.html"><i class="fa-solid fa-gauge-high"></i><span>KPI Designer</span></a>
+      <a href="reportdesigner.html"><i class="fa-solid fa-file-lines"></i><span>Report Designer</span></a>
+      <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title"><h1>ERP Replay</h1><p>ERP geçmişini zaman çizgisi olarak izle.</p></div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="loadReplay()" title="Yenile"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">0</span></button>
+        <div class="user-menu">
+          <div class="avatar" id="userAvatar">E</div>
+          <div class="user-info"><h4 id="topUserName">Eray</h4><p id="topUserRole">Admin</p></div>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="hero-card">
+        <div>
+          <h2>ERP Replay Timeline</h2>
+          <p>Dün, bugün veya belirli bir saatte ERP içinde ne oldu? İş emri, stok, workflow, webhook, notification ve audit hareketlerini film şeridi gibi izle.</p>
+        </div>
+        <div class="hero-badge"><i class="fa-solid fa-film"></i> Time Machine</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card"><i class="fa-solid fa-bolt"></i><h3 id="statTotal">0</h3><p>Toplam Hareket</p></div>
+        <div class="stat-card"><i class="fa-solid fa-user"></i><h3 id="statUsers">0</h3><p>Kullanıcı</p></div>
+        <div class="stat-card"><i class="fa-solid fa-layer-group"></i><h3 id="statModules">0</h3><p>Modül</p></div>
+        <div class="stat-card"><i class="fa-solid fa-triangle-exclamation"></i><h3 id="statErrors">0</h3><p>Hata</p></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div><h3>Zaman Seçimi</h3><p>Örn: Dün 15:20’de ne oldu?</p></div>
+        </div>
+        <div class="panel-body">
+          <div class="filters">
+            <div class="form-group">
+              <label>Tarih</label>
+              <input type="date" class="form-control" id="replayDate">
+            </div>
+            <div class="form-group">
+              <label>Saat</label>
+              <input type="time" class="form-control" id="replayTime">
+            </div>
+            <div class="form-group">
+              <label>Dakika Aralığı</label>
+              <select class="form-control" id="replayMinutes">
+                <option value="15">15 dk</option>
+                <option value="30">30 dk</option>
+                <option value="60" selected>60 dk</option>
+                <option value="180">3 saat</option>
+                <option value="1440">Tüm gün</option>
+              </select>
+            </div>
+            <button class="primary-btn" onclick="loadReplay()"><i class="fa-solid fa-play"></i> Replay Başlat</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="replay-layout">
+        <div class="panel">
+          <div class="panel-header">
+            <div><h3>Replay Akışı</h3><p id="timelineSub">Zaman çizgisi yükleniyor...</p></div>
+            <button class="secondary-btn" onclick="playReplay()"><i class="fa-solid fa-circle-play"></i> Film Gibi Oynat</button>
+          </div>
+          <div class="panel-body">
+            <div class="timeline" id="timeline"></div>
+          </div>
+        </div>
+
+        <div class="detail-box" id="detailBox">
+          <h3>Hareket Detayı</h3>
+          <p style="color:#7a8799;font-size:13px;">Timeline’dan bir hareket seç.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let replayData = [];
+  let playIndex = 0;
+  let playTimer = null;
+
+  function toggleSidebar() {
+    const s = document.getElementById("sidebar");
+    const m = document.getElementById("main");
+    if (window.innerWidth <= 850) s.classList.toggle("mobile-open");
+    else {
+      s.classList.toggle("collapsed");
+      m.classList.toggle("expanded");
+    }
+  }
+
+  function showToast(message) {
+    const t = document.getElementById("toast");
+    t.textContent = message;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  function escapeHtml(v) {
+    return String(v ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function setToday() {
+    const d = new Date();
+    document.getElementById("replayDate").value = d.toISOString().slice(0,10);
+    document.getElementById("replayTime").value = "00:00";
+  }
+
+  async function loadReplay() {
+    const date = document.getElementById("replayDate").value;
+    const time = document.getElementById("replayTime").value;
+    const minutes = document.getElementById("replayMinutes").value;
+
+    const timeline = document.getElementById("timeline");
+    timeline.innerHTML = `<div class="empty-state">Replay yükleniyor...</div>`;
+
+    try {
+      const r = await fetch(`/api/erp-replay?date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}&minutes=${minutes}`);
+      const d = await r.json();
+
+      if (!d.success) throw new Error(d.message || "Replay alınamadı.");
+
+      replayData = d.data || [];
+
+      document.getElementById("statTotal").textContent = d.stats.total || 0;
+      document.getElementById("statUsers").textContent = d.stats.users || 0;
+      document.getElementById("statModules").textContent = d.stats.modules || 0;
+      document.getElementById("statErrors").textContent = d.stats.errors || 0;
+      document.getElementById("timelineSub").textContent = `${replayData.length} hareket bulundu.`;
+
+      renderTimeline();
+
+      if (replayData.length) showDetail(0);
+    } catch (err) {
+      timeline.innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderTimeline(activeIndex = -1) {
+    const area = document.getElementById("timeline");
+
+    if (!replayData.length) {
+      area.innerHTML = `<div class="empty-state">Bu aralıkta hareket bulunamadı.</div>`;
+      return;
+    }
+
+    area.innerHTML = replayData.map((x, i) => `
+      <div class="event-item ${i === activeIndex ? "active" : ""}" onclick="showDetail(${i})">
+        <div class="event-top">
+          <div>
+            <div class="event-title">${escapeHtml(x.title)}</div>
+            <div class="event-time">${formatDate(x.time)} • ${escapeHtml(x.actor)}</div>
+          </div>
+          <span class="pill source-${escapeHtml(x.source)}">${escapeHtml(x.source)}</span>
+        </div>
+        <div class="event-desc">
+          ${escapeHtml(x.description)}
+          <br>
+          <strong>${escapeHtml(x.module)}</strong> / ${escapeHtml(x.entity_type)} #${escapeHtml(x.entity_id)}
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function showDetail(index) {
+    const x = replayData[index];
+    if (!x) return;
+
+    renderTimeline(index);
+
+    document.getElementById("detailBox").innerHTML = `
+      <h3>${escapeHtml(x.title)}</h3>
+      <p style="color:#7a8799;font-size:13px;margin-bottom:12px;">${escapeHtml(x.description)}</p>
+
+      <div class="detail-row"><small>Zaman</small><span>${formatDate(x.time)}</span></div>
+      <div class="detail-row"><small>Kullanıcı</small><span>${escapeHtml(x.actor)}</span></div>
+      <div class="detail-row"><small>Modül</small><span>${escapeHtml(x.module)}</span></div>
+      <div class="detail-row"><small>Entity</small><span>${escapeHtml(x.entity_type)} #${escapeHtml(x.entity_id)}</span></div>
+      <div class="detail-row"><small>Kaynak</small><span>${escapeHtml(x.source)}</span></div>
+      <div class="detail-row"><small>Durum</small><span>${escapeHtml(x.status)}</span></div>
+
+      <div style="margin-top:14px;">
+        <small style="display:block;color:#7a8799;font-size:11px;font-weight:900;text-transform:uppercase;margin-bottom:8px;">Ham Veri</small>
+        <pre>${escapeHtml(JSON.stringify(x.raw || {}, null, 2))}</pre>
+      </div>
+    `;
+  }
+
+  function playReplay() {
+    if (!replayData.length) {
+      showToast("Oynatılacak hareket yok.");
+      return;
+    }
+
+    clearInterval(playTimer);
+    playIndex = 0;
+    showToast("Replay başlatıldı.");
+
+    playTimer = setInterval(() => {
+      showDetail(playIndex);
+      playIndex++;
+
+      if (playIndex >= replayData.length) {
+        clearInterval(playTimer);
+        showToast("Replay tamamlandı.");
+      }
+    }, 1200);
+  }
+
+  function formatDate(value) {
+    if (!value) return "-";
+    return new Date(value).toLocaleString("tr-TR");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setToday();
+    loadReplay();
+  });
+</script>
+
+<script src="/js/universal-search.js"></script>
+</body>
+</html>

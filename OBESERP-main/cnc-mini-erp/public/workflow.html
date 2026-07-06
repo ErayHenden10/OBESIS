@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Workflow Engine</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #172033;
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #071428;
+      color: #fff;
+      transition: .3s;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-track { background: #071428; }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #2f7cff;
+      border-radius: 10px;
+    }
+
+    .sidebar.collapsed { width: 82px; }
+
+    .sidebar-header {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+   .logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}
+
+    .logo-text h2 {
+      font-size: 21px;
+      letter-spacing: .5px;
+    }
+
+    .logo-text span { color: #3f8cff; }
+
+    .logo-text p {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #9ca8ba;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .sidebar.collapsed .logo-text,
+    .sidebar.collapsed .menu-title,
+    .sidebar.collapsed .menu a span,
+    .sidebar.collapsed .sidebar-footer-info {
+      display: none;
+    }
+
+    .menu {
+      padding: 22px 14px 120px 14px;
+    }
+
+    .menu-title {
+      color: #7f8da3;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      margin: 14px 12px 10px;
+    }
+
+    .menu a {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #c9d2e3;
+      text-decoration: none;
+      padding: 0 15px;
+      border-radius: 13px;
+      margin-bottom: 7px;
+      transition: .25s;
+      white-space: nowrap;
+    }
+
+    .menu a i {
+      width: 22px;
+      text-align: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: rgba(47,124,255,.16);
+      color: #fff;
+    }
+
+    .menu a.active {
+      border: 1px solid rgba(47,124,255,.45);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-footer i {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(47,124,255,.18);
+      color: #3f8cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer-info h4 {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-footer-info p {
+      color: #9ca8ba;
+      font-size: 12px;
+    }
+
+    .main {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      transition: .3s;
+      min-height: 100vh;
+    }
+
+    .main.expanded {
+      margin-left: 82px;
+      width: calc(100% - 82px);
+    }
+
+    .topbar {
+      height: 78px;
+      background: #fff;
+      border-bottom: 1px solid #e5eaf2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .menu-toggle {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      background: #f1f5fb;
+      color: #172033;
+      cursor: pointer;
+      font-size: 18px;
+      transition: .25s;
+    }
+
+    .menu-toggle:hover { background: #e8eef7; }
+
+    .page-title h1 {
+      font-size: 23px;
+      margin-bottom: 4px;
+    }
+
+    .page-title p {
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      border-radius: 13px;
+      cursor: pointer;
+      color: #48576b;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 16px;
+      padding: 7px 12px 7px 7px;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1464ff, #3f8cff);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .user-info h4 {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .user-info p {
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .content { padding: 28px; }
+
+    .hero-card {
+      background:
+        linear-gradient(135deg, rgba(7,20,40,.96), rgba(16,48,95,.92)),
+        url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=1400&q=80");
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      border-radius: 24px;
+      padding: 30px 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .hero-card h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .hero-card p {
+      color: #c9d2e3;
+      max-width: 780px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-badge {
+      height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: rgba(47,124,255,.18);
+      border: 1px solid rgba(47,124,255,.38);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .stat-card h3 {
+      font-size: 25px;
+      margin-bottom: 4px;
+    }
+
+    .stat-card p {
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 22px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .panel-header {
+      padding: 21px 24px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h3 {
+      font-size: 18px;
+    }
+
+    .panel-header p {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .panel-body {
+      padding: 22px 24px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: #27364a;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #dce3ee;
+      border-radius: 12px;
+      padding: 0 14px;
+      outline: none;
+      background: #fff;
+      color: #172033;
+      font-size: 14px;
+      transition: .25s;
+    }
+
+    textarea.form-control {
+      height: 88px;
+      padding: 12px 14px;
+      resize: vertical;
+    }
+
+    .form-control:focus {
+      border-color: #2f7cff;
+      box-shadow: 0 0 0 4px rgba(47,124,255,.12);
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn,
+    .success-btn {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .25s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .primary-btn {
+      background: #2f7cff;
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(47,124,255,.24);
+    }
+
+    .secondary-btn {
+      background: #f1f5fb;
+      color: #263548;
+      border: 1px solid #e2e8f2;
+    }
+
+    .danger-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .success-btn {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover,
+    .success-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      color: #48576b;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: #eef5ff;
+      color: #2f7cff;
+      border-color: rgba(47,124,255,.35);
+    }
+
+    .workflow-list,
+    .pending-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 380px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .workflow-card,
+    .pending-card {
+      border: 1px solid #e5eaf2;
+      background: #fbfcfe;
+      border-radius: 16px;
+      padding: 15px;
+      transition: .25s;
+      cursor: pointer;
+    }
+
+    .workflow-card:hover,
+    .workflow-card.active,
+    .pending-card:hover {
+      border-color: rgba(47,124,255,.5);
+      background: #eef5ff;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .workflow-card h4,
+    .pending-card h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .workflow-card p,
+    .pending-card p {
+      color: #7a8799;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .pill {
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .pill.active { background: #dcfce7; color: #15803d; }
+    .pill.passive { background: #f1f5f9; color: #64748b; }
+    .pill.pending { background: #fff7ed; color: #c2410c; }
+    .pill.approved { background: #dcfce7; color: #15803d; }
+    .pill.rejected { background: #fee2e2; color: #b91c1c; }
+    .pill.waiting { background: #eef2ff; color: #4338ca; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid #e5eaf2;
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 820px;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #edf1f7;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    th {
+      color: #7a8799;
+      font-size: 11px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      background: #fbfcfe;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      padding: 28px;
+      text-align: center;
+      color: #7a8799;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: #fbfcfe;
+    }
+
+    .step-builder {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .step-row {
+      display: grid;
+      grid-template-columns: 70px 1fr 1fr 42px;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid #edf1f7;
+      border-radius: 14px;
+      padding: 10px;
+      background: #fbfcfe;
+    }
+
+    .small-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      color: #48576b;
+      cursor: pointer;
+    }
+
+    .small-btn.delete {
+      color: #dc2626;
+      background: #fff1f2;
+      border-color: #fecaca;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 999;
+      background: #071428;
+      color: #fff;
+      border-radius: 16px;
+      padding: 15px 18px;
+      box-shadow: 0 18px 40px rgba(7,20,40,.24);
+      display: none;
+      max-width: 380px;
+      font-size: 14px;
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideIn .2s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(7,20,40,.55);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(720px, 100%);
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 25px 80px rgba(7,20,40,.35);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 20px 22px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+    }
+
+    .modal-body {
+      padding: 22px;
+    }
+
+    .close-btn {
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 12px;
+      background: #f1f5fb;
+      cursor: pointer;
+      color: #48576b;
+    }
+
+    @media (max-width: 1200px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 850px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .sidebar.collapsed { width: 280px; }
+
+      .main,
+      .main.expanded {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .user-info { display: none; }
+
+      .hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .step-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .content { padding: 18px; }
+      .topbar { padding: 0 18px; }
+      .page-title p { display: none; }
+      .panel-header,
+      .panel-body { padding: 18px; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+        <div class="logo-text">
+          <h2>OBES <span>ERP</span></h2>
+          <p>AKILLI ÜRETİM</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+        <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+        <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+        <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+
+        <div class="menu-title">ÜRETİM</div>
+        <a href="uretim.html"><i class="fa-solid fa-gears"></i><span>Üretim</span></a>
+        <a href="uretimtakip.html"><i class="fa-solid fa-chart-line"></i><span>Üretim Takip</span></a>
+        <a href="stokyonetimi.html"><i class="fa-solid fa-boxes-stacked"></i><span>Stok Yönetimi</span></a>
+        <a href="bom.html"><i class="fa-solid fa-sitemap"></i><span>Ürün Reçeteleri</span></a>
+        <a href="mrp.html"><i class="fa-solid fa-calculator"></i><span>MRP</span></a>
+        <a href="makinebakim.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Makine Bakım</span></a>
+        <a href="kalitekontrol.html"><i class="fa-solid fa-clipboard-check"></i><span>Kalite Kontrol</span></a>
+
+        <div class="menu-title">SATIN ALMA</div>
+        <a href="tedarikciler.html"><i class="fa-solid fa-truck"></i><span>Tedarikçiler</span></a>
+        <a href="satinalmatalepleri.html"><i class="fa-solid fa-file-circle-plus"></i><span>Satın Alma Talepleri</span></a>
+        <a href="satinalmaonay.html"><i class="fa-solid fa-circle-check"></i><span>Satın Alma Onayları</span></a>
+        <a href="satinalmasiparisleri.html"><i class="fa-solid fa-cart-shopping"></i><span>Satın Alma Siparişleri</span></a>
+
+        <div class="menu-title">YÖNETİM</div>
+        <a href="kullanicilar.html"><i class="fa-solid fa-users-gear"></i><span>Kullanıcılar</span></a>
+        <a href="roller.html"><i class="fa-solid fa-user-shield"></i><span>Rol Yönetimi</span></a>
+        <a href="yetkimatrisi.html"><i class="fa-solid fa-table-cells-large"></i><span>Yetki Matrisi</span></a>
+        <a href="workflow.html" class="active"><i class="fa-solid fa-diagram-project"></i><span>Workflow</span></a>
+        <a href="log.html"><i class="fa-solid fa-clock-rotate-left"></i><span>Sistem Logları</span></a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="page-title">
+            <h1>Workflow Engine</h1>
+            <p>Onay akışları, bekleyen işler ve süreç yönetimi.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="icon-btn" onclick="reloadAll()" title="Yenile">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+
+          <button class="icon-btn">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge" id="notificationCount">0</span>
+          </button>
+
+          <div class="user-menu">
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <h4 id="topUserName">Yükleniyor...</h4>
+              <p id="topUserRole">-</p>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="hero-card">
+          <div>
+            <h2>Kurumsal Onay Akış Motoru</h2>
+            <p>
+              Satın alma, kalite, bakım, iş emri ve finans süreçleri için rol bazlı onay akışları oluştur.
+              Tutar limitine göre farklı workflow seçilir, adımlar sırayla onaya düşer.
+            </p>
+          </div>
+          <div class="hero-badge">
+            <i class="fa-solid fa-route"></i>
+            Workflow Core
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <div>
+              <h3 id="statWorkflow">0</h3>
+              <p>Workflow Tanımı</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div>
+              <h3 id="statPending">0</h3>
+              <p>Bekleyen Onay</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <h3 id="statApproved">0</h3>
+              <p>Onaylanan</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-xmark"></i></div>
+            <div>
+              <h3 id="statRejected">0</h3>
+              <p>Reddedilen</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('definitions', this)">Workflow Tanımları</button>
+          <button class="tab-btn" onclick="switchTab('requests', this)">Onay İstekleri</button>
+          <button class="tab-btn" onclick="switchTab('pending', this)">Bekleyen Onaylar</button>
+          <button class="tab-btn" onclick="switchTab('newrequest', this)">Onay Başlat</button>
+        </div>
+
+        <div id="tab-definitions">
+          <div class="grid">
+            <div>
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h3>Yeni Workflow</h3>
+                    <p>Modül ve minimum tutara göre akış oluştur.</p>
+                  </div>
+                </div>
+
+                <div class="panel-body">
+                  <form onsubmit="createWorkflow(event)">
+                    <div class="form-group">
+                      <label>Workflow Kodu</label>
+                      <input class="form-control" id="workflowCode" placeholder="Örn: PO_APPROVAL" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Workflow Adı</label>
+                      <input class="form-control" id="workflowName" placeholder="Örn: Satın Alma Onayı" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Modül</label>
+                      <select class="form-control" id="moduleKey" required>
+                        <option value="satinalma">Satın Alma</option>
+                        <option value="teklifler">Teklifler</option>
+                        <option value="isemirleri">İş Emirleri</option>
+                        <option value="kalite">Kalite</option>
+                        <option value="bakim">Bakım</option>
+                        <option value="finans">Finans</option>
+                        <option value="stokyonetimi">Stok Yönetimi</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Minimum Tutar</label>
+                      <input class="form-control" id="minAmount" type="number" min="0" step="0.01" value="0">
+                    </div>
+
+                    <div class="form-group">
+                      <label>Açıklama</label>
+                      <textarea class="form-control" id="workflowDescription" placeholder="Bu akışın kullanım amacı..."></textarea>
+                    </div>
+
+                    <button class="primary-btn" type="submit" style="width:100%;">
+                      <i class="fa-solid fa-plus"></i>
+                      Workflow Oluştur
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h3>Workflow Listesi</h3>
+                    <p>Adım tanımlamak için bir workflow seç.</p>
+                  </div>
+                </div>
+
+                <div class="panel-body">
+                  <div class="workflow-list" id="workflowList">
+                    <div class="empty-state">Workflow'lar yükleniyor...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h3>Workflow Adımları</h3>
+                    <p id="selectedWorkflowText">Henüz workflow seçilmedi.</p>
+                  </div>
+
+                  <button class="secondary-btn" type="button" onclick="addStepRow()">
+                    <i class="fa-solid fa-plus"></i>
+                    Adım Ekle
+                  </button>
+                </div>
+
+                <div class="panel-body">
+                  <div id="stepBuilder" class="step-builder">
+                    <div class="empty-state">Sol taraftan workflow seç.</div>
+                  </div>
+
+                  <div class="button-row">
+                    <button class="primary-btn" onclick="saveSteps()">
+                      <i class="fa-solid fa-floppy-disk"></i>
+                      Adımları Kaydet
+                    </button>
+                    <button class="secondary-btn" onclick="loadSteps()">
+                      <i class="fa-solid fa-rotate"></i>
+                      Yenile
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h3>Akış Önizleme</h3>
+                    <p>Adımlar onay sırasına göre çalışır.</p>
+                  </div>
+                </div>
+
+                <div class="panel-body">
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Sıra</th>
+                          <th>Adım</th>
+                          <th>Onay Rolü</th>
+                          <th>Zorunlu</th>
+                        </tr>
+                      </thead>
+                      <tbody id="stepsPreview">
+                        <tr><td colspan="4" class="empty-state">Adım bulunmuyor.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-requests" style="display:none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Tüm Onay İstekleri</h3>
+                <p>Workflow motoruna düşen son 300 süreç.</p>
+              </div>
+              <button class="secondary-btn" onclick="loadRequests()">
+                <i class="fa-solid fa-rotate"></i>
+                Yenile
+              </button>
+            </div>
+
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Workflow</th>
+                      <th>Modül</th>
+                      <th>Kayıt No</th>
+                      <th>Başlık</th>
+                      <th>Tutar</th>
+                      <th>Durum</th>
+                      <th>Mevcut Adım</th>
+                      <th>Oluşturan</th>
+                      <th>Tarih</th>
+                      <th>İşlem</th>
+                    </tr>
+                  </thead>
+                  <tbody id="requestsTable">
+                    <tr><td colspan="11" class="empty-state">İstekler yükleniyor...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-pending" style="display:none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Bekleyen Onaylarım</h3>
+                <p>Kendi rolüne atanmış bekleyen workflow adımları.</p>
+              </div>
+              <button class="secondary-btn" onclick="loadPending()">
+                <i class="fa-solid fa-rotate"></i>
+                Yenile
+              </button>
+            </div>
+
+            <div class="panel-body">
+              <div class="pending-list" id="pendingList">
+                <div class="empty-state">Bekleyen onaylar yükleniyor...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-newrequest" style="display:none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Yeni Onay İsteği Başlat</h3>
+                <p>Herhangi bir modül kaydını workflow sürecine sok.</p>
+              </div>
+            </div>
+
+            <div class="panel-body">
+              <form onsubmit="createRequest(event)">
+                <div class="grid">
+                  <div>
+                    <div class="form-group">
+                      <label>Modül</label>
+                      <select class="form-control" id="requestModuleKey" required>
+                        <option value="satinalma">Satın Alma</option>
+                        <option value="teklifler">Teklifler</option>
+                        <option value="isemirleri">İş Emirleri</option>
+                        <option value="kalite">Kalite</option>
+                        <option value="bakim">Bakım</option>
+                        <option value="finans">Finans</option>
+                        <option value="stokyonetimi">Stok Yönetimi</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Kayıt ID</label>
+                      <input class="form-control" id="requestRecordId" placeholder="Örn: 125" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Kayıt No</label>
+                      <input class="form-control" id="requestRecordNo" placeholder="Örn: ST-2026-00125">
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="form-group">
+                      <label>Başlık</label>
+                      <input class="form-control" id="requestTitle" placeholder="Örn: Alüminyum hammadde alımı" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Tutar</label>
+                      <input class="form-control" id="requestAmount" type="number" min="0" step="0.01" value="0">
+                    </div>
+
+                    <div class="form-group">
+                      <label>Not</label>
+                      <textarea class="form-control" id="requestNote" placeholder="İsteğe bağlı açıklama..."></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="primary-btn" type="submit">
+                  <i class="fa-solid fa-play"></i>
+                  Workflow Başlat
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="stepModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Workflow Adım Detayları</h3>
+        <button class="close-btn" onclick="closeStepModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div id="stepModalContent">
+          <div class="empty-state">Yükleniyor...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let workflows = [];
+    let selectedWorkflow = null;
+    let workflowSteps = [];
+    let requests = [];
+    let pendingItems = [];
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+
+      if (window.innerWidth <= 850) {
+        sidebar.classList.toggle("mobile-open");
+      } else {
+        sidebar.classList.toggle("collapsed");
+        main.classList.toggle("expanded");
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      const sidebar = document.getElementById("sidebar");
+      const toggle = document.querySelector(".menu-toggle");
+
+      if (
+        window.innerWidth <= 850 &&
+        sidebar.classList.contains("mobile-open") &&
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)
+      ) {
+        sidebar.classList.remove("mobile-open");
+      }
+    });
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2600);
+    }
+
+    function getUser() {
+      try {
+        return JSON.parse(localStorage.getItem("user") || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function normalizeRole(role) {
+      return String(role || "")
+        .trim()
+        .toLowerCase()
+        .replace("yönetici", "admin")
+        .replace("yonetici", "admin")
+        .replace("süper admin", "superadmin")
+        .replace("super admin", "superadmin");
+    }
+
+    function getUserRole() {
+      const user = getUser();
+      return normalizeRole(localStorage.getItem("userRole") || user.role || "");
+    }
+
+    function authHeaders() {
+      const user = getUser();
+
+      return {
+        "Content-Type": "application/json",
+        "x-user-id": user.id || localStorage.getItem("userId") || "",
+        "x-user-name": user.username || user.fullName || user.full_name || localStorage.getItem("fullName") || "",
+        "x-user-role": getUserRole()
+      };
+    }
+
+    function setTopUser() {
+      const user = getUser();
+
+      if (!user || (!user.id && !localStorage.getItem("userRole"))) {
+        window.location.href = "giris.html";
+        return;
+      }
+
+      const name = user.fullName || user.full_name || user.username || localStorage.getItem("fullName") || "Kullanıcı";
+      const role = user.role || localStorage.getItem("userRole") || "-";
+
+      document.getElementById("topUserName").textContent = name;
+      document.getElementById("topUserRole").textContent = role;
+      document.getElementById("userAvatar").textContent = String(name).trim().charAt(0).toUpperCase();
+    }
+
+    async function apiGet(url) {
+      const response = await fetch(url, { headers: authHeaders() });
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    async function apiPost(url, body = {}) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+
+      const parsed = new Date(String(value).replace(" ", "T"));
+
+      if (Number.isNaN(parsed.getTime())) return value;
+
+      return parsed.toLocaleString("tr-TR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function money(value) {
+      const n = Number(value || 0);
+      return n.toLocaleString("tr-TR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + " ₺";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function statusPill(status) {
+      const s = String(status || "").toUpperCase();
+
+      if (s === "PENDING") return `<span class="pill pending"><i class="fa-solid fa-hourglass-half"></i> Bekliyor</span>`;
+      if (s === "APPROVED") return `<span class="pill approved"><i class="fa-solid fa-check"></i> Onaylandı</span>`;
+      if (s === "REJECTED") return `<span class="pill rejected"><i class="fa-solid fa-xmark"></i> Reddedildi</span>`;
+      if (s === "WAITING") return `<span class="pill waiting"><i class="fa-solid fa-clock"></i> Sırada</span>`;
+
+      return `<span class="pill passive">${escapeHtml(status || "-")}</span>`;
+    }
+
+    function switchTab(tabName, btn) {
+      ["definitions", "requests", "pending", "newrequest"].forEach(name => {
+        document.getElementById(`tab-${name}`).style.display = name === tabName ? "" : "none";
+      });
+
+      document.querySelectorAll(".tab-btn").forEach(x => x.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (tabName === "requests") loadRequests();
+      if (tabName === "pending") loadPending();
+    }
+
+    async function loadWorkflows() {
+      const list = document.getElementById("workflowList");
+      list.innerHTML = `<div class="empty-state">Workflow'lar yükleniyor...</div>`;
+
+      try {
+        const data = await apiGet("/api/workflows");
+        workflows = data.data || [];
+        renderWorkflows();
+
+        if (!selectedWorkflow && workflows.length) {
+          selectWorkflow(workflows[0].id);
+        }
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = `<div class="empty-state">Workflow alınamadı: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderWorkflows() {
+      const list = document.getElementById("workflowList");
+
+      document.getElementById("statWorkflow").textContent = workflows.length;
+
+      if (!workflows.length) {
+        list.innerHTML = `<div class="empty-state">Henüz workflow tanımı yok.</div>`;
+        return;
+      }
+
+      list.innerHTML = workflows.map(wf => {
+        const active = selectedWorkflow && Number(selectedWorkflow.id) === Number(wf.id);
+
+        return `
+          <div class="workflow-card ${active ? "active" : ""}" onclick="selectWorkflow(${wf.id})">
+            <div class="card-top">
+              <div>
+                <h4>${escapeHtml(wf.workflow_name)}</h4>
+                <p>${escapeHtml(wf.workflow_code)} • ${escapeHtml(wf.module_key)}</p>
+              </div>
+              ${Number(wf.active) === 1 ? `<span class="pill active">Aktif</span>` : `<span class="pill passive">Pasif</span>`}
+            </div>
+            <p>Minimum tutar: <strong>${money(wf.min_amount)}</strong></p>
+            <p>${escapeHtml(wf.description || "")}</p>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function selectWorkflow(id) {
+      selectedWorkflow = workflows.find(wf => Number(wf.id) === Number(id)) || null;
+      renderWorkflows();
+
+      if (!selectedWorkflow) return;
+
+      document.getElementById("selectedWorkflowText").textContent =
+        `${selectedWorkflow.workflow_name} / ${selectedWorkflow.workflow_code}`;
+
+      await loadSteps();
+    }
+
+    async function createWorkflow(event) {
+      event.preventDefault();
+
+      try {
+        await apiPost("/api/workflows", {
+          workflowCode: document.getElementById("workflowCode").value.trim().toUpperCase(),
+          workflowName: document.getElementById("workflowName").value.trim(),
+          moduleKey: document.getElementById("moduleKey").value,
+          minAmount: Number(document.getElementById("minAmount").value || 0),
+          active: true,
+          description: document.getElementById("workflowDescription").value.trim()
+        });
+
+        document.getElementById("workflowCode").value = "";
+        document.getElementById("workflowName").value = "";
+        document.getElementById("minAmount").value = "0";
+        document.getElementById("workflowDescription").value = "";
+
+        showToast("Workflow oluşturuldu.");
+        await loadWorkflows();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function loadSteps() {
+      const builder = document.getElementById("stepBuilder");
+      const preview = document.getElementById("stepsPreview");
+
+      if (!selectedWorkflow) {
+        builder.innerHTML = `<div class="empty-state">Sol taraftan workflow seç.</div>`;
+        preview.innerHTML = `<tr><td colspan="4" class="empty-state">Adım bulunmuyor.</td></tr>`;
+        return;
+      }
+
+      builder.innerHTML = `<div class="empty-state">Adımlar yükleniyor...</div>`;
+
+      try {
+        const data = await apiGet(`/api/workflows/${selectedWorkflow.id}/steps`);
+        workflowSteps = data.data || [];
+
+        renderStepBuilder();
+        renderStepsPreview();
+      } catch (err) {
+        console.error(err);
+        builder.innerHTML = `<div class="empty-state">Adımlar alınamadı: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderStepBuilder() {
+      const builder = document.getElementById("stepBuilder");
+
+      if (!workflowSteps.length) {
+        builder.innerHTML = `<div class="empty-state">Bu workflow için henüz adım yok. Adım Ekle butonuna bas.</div>`;
+        return;
+      }
+
+      builder.innerHTML = workflowSteps.map((step, index) => `
+        <div class="step-row">
+          <input class="form-control step-no" type="number" min="1" value="${escapeHtml(step.step_no || index + 1)}">
+          <input class="form-control step-name" value="${escapeHtml(step.step_name || "")}" placeholder="Adım adı">
+          <input class="form-control step-role" value="${escapeHtml(step.approver_role || "")}" placeholder="Onay rolü: admin">
+          <button class="small-btn delete" onclick="removeStepRow(${index})" title="Sil">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `).join("");
+    }
+
+    function renderStepsPreview() {
+      const preview = document.getElementById("stepsPreview");
+
+      if (!workflowSteps.length) {
+        preview.innerHTML = `<tr><td colspan="4" class="empty-state">Adım bulunmuyor.</td></tr>`;
+        return;
+      }
+
+      preview.innerHTML = workflowSteps
+        .slice()
+        .sort((a, b) => Number(a.step_no) - Number(b.step_no))
+        .map(step => `
+          <tr>
+            <td>${escapeHtml(step.step_no)}</td>
+            <td>${escapeHtml(step.step_name)}</td>
+            <td>${escapeHtml(step.approver_role)}</td>
+            <td>${Number(step.required ?? 1) === 1 ? "Evet" : "Hayır"}</td>
+          </tr>
+        `).join("");
+    }
+
+    function addStepRow() {
+      if (!selectedWorkflow) {
+        showToast("Önce workflow seçmelisin.");
+        return;
+      }
+
+      syncStepsFromDom();
+
+      workflowSteps.push({
+        step_no: workflowSteps.length + 1,
+        step_name: "",
+        approver_role: "",
+        required: 1
+      });
+
+      renderStepBuilder();
+      renderStepsPreview();
+    }
+
+    function removeStepRow(index) {
+      syncStepsFromDom();
+      workflowSteps.splice(index, 1);
+      workflowSteps = workflowSteps.map((s, i) => ({ ...s, step_no: i + 1 }));
+      renderStepBuilder();
+      renderStepsPreview();
+    }
+
+    function syncStepsFromDom() {
+      const rows = Array.from(document.querySelectorAll(".step-row"));
+
+      if (!rows.length) return;
+
+      workflowSteps = rows.map(row => ({
+        step_no: Number(row.querySelector(".step-no").value || 1),
+        step_name: row.querySelector(".step-name").value.trim(),
+        approver_role: normalizeRole(row.querySelector(".step-role").value.trim()),
+        required: 1
+      })).filter(s => s.step_name && s.approver_role);
+    }
+
+    async function saveSteps() {
+      if (!selectedWorkflow) {
+        showToast("Önce workflow seçmelisin.");
+        return;
+      }
+
+      syncStepsFromDom();
+
+      if (!workflowSteps.length) {
+        showToast("En az 1 adım eklemelisin.");
+        return;
+      }
+
+      try {
+        await apiPost(`/api/workflows/${selectedWorkflow.id}/steps`, {
+          steps: workflowSteps.map(step => ({
+            stepNo: step.step_no,
+            stepName: step.step_name,
+            approverRole: step.approver_role,
+            required: true
+          }))
+        });
+
+        showToast("Workflow adımları kaydedildi.");
+        await loadSteps();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function createRequest(event) {
+      event.preventDefault();
+
+      try {
+        const result = await apiPost("/api/workflow-requests", {
+          moduleKey: document.getElementById("requestModuleKey").value,
+          recordId: document.getElementById("requestRecordId").value.trim(),
+          recordNo: document.getElementById("requestRecordNo").value.trim(),
+          title: document.getElementById("requestTitle").value.trim(),
+          amount: Number(document.getElementById("requestAmount").value || 0),
+          note: document.getElementById("requestNote").value.trim()
+        });
+
+        document.getElementById("requestRecordId").value = "";
+        document.getElementById("requestRecordNo").value = "";
+        document.getElementById("requestTitle").value = "";
+        document.getElementById("requestAmount").value = "0";
+        document.getElementById("requestNote").value = "";
+
+        showToast(`Workflow başlatıldı. İstek ID: ${result.requestId}`);
+        await loadRequests();
+        await loadPending();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function loadRequests() {
+      const table = document.getElementById("requestsTable");
+      table.innerHTML = `<tr><td colspan="11" class="empty-state">İstekler yükleniyor...</td></tr>`;
+
+      try {
+        const data = await apiGet("/api/workflow-requests");
+        requests = data.data || [];
+        renderRequests();
+        refreshStats();
+      } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="11" class="empty-state">İstekler alınamadı: ${escapeHtml(err.message)}</td></tr>`;
+      }
+    }
+
+    function renderRequests() {
+      const table = document.getElementById("requestsTable");
+
+      if (!requests.length) {
+        table.innerHTML = `<tr><td colspan="11" class="empty-state">Henüz workflow isteği yok.</td></tr>`;
+        return;
+      }
+
+      table.innerHTML = requests.map(req => `
+        <tr>
+          <td>#${escapeHtml(req.id)}</td>
+          <td>${escapeHtml(req.workflow_name || "-")}</td>
+          <td>${escapeHtml(req.module_key || "-")}</td>
+          <td>${escapeHtml(req.record_no || "-")}</td>
+          <td>${escapeHtml(req.title || "-")}</td>
+          <td>${money(req.amount)}</td>
+          <td>${statusPill(req.status)}</td>
+          <td>${escapeHtml(req.current_step_no || "-")}</td>
+          <td>${escapeHtml(req.requested_by_name || "-")}</td>
+          <td>${escapeHtml(formatDate(req.created_at))}</td>
+          <td>
+            <button class="secondary-btn" style="height:34px;" onclick="openSteps(${req.id})">
+              <i class="fa-solid fa-list"></i>
+              Adımlar
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    async function loadPending() {
+      const list = document.getElementById("pendingList");
+      list.innerHTML = `<div class="empty-state">Bekleyen onaylar yükleniyor...</div>`;
+
+      try {
+        const data = await apiGet("/api/workflow-requests/pending");
+        pendingItems = data.data || [];
+        renderPending();
+        refreshStats();
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = `<div class="empty-state">Bekleyenler alınamadı: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderPending() {
+      const list = document.getElementById("pendingList");
+
+      if (!pendingItems.length) {
+        list.innerHTML = `<div class="empty-state">Rolüne atanmış bekleyen onay yok.</div>`;
+        return;
+      }
+
+      list.innerHTML = pendingItems.map(item => `
+        <div class="pending-card">
+          <div class="card-top">
+            <div>
+              <h4>${escapeHtml(item.title || item.record_no || "Workflow İsteği")}</h4>
+              <p>${escapeHtml(item.module_key)} • ${escapeHtml(item.record_no || item.record_id)}</p>
+            </div>
+            ${statusPill("PENDING")}
+          </div>
+
+          <p><strong>Adım:</strong> ${escapeHtml(item.step_no)} - ${escapeHtml(item.step_name)}</p>
+          <p><strong>Tutar:</strong> ${money(item.amount)} • <strong>Rol:</strong> ${escapeHtml(item.approver_role)}</p>
+          <p><strong>Tarih:</strong> ${escapeHtml(formatDate(item.created_at))}</p>
+
+          <div class="button-row">
+            <button class="success-btn" onclick="approveRequest(${item.request_id})">
+              <i class="fa-solid fa-check"></i>
+              Onayla
+            </button>
+
+            <button class="danger-btn" onclick="rejectRequest(${item.request_id})">
+              <i class="fa-solid fa-xmark"></i>
+              Reddet
+            </button>
+
+            <button class="secondary-btn" onclick="openSteps(${item.request_id})">
+              <i class="fa-solid fa-list"></i>
+              Adımlar
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function approveRequest(id) {
+      const note = prompt("Onay notu yazabilirsin:", "") || "";
+
+      try {
+        await apiPost(`/api/workflow-requests/${id}/approve`, { note });
+        showToast("Workflow adımı onaylandı.");
+        await loadPending();
+        await loadRequests();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function rejectRequest(id) {
+      const note = prompt("Red nedeni yaz:", "") || "";
+
+      if (!confirm("Bu workflow isteğini reddetmek istediğine emin misin?")) return;
+
+      try {
+        await apiPost(`/api/workflow-requests/${id}/reject`, { note });
+        showToast("Workflow reddedildi.");
+        await loadPending();
+        await loadRequests();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function openSteps(requestId) {
+      const modal = document.getElementById("stepModal");
+      const content = document.getElementById("stepModalContent");
+
+      modal.classList.add("show");
+      content.innerHTML = `<div class="empty-state">Adımlar yükleniyor...</div>`;
+
+      try {
+        const data = await apiGet(`/api/workflow-requests/${requestId}/steps`);
+        const rows = data.data || [];
+
+        if (!rows.length) {
+          content.innerHTML = `<div class="empty-state">Adım bulunamadı.</div>`;
+          return;
+        }
+
+        content.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sıra</th>
+                  <th>Adım</th>
+                  <th>Rol</th>
+                  <th>Durum</th>
+                  <th>Onaylayan</th>
+                  <th>Not</th>
+                  <th>Tarih</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map(row => `
+                  <tr>
+                    <td>${escapeHtml(row.step_no)}</td>
+                    <td>${escapeHtml(row.step_name)}</td>
+                    <td>${escapeHtml(row.approver_role)}</td>
+                    <td>${statusPill(row.status)}</td>
+                    <td>${escapeHtml(row.approved_by_name || "-")}</td>
+                    <td>${escapeHtml(row.note || "-")}</td>
+                    <td>${escapeHtml(formatDate(row.approved_at))}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        content.innerHTML = `<div class="empty-state">Adımlar alınamadı: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function closeStepModal() {
+      document.getElementById("stepModal").classList.remove("show");
+    }
+
+    function refreshStats() {
+      document.getElementById("statWorkflow").textContent = workflows.length;
+      document.getElementById("statPending").textContent =
+        requests.filter(x => String(x.status).toUpperCase() === "PENDING").length || pendingItems.length;
+      document.getElementById("statApproved").textContent =
+        requests.filter(x => String(x.status).toUpperCase() === "APPROVED").length;
+      document.getElementById("statRejected").textContent =
+        requests.filter(x => String(x.status).toUpperCase() === "REJECTED").length;
+    }
+
+    async function reloadAll() {
+      await loadWorkflows();
+      await loadRequests();
+      await loadPending();
+      refreshStats();
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      setTopUser();
+      await reloadAll();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İrsaliyeli Fatura | OBES ERP</title>
+
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#e5e7eb;margin:0;padding:30px;color:#111827}
+.page{width:210mm;min-height:297mm;background:#fff;margin:auto;padding:14mm;border:1px solid #d1d5db;box-shadow:0 18px 50px rgba(0,0,0,.12)}
+.header{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #111827;padding-bottom:16px}
+.logo h1{margin:0;font-size:26px;letter-spacing:.3px}
+.logo p{margin:4px 0;color:#6b7280;font-size:13px}
+.doc-title{text-align:right;min-width:260px}
+.doc-title h2{margin:0 0 8px;font-size:24px;letter-spacing:.5px}
+.doc-title p{margin:5px 0;font-size:13px}
+.doc-status{display:inline-block;margin-top:6px;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700;font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+.box{border:1px solid #d1d5db;padding:12px;border-radius:6px;background:#fff}
+.box h3{margin:0 0 10px;font-size:14px;background:#f3f4f6;padding:8px;border-radius:4px}
+.row{display:flex;justify-content:space-between;gap:12px;margin:7px 0;font-size:13px}
+.row span{color:#6b7280}.row strong{text-align:right;max-width:65%;word-break:break-word}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{border:1px solid #d1d5db;padding:8px;font-size:13px;vertical-align:top}
+th{background:#f3f4f6;color:#374151}
+.right{text-align:right}.center{text-align:center}
+.totals{width:340px;margin-left:auto;margin-top:18px;border:1px solid #d1d5db;border-radius:6px;padding:8px 12px}
+.totals .row{border-bottom:1px solid #e5e7eb;padding:7px 0;margin:0}
+.totals .row:last-child{border-bottom:none;font-size:15px}
+.note-box{margin-top:20px;min-height:70px}
+.footer{margin-top:35px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.sign{height:90px;border:1px dashed #9ca3af;padding:10px;border-radius:6px}
+.sign small{display:block;margin-top:42px;color:#6b7280}
+.print-btn{position:fixed;right:30px;top:30px;padding:12px 18px;border:none;background:#2563eb;color:white;border-radius:8px;cursor:pointer;font-weight:700;box-shadow:0 10px 24px rgba(37,99,235,.25)}
+.back-btn{position:fixed;right:130px;top:30px;padding:12px 18px;border:1px solid #d1d5db;background:white;color:#111827;border-radius:8px;cursor:pointer;font-weight:700;box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.loading{padding:14px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:8px;margin:0 auto 18px;width:210mm;display:none}
+.loading.show{display:block}
+.error{padding:14px;background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:8px;margin:0 auto 18px;width:210mm;display:none}
+.error.show{display:block}
+@page{size:A4;margin:8mm}
+@media print{
+  body{background:white;padding:0}
+  .page{border:none;box-shadow:none;margin:0;width:100%;min-height:auto;padding:0}
+  .print-btn,.back-btn,.loading,.error{display:none!important}
+  th,td{font-size:12px;padding:6px}
+}
+@media(max-width:900px){
+  body{padding:12px}.page,.loading,.error{width:100%;padding:18px}.header,.grid,.footer{grid-template-columns:1fr;display:grid}.doc-title{text-align:left}.totals{width:100%}.print-btn,.back-btn{position:static;margin:0 8px 12px 0}.row strong{text-align:left;max-width:none}
+}
+</style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<button class="back-btn" onclick="window.close()">Kapat</button>
+<button class="print-btn" onclick="window.print()">Yazdır</button>
+
+<div id="loadingBox" class="loading show">Fatura bilgileri yükleniyor...</div>
+<div id="errorBox" class="error"></div>
+
+<div class="page">
+  <div class="header">
+    <div class="logo">
+      <h1>OBES ERP</h1>
+      <p>Akıllı Üretim ve Finans Yönetimi</p>
+      <p><strong>Adres:</strong> -</p>
+      <p><strong>Telefon:</strong> -</p>
+      <p><strong>E-posta:</strong> -</p>
+    </div>
+
+    <div class="doc-title">
+      <h2>İRSALİYELİ FATURA</h2>
+      <p><strong>Fatura No:</strong> <span id="invoiceNo">-</span></p>
+      <p><strong>İrsaliye No:</strong> <span id="dispatchNo">-</span></p>
+      <p><strong>Fatura Tarihi:</strong> <span id="invoiceDate">-</span></p>
+      <p><strong>Vade Tarihi:</strong> <span id="dueDate">-</span></p>
+      <span class="doc-status" id="status">-</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <h3>Müşteri Bilgileri</h3>
+      <div class="row"><span>Firma</span><strong id="customerName">-</strong></div>
+      <div class="row"><span>Vergi No</span><strong id="taxNo">-</strong></div>
+      <div class="row"><span>Vergi Dairesi</span><strong id="taxOffice">-</strong></div>
+      <div class="row"><span>Telefon</span><strong id="phone">-</strong></div>
+      <div class="row"><span>E-posta</span><strong id="email">-</strong></div>
+      <div class="row"><span>Adres</span><strong id="address">-</strong></div>
+    </div>
+
+    <div class="box">
+      <h3>Sevk Bilgileri</h3>
+      <div class="row"><span>Sevk Tarihi</span><strong id="dispatchDate">-</strong></div>
+      <div class="row"><span>Sevk Adresi</span><strong id="shipAddress">-</strong></div>
+      <div class="row"><span>Taşıyıcı</span><strong id="carrier">-</strong></div>
+      <div class="row"><span>Araç Plaka</span><strong id="plateNo">-</strong></div>
+      <div class="row"><span>Fatura Tipi</span><strong id="invoiceType">-</strong></div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="center">Sıra</th>
+        <th>Malzeme / Hizmet</th>
+        <th class="right">Miktar</th>
+        <th>Birim</th>
+        <th class="right">Birim Fiyat</th>
+        <th class="right">KDV %</th>
+        <th class="right">KDV Tutarı</th>
+        <th class="right">Toplam</th>
+      </tr>
+    </thead>
+    <tbody id="itemsBody">
+      <tr><td colspan="8" class="center">Yükleniyor...</td></tr>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div class="row"><span>Ara Toplam</span><strong id="subtotal">0,00 ₺</strong></div>
+    <div class="row"><span>KDV</span><strong id="vatAmount">0,00 ₺</strong></div>
+    <div class="row"><span>Genel Toplam</span><strong id="totalAmount">0,00 ₺</strong></div>
+  </div>
+
+  <div class="box note-box">
+    <h3>Not</h3>
+    <p id="note">-</p>
+  </div>
+
+  <div class="footer">
+    <div class="sign">
+      <strong>Teslim Eden</strong>
+      <small>Ad Soyad / İmza</small>
+    </div>
+    <div class="sign">
+      <strong>Teslim Alan</strong>
+      <small>Ad Soyad / İmza</small>
+    </div>
+  </div>
+</div>
+
+<script>
+async function safeJson(r){
+  const t = await r.text();
+  try { return JSON.parse(t); }
+  catch { return { success:false, message:t || "Sunucu JSON cevap döndürmedi." }; }
+}
+
+function qs(name){
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function setText(id, value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value || "-";
+}
+
+function pick(obj, keys, fallback = "-"){
+  for(const key of keys){
+    if(obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== "") return obj[key];
+  }
+  return fallback;
+}
+
+async function loadInvoice(){
+  const id = qs("id");
+
+  if(!id){
+    showError("Fatura ID bulunamadı. Bu sayfa fatura-cikti.html?id=1 formatında açılmalı.");
+    return;
+  }
+
+  try{
+    const r = await fetch(`/api/invoices/${id}`);
+    const d = await safeJson(r);
+
+    if(!r.ok || d.success === false){
+      showError(d.message || "Fatura detayı alınamadı. Backend tarafında GET /api/invoices/:id endpointini kontrol et.");
+      return;
+    }
+
+    const i = d.invoice || {};
+    const items = Array.isArray(d.items) ? d.items : [];
+
+    fillInvoice(i, items, id);
+    document.getElementById("loadingBox").classList.remove("show");
+  }catch(err){
+    console.error(err);
+    showError("Sunucu bağlantı hatası. API çalışıyor mu kontrol et.");
+  }
+}
+
+function fillInvoice(i, items, id){
+  const invoiceNo = pick(i, ["invoice_no", "invoiceNo"], `FAT${String(id).padStart(6,"0")}`);
+  const invoiceDate = pick(i, ["invoice_date", "invoiceDate", "created_at", "createdAt"], "-");
+  const dueDate = pick(i, ["due_date", "dueDate"], "-");
+  const address = pick(i, ["address", "customer_address", "customerAddress"], "-");
+
+  setText("invoiceNo", invoiceNo);
+  setText("dispatchNo", pick(i, ["dispatch_no", "dispatchNo", "irsaliye_no", "irsaliyeNo"], "IRS" + String(id).padStart(6, "0")));
+  setText("invoiceDate", formatDate(invoiceDate));
+  setText("dueDate", formatDate(dueDate));
+  setText("dispatchDate", formatDate(pick(i, ["dispatch_date", "dispatchDate", "shipment_date", "shipmentDate", "invoice_date", "invoiceDate"], invoiceDate)));
+
+  setText("customerName", pick(i, ["customer_name", "customerName", "company_name", "companyName", "name"]));
+  setText("taxNo", pick(i, ["tax_no", "taxNo", "tax_number", "taxNumber"]));
+  setText("taxOffice", pick(i, ["tax_office", "taxOffice"]));
+  setText("phone", pick(i, ["phone", "customer_phone", "customerPhone"]));
+  setText("email", pick(i, ["email", "customer_email", "customerEmail"]));
+  setText("address", address);
+  setText("shipAddress", pick(i, ["ship_address", "shipAddress", "shipment_address", "shipmentAddress", "address"], address));
+  setText("carrier", pick(i, ["carrier", "carrier_name", "carrierName", "tasiyici"]));
+  setText("plateNo", pick(i, ["plate_no", "plateNo", "vehicle_plate", "vehiclePlate", "plaka"]));
+  setText("status", pick(i, ["status"], "Beklemede"));
+  setText("invoiceType", pick(i, ["invoice_type", "invoiceType"], "Satış"));
+  setText("note", pick(i, ["note", "description"], "-"));
+
+  renderItems(items, i);
+
+  const subtotal = Number(pick(i, ["subtotal", "sub_total", "subTotal"], 0));
+  const vatAmount = Number(pick(i, ["vat_amount", "vatAmount", "kdv_tutari"], 0));
+  const totalAmount = Number(pick(i, ["total_amount", "totalAmount", "grand_total", "grandTotal"], subtotal + vatAmount));
+
+  setText("subtotal", formatMoney(subtotal));
+  setText("vatAmount", formatMoney(vatAmount));
+  setText("totalAmount", formatMoney(totalAmount));
+}
+
+function renderItems(items, invoice){
+  const body = document.getElementById("itemsBody");
+  body.innerHTML = "";
+
+  if(!items.length){
+    const qty = Number(pick(invoice, ["quantity"], 0));
+    const unitPrice = Number(pick(invoice, ["unit_price", "unitPrice"], 0));
+    const vatRate = Number(pick(invoice, ["vat_rate", "vatRate"], 20));
+    const lineTotal = Number(pick(invoice, ["total_amount", "totalAmount"], qty * unitPrice * (1 + vatRate / 100)));
+    const vatAmount = Number(pick(invoice, ["vat_amount", "vatAmount"], (qty * unitPrice) * vatRate / 100));
+    const itemName = pick(invoice, ["item_name", "itemName", "material_name", "materialName", "part_name", "partName"], "Fatura Kalemi");
+
+    if(qty > 0 || unitPrice > 0 || itemName !== "Fatura Kalemi"){
+      body.innerHTML = rowHtml(1, {
+        item_name: itemName,
+        quantity: qty || 1,
+        unit: pick(invoice, ["unit"], "Adet"),
+        unit_price: unitPrice,
+        vat_rate: vatRate,
+        vat_amount: vatAmount,
+        total_amount: lineTotal
+      });
+      return;
+    }
+
+    body.innerHTML = `<tr><td colspan="8" class="center">Kalem bulunamadı.</td></tr>`;
+    return;
+  }
+
+  items.forEach((x, index) => {
+    body.innerHTML += rowHtml(index + 1, x);
+  });
+}
+
+function rowHtml(index, x){
+  const qty = Number(pick(x, ["quantity", "qty"], 0));
+  const unitPrice = Number(pick(x, ["unit_price", "unitPrice", "price"], 0));
+  const vatRate = Number(pick(x, ["vat_rate", "vatRate"], 0));
+  const total = Number(pick(x, ["total_amount", "totalAmount", "total_price", "totalPrice"], qty * unitPrice * (1 + vatRate / 100)));
+  const vatAmount = Number(pick(x, ["vat_amount", "vatAmount"], qty * unitPrice * vatRate / 100));
+
+  return `
+    <tr>
+      <td class="center">${index}</td>
+      <td>${pick(x, ["item_name", "itemName", "material_name", "materialName", "part_name", "partName", "description"])}</td>
+      <td class="right">${formatNumber(qty)}</td>
+      <td>${pick(x, ["unit"], "Adet")}</td>
+      <td class="right">${formatMoney(unitPrice)}</td>
+      <td class="right">%${formatNumber(vatRate)}</td>
+      <td class="right">${formatMoney(vatAmount)}</td>
+      <td class="right">${formatMoney(total)}</td>
+    </tr>
+  `;
+}
+
+function showError(msg){
+  document.getElementById("loadingBox").classList.remove("show");
+  const e = document.getElementById("errorBox");
+  e.textContent = msg;
+  e.classList.add("show");
+}
+
+function formatMoney(v){
+  return Number(v || 0).toLocaleString("tr-TR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + " ₺";
+}
+
+function formatNumber(v){
+  return Number(v || 0).toLocaleString("tr-TR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 4
+  });
+}
+
+function formatDate(v){
+  if(!v) return "-";
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return v;
+  return d.toLocaleDateString("tr-TR");
+}
+
+document.addEventListener("DOMContentLoaded", loadInvoice);
+</script>
+</body>
+</html>

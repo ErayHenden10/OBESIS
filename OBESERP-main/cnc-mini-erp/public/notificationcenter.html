@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Notification Center</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #172033;
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #071428;
+      color: #fff;
+      transition: .3s;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: #071428;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #2f7cff;
+      border-radius: 10px;
+    }
+
+    .sidebar.collapsed {
+      width: 82px;
+    }
+
+    .sidebar-header {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}
+
+    .logo-text h2 {
+      font-size: 21px;
+      letter-spacing: .5px;
+    }
+
+    .logo-text span {
+      color: #3f8cff;
+    }
+
+    .logo-text p {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #9ca8ba;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .sidebar.collapsed .logo-text,
+    .sidebar.collapsed .menu-title,
+    .sidebar.collapsed .menu a span,
+    .sidebar.collapsed .sidebar-footer-info {
+      display: none;
+    }
+
+    .menu {
+      padding: 22px 14px 120px 14px;
+    }
+
+    .menu-title {
+      color: #7f8da3;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      margin: 14px 12px 10px;
+    }
+
+    .menu a {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #c9d2e3;
+      text-decoration: none;
+      padding: 0 15px;
+      border-radius: 13px;
+      margin-bottom: 7px;
+      transition: .25s;
+      white-space: nowrap;
+    }
+
+    .menu a i {
+      width: 22px;
+      text-align: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: rgba(47,124,255,.16);
+      color: #fff;
+    }
+
+    .menu a.active {
+      border: 1px solid rgba(47,124,255,.45);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-footer i {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(47,124,255,.18);
+      color: #3f8cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer-info h4 {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-footer-info p {
+      color: #9ca8ba;
+      font-size: 12px;
+    }
+
+    .main {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      transition: .3s;
+      min-height: 100vh;
+    }
+
+    .main.expanded {
+      margin-left: 82px;
+      width: calc(100% - 82px);
+    }
+
+    .topbar {
+      height: 78px;
+      background: #fff;
+      border-bottom: 1px solid #e5eaf2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .menu-toggle {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      background: #f1f5fb;
+      color: #172033;
+      cursor: pointer;
+      font-size: 18px;
+      transition: .25s;
+    }
+
+    .menu-toggle:hover {
+      background: #e8eef7;
+    }
+
+    .page-title h1 {
+      font-size: 23px;
+      margin-bottom: 4px;
+    }
+
+    .page-title p {
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      border-radius: 13px;
+      cursor: pointer;
+      color: #48576b;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 16px;
+      padding: 7px 12px 7px 7px;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1464ff, #3f8cff);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .user-info h4 {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .user-info p {
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .hero-card {
+      background:
+        linear-gradient(135deg, rgba(7,20,40,.96), rgba(16,48,95,.92)),
+        url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=1400&q=80");
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      border-radius: 24px;
+      padding: 30px 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .hero-card h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .hero-card p {
+      color: #c9d2e3;
+      max-width: 760px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-badge {
+      height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: rgba(47,124,255,.18);
+      border: 1px solid rgba(47,124,255,.38);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.unread {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .stat-icon.critical {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .stat-icon.workflow {
+      background: #eef2ff;
+      color: #4338ca;
+    }
+
+    .stat-icon.today {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .stat-card h3 {
+      font-size: 25px;
+      margin-bottom: 4px;
+    }
+
+    .stat-card p {
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 22px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h3 {
+      font-size: 18px;
+    }
+
+    .panel-header p {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .panel-body {
+      padding: 22px 24px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 220px 220px auto auto auto;
+      gap: 10px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 44px;
+      border: 1px solid #dce3ee;
+      border-radius: 12px;
+      padding: 0 14px;
+      outline: none;
+      background: #fff;
+      color: #172033;
+      font-size: 14px;
+      transition: .25s;
+    }
+
+    .form-control:focus {
+      border-color: #2f7cff;
+      box-shadow: 0 0 0 4px rgba(47,124,255,.12);
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .25s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .primary-btn {
+      background: #2f7cff;
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(47,124,255,.24);
+    }
+
+    .secondary-btn {
+      background: #f1f5fb;
+      color: #263548;
+      border: 1px solid #e2e8f2;
+    }
+
+    .danger-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .notification-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .notification-card {
+      border: 1px solid #e5eaf2;
+      background: #fbfcfe;
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      gap: 14px;
+      align-items: flex-start;
+      transition: .25s;
+    }
+
+    .notification-card:hover {
+      border-color: rgba(47,124,255,.4);
+      background: #f8fbff;
+    }
+
+    .notification-card.unread {
+      background: #fff;
+      border-color: rgba(47,124,255,.45);
+      box-shadow: 0 8px 28px rgba(47,124,255,.08);
+    }
+
+    .notification-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      background: #eef5ff;
+      color: #2f7cff;
+      flex-shrink: 0;
+    }
+
+    .notification-icon.approval {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .notification-icon.critical,
+    .notification-icon.error {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .notification-icon.success {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .notification-icon.warning {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .notification-content h4 {
+      font-size: 15px;
+      margin-bottom: 6px;
+      color: #172033;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .notification-content p {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .notification-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .pill.unread {
+      background: #eef5ff;
+      color: #2563eb;
+    }
+
+    .pill.module {
+      background: #eef2ff;
+      color: #4338ca;
+    }
+
+    .pill.type {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .pill.read {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .notification-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      height: 34px;
+      min-width: 34px;
+      padding: 0 10px;
+      border-radius: 11px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      color: #48576b;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: .2s;
+    }
+
+    .mini-btn:hover {
+      background: #eef5ff;
+      color: #2f7cff;
+      border-color: rgba(47,124,255,.3);
+    }
+
+    .mini-btn.danger:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+
+    .empty-state {
+      padding: 32px;
+      text-align: center;
+      color: #7a8799;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: #fbfcfe;
+    }
+
+    .empty-state i {
+      font-size: 32px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 999;
+      background: #071428;
+      color: #fff;
+      border-radius: 16px;
+      padding: 15px 18px;
+      box-shadow: 0 18px 40px rgba(7,20,40,.24);
+      display: none;
+      max-width: 380px;
+      font-size: 14px;
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideIn .2s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 1300px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar.collapsed {
+        width: 280px;
+      }
+
+      .main,
+      .main.expanded {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .user-info {
+        display: none;
+      }
+
+      .hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .stats-grid,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .notification-card {
+        grid-template-columns: 1fr;
+      }
+
+      .notification-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .content {
+        padding: 18px;
+      }
+
+      .topbar {
+        padding: 0 18px;
+      }
+
+      .page-title p {
+        display: none;
+      }
+
+      .panel-header,
+      .panel-body {
+        padding: 18px;
+      }
+    }
+  </style>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+          <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+        </div>
+        <div class="logo-text">
+          <h2>OBES <span>ERP</span></h2>
+          <p>AKILLI ÜRETİM</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+        <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+        <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+        <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+
+        <div class="menu-title">ÜRETİM</div>
+        <a href="uretim.html"><i class="fa-solid fa-gears"></i><span>Üretim</span></a>
+        <a href="uretimtakip.html"><i class="fa-solid fa-chart-line"></i><span>Üretim Takip</span></a>
+        <a href="stokyonetimi.html"><i class="fa-solid fa-boxes-stacked"></i><span>Stok Yönetimi</span></a>
+        <a href="makinebakim.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Makine Bakım</span></a>
+        <a href="kalitekontrol.html"><i class="fa-solid fa-clipboard-check"></i><span>Kalite Kontrol</span></a>
+
+        <div class="menu-title">SATIN ALMA</div>
+        <a href="tedarikciler.html"><i class="fa-solid fa-truck"></i><span>Tedarikçiler</span></a>
+        <a href="satinalmatalepleri.html"><i class="fa-solid fa-file-circle-plus"></i><span>Satın Alma Talepleri</span></a>
+        <a href="satinalmaonay.html"><i class="fa-solid fa-circle-check"></i><span>Satın Alma Onayları</span></a>
+        <a href="satinalmasiparisleri.html"><i class="fa-solid fa-cart-shopping"></i><span>Satın Alma Siparişleri</span></a>
+
+        <div class="menu-title">YÖNETİM</div>
+        <a href="kullanicilar.html"><i class="fa-solid fa-users-gear"></i><span>Kullanıcılar</span></a>
+        <a href="roller.html"><i class="fa-solid fa-user-shield"></i><span>Rol Yönetimi</span></a>
+        <a href="yetkimatrisi.html"><i class="fa-solid fa-table-cells-large"></i><span>Yetki Matrisi</span></a>
+        <a href="workflow.html"><i class="fa-solid fa-diagram-project"></i><span>Workflow</span></a>
+        <a href="notificationcenter.html" class="active"><i class="fa-solid fa-bell"></i><span>Notification Center</span></a>
+        <a href="log.html"><i class="fa-solid fa-clock-rotate-left"></i><span>Sistem Logları</span></a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="page-title">
+            <h1>Notification Center</h1>
+            <p>Workflow, stok, bakım, kalite ve sistem bildirimleri.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="icon-btn" onclick="loadNotifications()" title="Yenile">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+
+          <button class="icon-btn" onclick="window.location.href='notificationcenter.html'" title="Bildirimler">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge" id="notificationCount">0</span>
+          </button>
+
+          <div class="user-menu">
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <h4 id="topUserName">Yükleniyor...</h4>
+              <p id="topUserRole">-</p>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="hero-card">
+          <div>
+            <h2>Merkezi Bildirim Yönetimi</h2>
+            <p>
+              ERP içinde oluşan tüm kritik hareketleri tek ekranda takip et. Workflow onayları, kritik stok,
+              bakım uyarıları, kalite hareketleri ve sistem mesajları burada toplanır.
+            </p>
+          </div>
+          <div class="hero-badge">
+            <i class="fa-solid fa-bell"></i>
+            Real-Time Ready
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-list"></i></div>
+            <div>
+              <h3 id="statTotal">0</h3>
+              <p>Toplam</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon unread"><i class="fa-solid fa-envelope"></i></div>
+            <div>
+              <h3 id="statUnread">0</h3>
+              <p>Okunmamış</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon workflow"><i class="fa-solid fa-diagram-project"></i></div>
+            <div>
+              <h3 id="statWorkflow">0</h3>
+              <p>Workflow</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon critical"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div>
+              <h3 id="statCritical">0</h3>
+              <p>Kritik</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon today"><i class="fa-solid fa-calendar-day"></i></div>
+            <div>
+              <h3 id="statToday">0</h3>
+              <p>Bugün</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Bildirimler</h3>
+              <p>Son bildirimleri filtreleyebilir, okundu yapabilir veya ilgili modüle gidebilirsin.</p>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="toolbar">
+              <input class="form-control" id="searchInput" type="text" placeholder="Ara: workflow, stok, bakım..." oninput="renderNotifications()">
+
+              <select class="form-control" id="moduleFilter" onchange="renderNotifications()">
+                <option value="">Tüm Modüller</option>
+                <option value="workflow">Workflow</option>
+                <option value="stokyonetimi">Stok</option>
+                <option value="uretim">Üretim</option>
+                <option value="kalite">Kalite</option>
+                <option value="bakim">Bakım</option>
+                <option value="finans">Finans</option>
+                <option value="sistem">Sistem</option>
+              </select>
+
+              <select class="form-control" id="statusFilter" onchange="renderNotifications()">
+                <option value="">Tümü</option>
+                <option value="unread">Okunmamış</option>
+                <option value="read">Okunmuş</option>
+              </select>
+
+              <button class="secondary-btn" onclick="loadNotifications()">
+                <i class="fa-solid fa-rotate"></i>
+                Yenile
+              </button>
+
+              <button class="primary-btn" onclick="markAllRead()">
+                <i class="fa-solid fa-check-double"></i>
+                Tümünü Okundu Yap
+              </button>
+
+              <button class="secondary-btn" onclick="exportCsv()">
+                <i class="fa-solid fa-file-export"></i>
+                CSV
+              </button>
+            </div>
+
+            <div class="notification-list" id="notificationList">
+              <div class="empty-state">
+                <i class="fa-regular fa-bell"></i>
+                Bildirimler yükleniyor...
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let allNotifications = [];
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+
+      if (window.innerWidth <= 850) {
+        sidebar.classList.toggle("mobile-open");
+      } else {
+        sidebar.classList.toggle("collapsed");
+        main.classList.toggle("expanded");
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      const sidebar = document.getElementById("sidebar");
+      const toggle = document.querySelector(".menu-toggle");
+
+      if (
+        window.innerWidth <= 850 &&
+        sidebar.classList.contains("mobile-open") &&
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)
+      ) {
+        sidebar.classList.remove("mobile-open");
+      }
+    });
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2600);
+    }
+
+    function getUser() {
+      try {
+        return JSON.parse(localStorage.getItem("user") || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function normalizeRole(role) {
+      return String(role || "")
+        .trim()
+        .toLowerCase()
+        .replace("yönetici", "admin")
+        .replace("yonetici", "admin")
+        .replace("süper admin", "superadmin")
+        .replace("super admin", "superadmin");
+    }
+
+    function getUserRole() {
+      const user = getUser();
+      return normalizeRole(localStorage.getItem("userRole") || user.role || "");
+    }
+
+    function authHeaders() {
+      const user = getUser();
+
+      return {
+        "Content-Type": "application/json",
+        "x-user-id": user.id || localStorage.getItem("userId") || "",
+        "x-user-name": user.username || user.fullName || user.full_name || localStorage.getItem("fullName") || "",
+        "x-user-role": getUserRole()
+      };
+    }
+
+    function setTopUser() {
+      const user = getUser();
+
+      if (!user || (!user.id && !localStorage.getItem("userRole"))) {
+        window.location.href = "giris.html";
+        return;
+      }
+
+      const name = user.fullName || user.full_name || user.username || localStorage.getItem("fullName") || "Kullanıcı";
+      const role = user.role || localStorage.getItem("userRole") || "-";
+
+      document.getElementById("topUserName").textContent = name;
+      document.getElementById("topUserRole").textContent = role;
+      document.getElementById("userAvatar").textContent = String(name).trim().charAt(0).toUpperCase();
+    }
+
+    async function apiGet(url) {
+      const response = await fetch(url, { headers: authHeaders() });
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    async function apiPut(url) {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: authHeaders()
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    async function apiDelete(url) {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: authHeaders()
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "API hatası oluştu.");
+      }
+
+      return data;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+
+      const parsed = new Date(String(value).replace(" ", "T"));
+
+      if (Number.isNaN(parsed.getTime())) return value;
+
+      return parsed.toLocaleString("tr-TR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function isToday(value) {
+      if (!value) return false;
+
+      const parsed = new Date(String(value).replace(" ", "T"));
+
+      if (Number.isNaN(parsed.getTime())) return false;
+
+      const now = new Date();
+      return parsed.getFullYear() === now.getFullYear()
+        && parsed.getMonth() === now.getMonth()
+        && parsed.getDate() === now.getDate();
+    }
+
+    function iconForType(type) {
+      const t = String(type || "info").toLowerCase();
+
+      if (t === "approval") return "fa-diagram-project";
+      if (t === "critical" || t === "error") return "fa-triangle-exclamation";
+      if (t === "success") return "fa-circle-check";
+      if (t === "warning") return "fa-circle-exclamation";
+
+      return "fa-bell";
+    }
+
+    function typeLabel(type) {
+      const t = String(type || "info").toLowerCase();
+
+      if (t === "approval") return "Onay";
+      if (t === "critical") return "Kritik";
+      if (t === "error") return "Hata";
+      if (t === "success") return "Başarılı";
+      if (t === "warning") return "Uyarı";
+
+      return "Bilgi";
+    }
+
+    async function loadNotifications() {
+      const list = document.getElementById("notificationList");
+      list.innerHTML = `
+        <div class="empty-state">
+          <i class="fa-regular fa-bell"></i>
+          Bildirimler yükleniyor...
+        </div>
+        
+      `;
+
+      try {
+        const data = await apiGet("/api/notifications?limit=200");
+        allNotifications = data.data || [];
+        renderNotifications();
+        await loadNotificationCount();
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            ${escapeHtml(err.message)}
+          </div>
+        `;
+      }
+    }
+
+    async function loadNotificationCount() {
+      try {
+        const data = await apiGet("/api/notifications/count");
+        document.getElementById("notificationCount").textContent = data.unreadCount || 0;
+      } catch (err) {
+        console.warn("Bildirim sayısı alınamadı:", err.message);
+      }
+    }
+
+    function getFilteredNotifications() {
+      const search = document.getElementById("searchInput").value.trim().toLowerCase();
+      const moduleKey = document.getElementById("moduleFilter").value;
+      const status = document.getElementById("statusFilter").value;
+
+      return allNotifications.filter(n => {
+        const searchText = [
+          n.title,
+          n.message,
+          n.module_key,
+          n.notification_type,
+          n.url,
+          n.record_id,
+          n.created_at
+        ].join(" ").toLowerCase();
+
+        const searchOk = !search || searchText.includes(search);
+        const moduleOk = !moduleKey || String(n.module_key || "") === moduleKey;
+        const statusOk =
+          !status ||
+          (status === "unread" && Number(n.is_read || 0) === 0) ||
+          (status === "read" && Number(n.is_read || 0) === 1);
+
+        return searchOk && moduleOk && statusOk;
+      });
+    }
+
+    function refreshStats(filtered) {
+      document.getElementById("statTotal").textContent = filtered.length;
+      document.getElementById("statUnread").textContent = filtered.filter(n => Number(n.is_read || 0) === 0).length;
+      document.getElementById("statWorkflow").textContent = filtered.filter(n => String(n.module_key || "") === "workflow").length;
+      document.getElementById("statCritical").textContent = filtered.filter(n => ["critical", "error"].includes(String(n.notification_type || "").toLowerCase())).length;
+      document.getElementById("statToday").textContent = filtered.filter(n => isToday(n.created_at)).length;
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById("notificationList");
+      const items = getFilteredNotifications();
+
+      refreshStats(items);
+
+      if (!items.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-bell-slash"></i>
+            Bildirim bulunamadı.
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = items.map(n => {
+        const unread = Number(n.is_read || 0) === 0;
+        const type = String(n.notification_type || "info").toLowerCase();
+        const icon = iconForType(type);
+
+        return `
+          <div class="notification-card ${unread ? "unread" : ""}">
+            <div class="notification-icon ${escapeHtml(type)}">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+
+            <div class="notification-content">
+              <h4>
+                ${escapeHtml(n.title || "Bildirim")}
+                ${unread ? `<span class="pill unread">Yeni</span>` : `<span class="pill read">Okundu</span>`}
+              </h4>
+
+              <p>${escapeHtml(n.message || "-")}</p>
+
+              <div class="notification-meta">
+                <span class="pill module"><i class="fa-solid fa-cube"></i>${escapeHtml(n.module_key || "genel")}</span>
+                <span class="pill type"><i class="fa-solid fa-tag"></i>${escapeHtml(typeLabel(type))}</span>
+                <span class="pill"><i class="fa-regular fa-clock"></i>${escapeHtml(formatDate(n.created_at))}</span>
+                ${n.record_id ? `<span class="pill"><i class="fa-solid fa-hashtag"></i>${escapeHtml(n.record_id)}</span>` : ""}
+              </div>
+            </div>
+
+            <div class="notification-actions">
+              ${n.url ? `
+                <button class="mini-btn" onclick="goNotification(${n.id}, '${escapeHtml(n.url)}')" title="Git">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  Git
+                </button>
+              ` : ""}
+
+              ${unread ? `
+                <button class="mini-btn" onclick="markRead(${n.id})" title="Okundu yap">
+                  <i class="fa-solid fa-check"></i>
+                  Okundu
+                </button>
+              ` : ""}
+
+              <button class="mini-btn danger" onclick="deleteNotification(${n.id})" title="Sil">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function markRead(id) {
+      try {
+        await apiPut(`/api/notifications/${id}/read`);
+        showToast("Bildirim okundu yapıldı.");
+        await loadNotifications();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function markAllRead() {
+      try {
+        await apiPut("/api/notifications/read-all");
+        showToast("Tüm bildirimler okundu yapıldı.");
+        await loadNotifications();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function deleteNotification(id) {
+      if (!confirm("Bu bildirimi silmek istediğine emin misin?")) return;
+
+      try {
+        await apiDelete(`/api/notifications/${id}`);
+        showToast("Bildirim silindi.");
+        await loadNotifications();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message);
+      }
+    }
+
+    async function goNotification(id, url) {
+      try {
+        await apiPut(`/api/notifications/${id}/read`);
+      } catch {}
+
+      window.location.href = url;
+    }
+
+    function exportCsv() {
+      const items = getFilteredNotifications();
+
+      if (!items.length) {
+        alert("Aktarılacak bildirim bulunamadı.");
+        return;
+      }
+
+      const headers = ["Tarih", "Başlık", "Mesaj", "Modül", "Tip", "Durum", "URL", "Kayıt ID"];
+      const rows = items.map(n => [
+        formatDate(n.created_at),
+        n.title || "",
+        n.message || "",
+        n.module_key || "",
+        n.notification_type || "",
+        Number(n.is_read || 0) === 0 ? "Okunmamış" : "Okunmuş",
+        n.url || "",
+        n.record_id || ""
+      ]);
+
+      const csv = [headers, ...rows]
+        .map(row => row.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(";"))
+        .join("\n");
+
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "obes-erp-bildirimler.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      setTopUser();
+      await loadNotifications();
+    });
+  </script>
+</body>
+</html>

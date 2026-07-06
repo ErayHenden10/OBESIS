@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Ürün Rotaları</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+    .sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-track{background:#071428}.sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px;letter-spacing:.5px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px 120px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:sticky;left:14px;right:14px;bottom:18px;margin:0 14px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}.sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}.menu-toggle:hover{background:#e8eef7}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}.topbar-right{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}.user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}.hero-card{background:linear-gradient(135deg,rgba(7,20,40,.96),rgba(16,48,95,.92));color:#fff;border-radius:24px;padding:30px 34px;display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:22px;box-shadow:0 16px 36px rgba(7,20,40,.16)}
+    .hero-card h2{font-size:28px;margin-bottom:8px}.hero-card p{color:#c9d2e3;line-height:1.6}.hero-icon{width:76px;height:76px;border-radius:22px;background:rgba(47,124,255,.18);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;flex-shrink:0}
+    .grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px;align-items:start}.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+    .panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:14px}.panel-header h3{font-size:18px}.panel-header p{color:#7a8799;font-size:13px;margin-top:4px}.panel-body{padding:22px 24px}
+    .form-grid{display:grid;grid-template-columns:1fr;gap:16px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-group label{display:block;font-weight:800;font-size:13px;color:#243247;margin-bottom:8px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid #dce3ee;background:#fff;border-radius:12px;height:46px;padding:0 13px;outline:none;color:#172033;font-size:14px;transition:.25s}.form-group textarea{height:86px;resize:vertical;padding-top:12px}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.10)}
+    .btn{height:46px;border:none;border-radius:12px;padding:0 16px;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;white-space:nowrap}.btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,#1262f3,#3182ff);color:#fff;box-shadow:0 12px 24px rgba(47,124,255,.22)}.btn-secondary{background:#eef5ff;color:#2563eb}.btn-danger{background:#fee2e2;color:#dc2626}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+    .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}.summary-card{background:#fff;border:1px solid #e5eaf2;border-radius:18px;padding:18px;box-shadow:0 10px 26px rgba(31,54,91,.05)}.summary-card i{width:42px;height:42px;border-radius:13px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px}.summary-card h4{font-size:24px;margin-bottom:4px}.summary-card p{color:#7a8799;font-size:13px}
+    .filters{display:grid;grid-template-columns:1fr .7fr auto;gap:10px;align-items:end;margin-bottom:16px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:15px 18px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}td{color:#263548}.empty-row{text-align:center;color:#7a8799;padding:30px}
+    .status{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}.status.active,.status.completed{background:#eaf8ef;color:#15803d}.status.passive,.status.cancelled{background:#fee2e2;color:#dc2626}.status.pending{background:#fff7e6;color:#b76b00}.status.open{background:#eef5ff;color:#2563eb}
+    @media(max-width:1200px){.grid{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero-card{flex-direction:column;align-items:flex-start}}
+    @media(max-width:560px){.content{padding:18px}.topbar{padding:0 18px}.page-title p{display:none}.form-row,.filters{grid-template-columns:1fr}}
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+<body>
+  <div class="app">
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+        <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+      </div>
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+      </div>
+      </nav>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title"><h1>Ürün Rotaları</h1><p>Ürünlere sıralı operasyon rotası tanımlayın.</p></div>
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn" onclick="window.location.href='bildirimler.html'"><i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span></button>
+          <div class="user-menu"><div class="avatar" id="userAvatar">-</div><div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div><i class="fa-solid fa-chevron-down"></i></div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="hero-card">
+          <div><h2>Routing Yönetimi</h2><p>Her ürün için Kesim → Torna → Freze → Kalite gibi üretim adımlarını sıralayın.</p></div>
+          <div class="hero-icon"><i class="fa-solid fa-route"></i></div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card"><i class="fa-solid fa-box"></i><h4 id="totalProducts">0</h4><p>Ürün/Stok Kartı</p></div>
+          <div class="summary-card"><i class="fa-solid fa-route"></i><h4 id="totalRoutes">0</h4><p>Toplam Rota Satırı</p></div>
+          <div class="summary-card"><i class="fa-solid fa-clock"></i><h4 id="totalMinutes">0</h4><p>Seçili Ürün Süresi / dk</p></div>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-header"><div><h3>Rota Satırı Ekle</h3><p>Ürün seçip operasyon sırası belirleyin.</p></div></div>
+            <div class="panel-body">
+              <form id="routeForm" onsubmit="saveRoute(event)">
+                <div class="form-grid">
+                  <div class="form-group"><label>Ürün / Stok Kartı</label><select id="productId" required onchange="loadRoutes()"><option value="">Ürün seçiniz</option></select></div>
+                  <div class="form-row">
+                    <div class="form-group"><label>Sıra No</label><input type="number" id="sequenceNo" min="1" step="1" value="1" required></div>
+                    <div class="form-group"><label>Operasyon</label><select id="operationId" required><option value="">Operasyon seçiniz</option></select></div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group"><label>Plan Süre / dk</label><input type="number" id="plannedTime" min="0" step="1" value="0"></div>
+                    <div class="form-group"><label>Durum</label><select id="status"><option value="active">Aktif</option><option value="passive">Pasif</option></select></div>
+                  </div>
+                  <div class="form-group"><label>Açıklama</label><textarea id="description" placeholder="Rota açıklaması"></textarea></div>
+                  <div class="actions">
+                    <button class="btn btn-primary" type="submit"><i class="fa-solid fa-plus"></i> Rotaya Ekle</button>
+                    <button class="btn btn-secondary" type="button" onclick="resetRouteForm()"><i class="fa-solid fa-rotate-left"></i> Temizle</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div><h3>Seçili Ürün Rotası</h3><p>Operasyon sırasını takip edin.</p></div>
+              <button class="btn btn-secondary" onclick="loadRoutes()"><i class="fa-solid fa-rotate"></i> Yenile</button>
+            </div>
+            <div class="panel-body">
+              <div class="filters">
+                <div class="form-group"><label>Arama</label><input type="text" id="searchInput" placeholder="Operasyon veya açıklama..." oninput="renderRoutes()"></div>
+                <div class="form-group"><label>Durum</label><select id="statusFilter" onchange="renderRoutes()"><option value="">Tümü</option><option value="active">Aktif</option><option value="passive">Pasif</option></select></div>
+                <button class="btn btn-danger" onclick="clearFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Temizle</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Sıra</th><th>Operasyon</th><th>Makine Tipi</th><th>Plan Süre</th><th>Durum</th><th>Açıklama</th><th>İşlem</th></tr></thead>
+                  <tbody id="routeTable"><tr><td colspan="7" class="empty-row">Ürün seçiniz.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+let products=[];
+let operations=[];
+let routes=[];
+
+
+    function toggleSidebar(){
+      const sidebar=document.getElementById("sidebar");
+      const main=document.getElementById("main");
+      if(window.innerWidth<=850){sidebar.classList.toggle("mobile-open")}
+      else{sidebar.classList.toggle("collapsed");main.classList.toggle("expanded")}
+    }
+
+    function authHeaders(){
+      return {
+        "Content-Type":"application/json",
+        "x-user-id":localStorage.getItem("userId")||"",
+        "x-user-name":localStorage.getItem("fullName")||"",
+        "x-user-role":localStorage.getItem("userRole")||""
+      };
+    }
+
+    function initUser(){
+      const user=JSON.parse(localStorage.getItem("user")||"{}");
+      if(!user||!user.role){window.location.href="giris.html";return}
+      document.getElementById("topUserName").textContent=user.fullName||"-";
+      document.getElementById("topUserRole").textContent=user.role||"-";
+      document.getElementById("userAvatar").textContent=(user.fullName||"-").trim().charAt(0).toUpperCase();
+    }
+
+    async function checkPagePermission(){
+      const user=JSON.parse(localStorage.getItem("user")||"{}");
+      const roleKey=user.role||localStorage.getItem("userRole");
+      if(!roleKey){window.location.href="giris.html";return}
+      if(roleKey==="superadmin") return;
+      const currentPage="/"+window.location.pathname.split("/").pop();
+      try{
+        const response=await fetch(`/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(currentPage)}`);
+        const data=await response.json();
+        if(!data.canAccess){appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");window.location.href="anasayfa.html"}
+      }catch(error){console.error("Yetki kontrol hatası:",error);window.location.href="anasayfa.html"}
+    }
+
+    async function applyRoleMenuPermissions(){
+      const user=JSON.parse(localStorage.getItem("user")||"{}");
+      const roleKey=user.role||localStorage.getItem("userRole");
+      if(!roleKey||roleKey==="superadmin") return;
+      const menuLinks=document.querySelectorAll(".menu a");
+      for(const link of menuLinks){
+        const href=link.getAttribute("href");
+        const pageUrl="/"+href;
+        try{
+          const response=await fetch(`/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(pageUrl)}`);
+          const data=await response.json();
+          if(!data.success||!data.canAccess){link.style.display="none"}
+        }catch(error){link.style.display="none"}
+      }
+    }
+
+    async function loadNotifications(){
+      try{
+        const response=await fetch("/api/notifications",{headers:authHeaders()});
+        const data=await response.json();
+        document.getElementById("notificationCount").textContent=data.unreadCount||0;
+      }catch(error){console.error("Bildirimler alınamadı:",error)}
+    }
+
+
+async function loadProducts(){
+  const response=await fetch("/api/stocks",{headers:authHeaders()});
+  const data=await response.json();
+  products=data.stocks||[];
+  document.getElementById("totalProducts").textContent=products.length;
+  const select=document.getElementById("productId");
+  select.innerHTML=`<option value="">Ürün seçiniz</option>`;
+  products.forEach(p=>{
+    const label=`${p.stock_code||p.stockCode||"-"} - ${p.part_name||p.partName||"-"}`;
+    select.innerHTML+=`<option value="${p.id}">${label}</option>`;
+  });
+}
+
+async function loadOperationsSelect(){
+  const response=await fetch("/api/operations",{headers:authHeaders()});
+  const data=await response.json();
+  operations=data.operations||[];
+  const select=document.getElementById("operationId");
+  select.innerHTML=`<option value="">Operasyon seçiniz</option>`;
+  operations.filter(o=>(o.status||"active")==="active").forEach(o=>{
+    select.innerHTML+=`<option value="${o.id}" data-time="${o.standard_time||o.standardTime||0}">${o.operation_code||o.operationCode||"-"} - ${o.operation_name||o.operationName||"-"}</option>`;
+  });
+}
+
+document.addEventListener("change",function(e){
+  if(e.target.id==="operationId"){
+    const option=e.target.selectedOptions[0];
+    if(option&&option.dataset.time){
+      document.getElementById("plannedTime").value=option.dataset.time||0;
+    }
+  }
+});
+
+async function loadRoutes(){
+  const productId=document.getElementById("productId").value;
+  if(!productId){
+    routes=[];
+    renderRoutes();
+    return;
+  }
+
+  try{
+    const response=await fetch(`/api/product-routes/${productId}`,{headers:authHeaders()});
+    const data=await response.json();
+    if(!data.success) throw new Error(data.message||"Rotalar alınamadı.");
+    routes=data.routes||[];
+    renderRoutes();
+  }catch(error){
+    console.error("Rotalar alınamadı:",error);
+    document.getElementById("routeTable").innerHTML=`<tr><td colspan="7" class="empty-row">Rotalar alınamadı. Backend endpointini kontrol et.</td></tr>`;
+  }
+}
+
+function renderRoutes(){
+  const tbody=document.getElementById("routeTable");
+  const search=(document.getElementById("searchInput").value||"").toLowerCase();
+  const status=document.getElementById("statusFilter").value;
+
+  document.getElementById("totalRoutes").textContent=routes.length;
+  document.getElementById("totalMinutes").textContent=routes.reduce((s,r)=>s+Number(r.planned_time||r.plannedTime||0),0);
+
+  if(!document.getElementById("productId").value){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-row">Ürün seçiniz.</td></tr>`;
+    return;
+  }
+
+  const filtered=routes.filter(r=>{
+    const text=`${r.operation_code||""} ${r.operation_name||""} ${r.machine_type||""} ${r.description||""}`.toLowerCase();
+    return (!search||text.includes(search))&&(!status||(r.status||"active")===status);
+  });
+
+  if(filtered.length===0){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-row">Bu ürün için rota satırı bulunamadı.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML=filtered.map(r=>`
+    <tr>
+      <td><strong>${r.sequence_no||r.sequenceNo||"-"}</strong></td>
+      <td>${r.operation_code||"-"} - ${r.operation_name||"-"}</td>
+      <td>${r.machine_type||"-"}</td>
+      <td>${Number(r.planned_time||r.plannedTime||0).toLocaleString("tr-TR")} dk</td>
+      <td><span class="status ${r.status||"active"}">${(r.status||"active")==="active"?"Aktif":"Pasif"}</span></td>
+      <td>${r.description||"-"}</td>
+      <td><button class="btn btn-danger" onclick="deleteRoute(${r.id})"><i class="fa-solid fa-trash"></i></button></td>
+    </tr>
+  `).join("");
+}
+
+async function saveRoute(event){
+  event.preventDefault();
+  const payload={
+    productId:document.getElementById("productId").value,
+    operationId:document.getElementById("operationId").value,
+    sequenceNo:document.getElementById("sequenceNo").value,
+    plannedTime:document.getElementById("plannedTime").value,
+    status:document.getElementById("status").value,
+    description:document.getElementById("description").value.trim()
+  };
+
+  try{
+    const response=await fetch("/api/product-routes",{
+      method:"POST",
+      headers:authHeaders(),
+      body:JSON.stringify(payload)
+    });
+    const data=await response.json();
+    if(!data.success){appAlert(data.message||"Rota satırı eklenemedi.");return}
+    appAlert("Rota satırı eklendi.");
+    resetRouteForm(false);
+    await loadRoutes();
+  }catch(error){
+    console.error("Rota kayıt hatası:",error);
+    appAlert("Sunucu bağlantı hatası.");
+  }
+}
+
+async function deleteRoute(id){
+  if (!(await appConfirm("Rota satırı silinsin mi?"))) return;
+  const response=await fetch(`/api/product-routes/${id}`,{method:"DELETE",headers:authHeaders()});
+  const data=await response.json();
+  if(!data.success){appAlert(data.message||"Silinemedi.");return}
+  loadRoutes();
+}
+
+function resetRouteForm(clearProduct=true){
+  const productId=document.getElementById("productId").value;
+  document.getElementById("routeForm").reset();
+  if(!clearProduct) document.getElementById("productId").value=productId;
+  document.getElementById("sequenceNo").value=routes.length+1;
+  document.getElementById("plannedTime").value=0;
+}
+
+function clearFilters(){
+  document.getElementById("searchInput").value="";
+  document.getElementById("statusFilter").value="";
+  renderRoutes();
+}
+
+document.addEventListener("DOMContentLoaded",async function(){
+  document.querySelector(".routes-active").classList.add("active");
+  initUser();
+  await checkPagePermission();
+  await applyRoleMenuPermissions();
+  await loadNotifications();
+  await loadProducts();
+  await loadOperationsSelect();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

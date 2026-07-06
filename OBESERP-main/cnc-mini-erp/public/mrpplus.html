@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>OBES ERP - MRP Plus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+body{background:#f4f7fb;color:#172033}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;background:#071428;color:#fff;position:fixed;top:0;bottom:0;left:0;overflow:auto}
+.sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}.logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba}
+.menu{padding:22px 14px 120px}.menu-title{color:#7f8da3;font-size:11px;font-weight:800;margin:14px 12px 10px}
+.menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px}
+.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+.menu a i{width:22px;text-align:center}
+.main{margin-left:280px;width:calc(100% - 280px);min-height:100vh}
+.topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20}
+.page-title h1{font-size:23px}.page-title p{color:#7a8799;font-size:13px;margin-top:4px}
+.content{padding:28px}
+.hero{background:linear-gradient(135deg,#071428,#12396d);color:#fff;border-radius:24px;padding:30px 34px;margin-bottom:24px;display:flex;justify-content:space-between;gap:20px}
+.hero h2{font-size:28px;margin-bottom:10px}.hero p{color:#c9d2e3;line-height:1.6}
+.badge{height:44px;padding:0 18px;border-radius:999px;background:rgba(47,124,255,.2);display:flex;align-items:center;gap:10px;font-weight:800;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+.card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:22px;box-shadow:0 12px 32px rgba(31,54,91,.06)}
+.card-icon{width:46px;height:46px;border-radius:14px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:19px}
+.card p{font-size:13px;color:#7a8799;margin-bottom:8px}.card h3{font-size:28px}
+.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+.panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-header h3{font-size:18px}.panel-header p{font-size:12px;color:#7a8799;margin-top:4px}
+.panel-body{padding:20px 24px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:13px 10px;border-bottom:1px solid #edf1f7;text-align:left;font-size:13px}
+th{color:#7a8799;background:#fbfcfe;text-transform:uppercase;font-size:11px}
+.risk{padding:6px 10px;border-radius:999px;font-weight:800;font-size:11px}
+.high{background:#fee2e2;color:#b91c1c}.medium{background:#fff7e6;color:#b76b00}.low{background:#eaf8ef;color:#15803d}
+.empty{text-align:center;color:#7a8799;padding:24px}
+.btn{height:42px;padding:0 15px;border:0;border-radius:12px;background:#2f7cff;color:#fff;font-weight:800;cursor:pointer}
+.btn.secondary{background:#f1f5fb;color:#263548;border:1px solid #e2e8f2}
+.btn.danger{background:#fee2e2;color:#b91c1c}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:rgba(7,20,40,.55);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+.modal.show{display:flex}
+.modal-card{width:100%;max-width:620px;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25);overflow:hidden}
+.modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;justify-content:space-between}
+.modal-body{padding:24px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:800;font-size:13px;margin-bottom:8px}
+.input{width:100%;height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px}
+.modal-footer{padding:18px 24px;border-top:1px solid #edf1f7;display:flex;justify-content:flex-end;gap:10px}
+@media(max-width:1200px){.cards{grid-template-columns:repeat(2,1fr)}}
+/* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+      <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>MRP PLUS</p></div>
+    </div>
+
+    <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+      <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+      </div>
+      </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="page-title">
+        <h1>MRP Plus</h1>
+        <p>Kritik stok, otomatik satın alma talebi ve tedarikçi önerisi.</p>
+      </div>
+      <div class="actions">
+        <button class="btn secondary" onclick="loadAll()"><i class="fa-solid fa-rotate"></i> Yenile</button>
+        <button class="btn" onclick="createAutoRequests()"><i class="fa-solid fa-bolt"></i> Otomatik Talepler</button>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="hero">
+        <div>
+          <h2>Premium MRP Plus Paneli</h2>
+          <p>Eksik stokları bulur, kritik malzemeleri listeler ve tek tıkla satın alma talebi oluşturur.</p>
+        </div>
+        <div class="badge"><i class="fa-solid fa-star"></i> Premium Paket 2</div>
+      </div>
+
+      <div class="cards">
+        <div class="card"><div class="card-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><p>Kritik Stok</p><h3 id="criticalStockCount">0</h3></div>
+        <div class="card"><div class="card-icon"><i class="fa-solid fa-file-circle-plus"></i></div><p>Açık Satın Alma Talebi</p><h3 id="openPurchaseRequestCount">0</h3></div>
+        <div class="card"><div class="card-icon"><i class="fa-solid fa-industry"></i></div><p>Açık İş Emri</p><h3 id="waitingWorkOrderCount">0</h3></div>
+        <div class="card"><div class="card-icon"><i class="fa-solid fa-box-open"></i></div><p>Toplam Eksik Miktar</p><h3 id="totalMissingQty">0</h3></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Kritik Malzemeler</h3>
+            <p>Minimum stok seviyesine düşen veya eksik kalan malzemeler</p>
+          </div>
+        </div>
+
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Malzeme</th>
+                <th>Kategori</th>
+                <th>Mevcut</th>
+                <th>Min.</th>
+                <th>Eksik</th>
+                <th>Risk</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="materialsRows">
+              <tr><td colspan="7" class="empty">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="requestModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Satın Alma Talebi Oluştur</h3>
+      <button class="btn secondary" onclick="closeModal()">Kapat</button>
+    </div>
+
+    <div class="modal-body">
+      <input type="hidden" id="modalStockId">
+
+      <div class="form-group">
+        <label>Malzeme</label>
+        <input class="input" id="modalMaterial" readonly>
+      </div>
+
+      <div class="form-group">
+        <label>Miktar</label>
+        <input class="input" id="modalQuantity" type="number" min="1">
+      </div>
+
+      <div class="form-group">
+        <label>Aciliyet</label>
+        <select class="input" id="modalUrgency">
+          <option value="high">Yüksek</option>
+          <option value="medium">Orta</option>
+          <option value="low">Düşük</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Açıklama</label>
+        <input class="input" id="modalDescription" placeholder="MRP Plus talebi">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn secondary" onclick="closeModal()">Vazgeç</button>
+      <button class="btn" onclick="createPurchaseRequest()">Talep Oluştur</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let materials = [];
+
+function getCurrentRole(){
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  return String(localStorage.getItem("userRole") || user.role || "")
+    .trim().toLowerCase()
+    .replace("yönetici","admin")
+    .replace("yonetici","admin")
+    .replace("süper admin","superadmin")
+    .replace("super admin","superadmin");
+}
+
+async function apiGet(url){
+  const res = await fetch(url,{headers:{"x-user-role":getCurrentRole()}});
+  const data = await res.json();
+  if(!res.ok || data.success === false) throw new Error(data.message || "API hatası");
+  return data;
+}
+
+async function apiPost(url, body){
+  const res = await fetch(url,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-user-role":getCurrentRole()
+    },
+    body:JSON.stringify(body || {})
+  });
+  const data = await res.json();
+  if(!res.ok || data.success === false) throw new Error(data.message || "API hatası");
+  return data;
+}
+
+function fmt(value){ return Number(value || 0).toLocaleString("tr-TR"); }
+
+async function loadSummary(){
+  const data = await apiGet("/api/mrp-plus/summary");
+  const s = data.summary || {};
+
+  document.getElementById("criticalStockCount").textContent = fmt(s.criticalStockCount);
+  document.getElementById("openPurchaseRequestCount").textContent = fmt(s.openPurchaseRequestCount);
+  document.getElementById("waitingWorkOrderCount").textContent = fmt(s.waitingWorkOrderCount);
+  document.getElementById("totalMissingQty").textContent = fmt(s.totalMissingQty);
+}
+
+async function loadMaterials(){
+  const data = await apiGet("/api/mrp-plus/critical-materials");
+  materials = data.materials || [];
+
+  const label = { high:"Yüksek", medium:"Orta", low:"Düşük" };
+
+  document.getElementById("materialsRows").innerHTML = materials.length ? materials.map(x => `
+    <tr>
+      <td><strong>${x.partName || "-"}</strong><br><small>${x.stockCode || "-"}</small></td>
+      <td>${x.category || "-"}</td>
+      <td>${fmt(x.quantity)} ${x.unit || ""}</td>
+      <td>${fmt(x.minQuantity)} ${x.unit || ""}</td>
+      <td><strong>${fmt(x.missingQuantity)}</strong> ${x.unit || ""}</td>
+      <td><span class="risk ${x.riskLevel}">${label[x.riskLevel] || "-"}</span></td>
+      <td>
+        <button class="btn" onclick="openRequestModal(${x.id})">
+          <i class="fa-solid fa-file-circle-plus"></i> Talep
+        </button>
+      </td>
+    </tr>
+  `).join("") : `<tr><td colspan="7" class="empty">Kritik malzeme bulunamadı.</td></tr>`;
+}
+
+function openRequestModal(stockId){
+  const item = materials.find(x => Number(x.id) === Number(stockId));
+  if(!item) return;
+
+  document.getElementById("modalStockId").value = item.id;
+  document.getElementById("modalMaterial").value = `${item.partName || "-"} / ${item.stockCode || "-"}`;
+  document.getElementById("modalQuantity").value = Number(item.missingQuantity || 1);
+  document.getElementById("modalUrgency").value = item.riskLevel === "low" ? "medium" : item.riskLevel;
+  document.getElementById("modalDescription").value = "MRP Plus kritik stok talebi";
+
+  document.getElementById("requestModal").classList.add("show");
+}
+
+function closeModal(){
+  document.getElementById("requestModal").classList.remove("show");
+}
+
+async function createPurchaseRequest(){
+  try{
+    const payload = {
+      stockId: Number(document.getElementById("modalStockId").value),
+      quantity: Number(document.getElementById("modalQuantity").value),
+      urgency: document.getElementById("modalUrgency").value,
+      requester: "MRP Plus",
+      description: document.getElementById("modalDescription").value
+    };
+
+    const data = await apiPost("/api/mrp-plus/create-purchase-request", payload);
+    appAlert(data.message || "Talep oluşturuldu.");
+    closeModal();
+    await loadAll();
+
+  }catch(err){
+    console.error(err);
+    appAlert(err.message);
+  }
+}
+
+async function createAutoRequests(){
+  if (!(await appConfirm("Tüm eksik stoklar için otomatik satın alma talebi oluşturulsun mu?"))) return;
+
+  try{
+    const data = await apiPost("/api/mrp-plus/create-auto-requests", {});
+    appAlert(data.message || "Otomatik talepler oluşturuldu.");
+    await loadAll();
+
+  }catch(err){
+    console.error(err);
+    appAlert(err.message);
+  }
+}
+
+async function checkPagePermission(){
+  const roleKey = getCurrentRole();
+  if(!roleKey){ window.location.href = "giris.html"; return; }
+  if(roleKey === "superadmin") return;
+
+  const currentPage = "/" + window.location.pathname.split("/").pop();
+  const res = await fetch(`/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(currentPage)}`);
+  const data = await res.json();
+
+  if(!data.canAccess){
+    appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+    window.location.href = "anasayfa.html";
+  }
+}
+
+async function loadAll(){
+  try{
+    await Promise.all([loadSummary(), loadMaterials()]);
+  }catch(err){
+    console.error(err);
+    appAlert(err.message);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await checkPagePermission();
+  await loadAll();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

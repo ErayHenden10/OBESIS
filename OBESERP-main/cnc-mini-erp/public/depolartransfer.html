@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Transfer Fişleri</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+    .sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-track{background:#071428}.sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px;letter-spacing:.5px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px 120px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:sticky;left:14px;right:14px;bottom:18px;margin:0 14px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}.sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}.menu-toggle:hover{background:#e8eef7}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}.topbar-right{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}.user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}.hero-card{background:linear-gradient(135deg,rgba(7,20,40,.96),rgba(16,48,95,.92));color:#fff;border-radius:24px;padding:30px 34px;display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:22px;box-shadow:0 16px 36px rgba(7,20,40,.16)}
+    .hero-card h2{font-size:28px;margin-bottom:8px}.hero-card p{color:#c9d2e3;line-height:1.6}.hero-icon{width:76px;height:76px;border-radius:22px;background:rgba(47,124,255,.18);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;flex-shrink:0}
+    .grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px;align-items:start}.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+    .panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:14px}.panel-header h3{font-size:18px}.panel-header p{color:#7a8799;font-size:13px;margin-top:4px}.panel-body{padding:22px 24px}
+    .form-grid{display:grid;grid-template-columns:1fr;gap:16px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-group label{display:block;font-weight:800;font-size:13px;color:#243247;margin-bottom:8px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid #dce3ee;background:#fff;border-radius:12px;height:46px;padding:0 13px;outline:none;color:#172033;font-size:14px;transition:.25s}.form-group textarea{height:86px;resize:vertical;padding-top:12px}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.10)}
+    .btn{height:46px;border:none;border-radius:12px;padding:0 16px;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;white-space:nowrap}.btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,#1262f3,#3182ff);color:#fff;box-shadow:0 12px 24px rgba(47,124,255,.22)}.btn-secondary{background:#eef5ff;color:#2563eb}.btn-danger{background:#fee2e2;color:#dc2626}.btn-success{background:#eaf8ef;color:#15803d}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.summary-card{background:#fff;border:1px solid #e5eaf2;border-radius:18px;padding:18px;box-shadow:0 10px 26px rgba(31,54,91,.05)}.summary-card i{width:42px;height:42px;border-radius:13px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px}.summary-card h4{font-size:24px;margin-bottom:4px}.summary-card p{color:#7a8799;font-size:13px}
+    .filters{display:grid;grid-template-columns:1fr .7fr .7fr auto;gap:10px;align-items:end;margin-bottom:16px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:15px 18px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}td{color:#263548}.empty-row{text-align:center;color:#7a8799;padding:30px}
+    .status{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}.status.approved{background:#eaf8ef;color:#15803d}.status.cancelled{background:#fee2e2;color:#dc2626}.status.pending{background:#fff7e6;color:#b76b00}
+    @media(max-width:1200px){.grid{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero-card{flex-direction:column;align-items:flex-start}}
+    @media(max-width:560px){.content{padding:18px}.topbar{padding:0 18px}.page-title p{display:none}.form-row,.filters,.summary-grid{grid-template-columns:1fr}}
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+    <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+  </div>
+
+  <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+  </div>
+      </nav>
+</aside>
+
+<main class="main" id="main">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="page-title"><h1>Transfer Fişleri</h1><p>Depolar arası stok transferlerini oluşturun ve onaylayın.</p></div>
+  </div>
+
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="window.location.href='bildirimler.html'">
+      <i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span>
+    </button>
+    <div class="user-menu">
+      <div class="avatar" id="userAvatar">-</div>
+      <div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </div>
+</header>
+
+<section class="content">
+  <div class="hero-card">
+    <div>
+      <h2>Depolar Arası Transfer</h2>
+      <p>Kaynak depodan hedef depoya malzeme aktarın. Onaylanan transferler stok hareketlerine otomatik işlenir.</p>
+    </div>
+    <div class="hero-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card"><i class="fa-solid fa-right-left"></i><h4 id="totalTransfers">0</h4><p>Toplam Transfer</p></div>
+    <div class="summary-card"><i class="fa-solid fa-hourglass-half"></i><h4 id="pendingTransfers">0</h4><p>Bekleyen</p></div>
+    <div class="summary-card"><i class="fa-solid fa-circle-check"></i><h4 id="approvedTransfers">0</h4><p>Onaylanan</p></div>
+    <div class="summary-card"><i class="fa-solid fa-circle-xmark"></i><h4 id="cancelledTransfers">0</h4><p>İptal</p></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-header">
+        <div><h3>Yeni Transfer Fişi</h3><p>Kaynak depo, hedef depo ve malzeme bilgilerini girin.</p></div>
+      </div>
+      <div class="panel-body">
+        <form id="transferForm" onsubmit="saveTransfer(event)">
+          <div class="form-grid">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Kaynak Depo</label>
+                <select id="sourceWarehouseId" required><option value="">Seçiniz</option></select>
+              </div>
+              <div class="form-group">
+                <label>Hedef Depo</label>
+                <select id="targetWarehouseId" required><option value="">Seçiniz</option></select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Malzeme</label>
+              <select id="stockId" required><option value="">Seçiniz</option></select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Miktar</label>
+                <input type="number" id="quantity" min="0.01" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label>Transfer Tarihi</label>
+                <input type="date" id="transferDate" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Açıklama</label>
+              <textarea id="description" placeholder="Transfer açıklaması"></textarea>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Kaydet</button>
+              <button class="btn btn-secondary" type="button" onclick="resetTransferForm()"><i class="fa-solid fa-rotate-left"></i> Temizle</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div><h3>Transfer Listesi</h3><p>Kayıtlı transfer fişleri.</p></div>
+        <button class="btn btn-secondary" onclick="loadTransfers()"><i class="fa-solid fa-rotate"></i> Yenile</button>
+      </div>
+
+      <div class="panel-body">
+        <div class="filters">
+          <div class="form-group">
+            <label>Arama</label>
+            <input type="text" id="searchInput" placeholder="Transfer no, depo veya malzeme..." oninput="renderTransfers()">
+          </div>
+          <div class="form-group">
+            <label>Durum</label>
+            <select id="statusFilter" onchange="renderTransfers()">
+              <option value="">Tümü</option>
+              <option value="Beklemede">Beklemede</option>
+              <option value="Onaylandı">Onaylandı</option>
+              <option value="İptal">İptal</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tarih</label>
+            <input type="date" id="dateFilter" onchange="renderTransfers()">
+          </div>
+          <button class="btn btn-danger" onclick="clearFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Temizle</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fiş No</th>
+                <th>Tarih</th>
+                <th>Kaynak</th>
+                <th>Hedef</th>
+                <th>Malzeme</th>
+                <th>Miktar</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="transferTable">
+              <tr><td colspan="8" class="empty-row">Veriler yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<script>
+let transfers = [];
+let warehouses = [];
+let stocks = [];
+
+function toggleSidebar(){
+  const sidebar=document.getElementById("sidebar");
+  const main=document.getElementById("main");
+  if(window.innerWidth<=850){sidebar.classList.toggle("mobile-open")}
+  else{sidebar.classList.toggle("collapsed");main.classList.toggle("expanded")}
+}
+
+document.addEventListener("click",function(e){
+  const sidebar=document.getElementById("sidebar");
+  const toggle=document.querySelector(".menu-toggle");
+  if(window.innerWidth<=850&&sidebar.classList.contains("mobile-open")&&!sidebar.contains(e.target)&&!toggle.contains(e.target)){
+    sidebar.classList.remove("mobile-open");
+  }
+});
+
+function authHeaders(){
+  return {
+    "Content-Type":"application/json",
+    "x-user-id":localStorage.getItem("userId")||"",
+    "x-user-name":localStorage.getItem("fullName")||"",
+    "x-user-role":localStorage.getItem("userRole")||""
+  };
+}
+
+function initUser(){
+  const user=JSON.parse(localStorage.getItem("user")||"{}");
+  if(!user||!user.role){window.location.href="giris.html";return}
+  document.getElementById("topUserName").textContent=user.fullName||"-";
+  document.getElementById("topUserRole").textContent=user.role||"-";
+  document.getElementById("userAvatar").textContent=(user.fullName||"-").trim().charAt(0).toUpperCase();
+}
+
+async function checkPagePermission(){
+  const user=JSON.parse(localStorage.getItem("user")||"{}");
+  const roleKey=user.role||localStorage.getItem("userRole");
+  if(!roleKey){window.location.href="giris.html";return}
+  if(roleKey==="superadmin") return;
+
+  const currentPage="/"+window.location.pathname.split("/").pop();
+
+  try{
+    const response=await fetch(`/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(currentPage)}`);
+    const data=await response.json();
+    if(!data.canAccess){
+      appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+      window.location.href="anasayfa.html";
+    }
+  }catch(error){
+    console.error("Yetki kontrol hatası:",error);
+    window.location.href="anasayfa.html";
+  }
+}
+
+async function applyRoleMenuPermissions(){
+  const user=JSON.parse(localStorage.getItem("user")||"{}");
+  const roleKey=user.role||localStorage.getItem("userRole");
+  if(!roleKey||roleKey==="superadmin") return;
+
+  const menuLinks=document.querySelectorAll(".menu a");
+
+  for(const link of menuLinks){
+    const href=link.getAttribute("href");
+    const pageUrl="/"+href;
+
+    try{
+      const response=await fetch(`/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(pageUrl)}`);
+      const data=await response.json();
+      if(!data.success||!data.canAccess){link.style.display="none"}
+    }catch(error){
+      link.style.display="none";
+    }
+  }
+}
+
+async function loadNotifications(){
+  try{
+    const response=await fetch("/api/notifications",{headers:authHeaders()});
+    const data=await response.json();
+    document.getElementById("notificationCount").textContent=data.unreadCount||0;
+  }catch(error){
+    console.error("Bildirimler alınamadı:",error);
+  }
+}
+
+async function loadWarehouses(){
+  try{
+    const response=await fetch("/api/warehouses",{headers:authHeaders()});
+    const data=await response.json();
+
+    if(!data.success) throw new Error(data.message||"Depolar alınamadı.");
+
+    warehouses=data.warehouses||[];
+
+    const source=document.getElementById("sourceWarehouseId");
+    const target=document.getElementById("targetWarehouseId");
+
+    source.innerHTML=`<option value="">Seçiniz</option>`;
+    target.innerHTML=`<option value="">Seçiniz</option>`;
+
+    warehouses
+      .filter(w=>(w.status||"active")==="active")
+      .forEach(w=>{
+        const name=w.warehouse_name||w.warehouseName||"-";
+        source.innerHTML+=`<option value="${w.id}">${name}</option>`;
+        target.innerHTML+=`<option value="${w.id}">${name}</option>`;
+      });
+
+  }catch(error){
+    console.error("Depolar alınamadı:",error);
+  }
+}
+
+async function loadStocks(){
+  try{
+    const response=await fetch("/api/stocks",{headers:authHeaders()});
+    const data=await response.json();
+
+    stocks=data.stocks||data.items||[];
+
+    const select=document.getElementById("stockId");
+    select.innerHTML=`<option value="">Seçiniz</option>`;
+
+    stocks.forEach(s=>{
+      const code=s.stock_code||s.stockCode||s.code||"";
+      const name=s.part_name||s.partName||s.stock_name||s.name||"";
+      select.innerHTML+=`<option value="${s.id}">${code} - ${name}</option>`;
+    });
+
+  }catch(error){
+    console.error("Stoklar alınamadı:",error);
+  }
+}
+
+async function loadTransfers(){
+  try{
+    const response=await fetch("/api/warehouse-transfers",{headers:authHeaders()});
+    const data=await response.json();
+
+    if(!data.success) throw new Error(data.message||"Transferler alınamadı.");
+
+    transfers=data.transfers||[];
+    renderTransfers();
+
+  }catch(error){
+    console.error("Transferler alınamadı:",error);
+    document.getElementById("transferTable").innerHTML=`<tr><td colspan="8" class="empty-row">Transferler alınamadı. Backend endpointini kontrol et.</td></tr>`;
+  }
+}
+
+function renderTransfers(){
+  const tbody=document.getElementById("transferTable");
+  const search=(document.getElementById("searchInput").value||"").toLowerCase();
+  const status=document.getElementById("statusFilter").value;
+  const date=document.getElementById("dateFilter").value;
+
+  document.getElementById("totalTransfers").textContent=transfers.length;
+  document.getElementById("pendingTransfers").textContent=transfers.filter(t=>t.status==="Beklemede").length;
+  document.getElementById("approvedTransfers").textContent=transfers.filter(t=>t.status==="Onaylandı").length;
+  document.getElementById("cancelledTransfers").textContent=transfers.filter(t=>t.status==="İptal").length;
+
+  const filtered=transfers.filter(t=>{
+    const text=`
+      ${t.transfer_no||t.transferNo||""}
+      ${t.source_warehouse_name||""}
+      ${t.target_warehouse_name||""}
+      ${t.stock_code||""}
+      ${t.part_name||""}
+    `.toLowerCase();
+
+    return (!search||text.includes(search))
+      && (!status||t.status===status)
+      && (!date||t.transfer_date===date);
+  });
+
+  if(filtered.length===0){
+    tbody.innerHTML=`<tr><td colspan="8" class="empty-row">Kayıt bulunamadı.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML=filtered.map(t=>`
+    <tr>
+      <td>${t.transfer_no||t.transferNo||"-"}</td>
+      <td>${formatDate(t.transfer_date||t.transferDate)}</td>
+      <td>${t.source_warehouse_name||"-"}</td>
+      <td>${t.target_warehouse_name||"-"}</td>
+      <td>${(t.stock_code||"") + " " + (t.part_name||"")}</td>
+      <td>${t.quantity||0}</td>
+      <td>${statusHtml(t.status)}</td>
+      <td>
+        ${
+          t.status==="Beklemede"
+          ? `
+            <div class="actions">
+              <button class="btn btn-success" onclick="approveTransfer(${t.id})"><i class="fa-solid fa-check"></i></button>
+              <button class="btn btn-danger" onclick="cancelTransfer(${t.id})"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          `
+          : "-"
+        }
+      </td>
+    </tr>
+  `).join("");
+}
+
+function statusHtml(status){
+  if(status==="Onaylandı") return `<span class="status approved">Onaylandı</span>`;
+  if(status==="İptal") return `<span class="status cancelled">İptal</span>`;
+  return `<span class="status pending">Beklemede</span>`;
+}
+
+function formatDate(date){
+  if(!date) return "-";
+  return new Date(date).toLocaleDateString("tr-TR");
+}
+
+async function saveTransfer(event){
+  event.preventDefault();
+
+  const payload={
+    sourceWarehouseId:document.getElementById("sourceWarehouseId").value,
+    targetWarehouseId:document.getElementById("targetWarehouseId").value,
+    stockId:document.getElementById("stockId").value,
+    quantity:document.getElementById("quantity").value,
+    transferDate:document.getElementById("transferDate").value,
+    description:document.getElementById("description").value.trim(),
+    createdBy:localStorage.getItem("fullName")||"Admin"
+  };
+
+  if(payload.sourceWarehouseId===payload.targetWarehouseId){
+    appAlert("Kaynak depo ile hedef depo aynı olamaz.");
+    return;
+  }
+
+  try{
+    const response=await fetch("/api/warehouse-transfers",{
+      method:"POST",
+      headers:authHeaders(),
+      body:JSON.stringify(payload)
+    });
+
+    const data=await response.json();
+
+    if(!data.success){
+      appAlert(data.message||"Transfer kaydedilemedi.");
+      return;
+    }
+
+    appAlert("Transfer fişi oluşturuldu.");
+    resetTransferForm();
+    loadTransfers();
+
+  }catch(error){
+    console.error("Transfer kayıt hatası:",error);
+    appAlert("Sunucu bağlantı hatası.");
+  }
+}
+
+async function approveTransfer(id){
+  if (!(await appConfirm("Transfer onaylansın mı? Stok kaynak depodan düşüp hedef depoya eklenecek."))) return;
+
+  try{
+    const response=await fetch(`/api/warehouse-transfers/${id}/approve`,{
+      method:"PUT",
+      headers:authHeaders()
+    });
+
+    const data=await response.json();
+
+    if(!data.success){
+      appAlert(data.message||"Transfer onaylanamadı.");
+      return;
+    }
+
+    appAlert("Transfer onaylandı.");
+    loadTransfers();
+
+  }catch(error){
+    console.error("Transfer onay hatası:",error);
+    appAlert("Sunucu bağlantı hatası.");
+  }
+}
+
+async function cancelTransfer(id){
+  if (!(await appConfirm("Transfer iptal edilsin mi?"))) return;
+
+  try{
+    const response=await fetch(`/api/warehouse-transfers/${id}/cancel`,{
+      method:"PUT",
+      headers:authHeaders()
+    });
+
+    const data=await response.json();
+
+    if(!data.success){
+      appAlert(data.message||"Transfer iptal edilemedi.");
+      return;
+    }
+
+    appAlert("Transfer iptal edildi.");
+    loadTransfers();
+
+  }catch(error){
+    console.error("Transfer iptal hatası:",error);
+    appAlert("Sunucu bağlantı hatası.");
+  }
+}
+
+function resetTransferForm(){
+  document.getElementById("transferForm").reset();
+  document.getElementById("transferDate").value=new Date().toISOString().slice(0,10);
+}
+
+function clearFilters(){
+  document.getElementById("searchInput").value="";
+  document.getElementById("statusFilter").value="";
+  document.getElementById("dateFilter").value="";
+  renderTransfers();
+}
+
+document.addEventListener("DOMContentLoaded",async function(){
+  document.getElementById("transferDate").value=new Date().toISOString().slice(0,10);
+  initUser();
+  await checkPagePermission();
+  await applyRoleMenuPermissions();
+  await loadNotifications();
+  await loadWarehouses();
+  await loadStocks();
+  await loadTransfers();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2941 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anasayfa</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #172033;
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+.sidebar {
+    width: 280px;
+    background: #071428;
+    color: #fff;
+    transition: .3s;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #071428;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #2f7cff;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #4b8cff;
+}
+    .sidebar.collapsed {
+      width: 82px;
+    }
+
+    .sidebar-header {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #1464ff, #3f8cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    .logo-text h2 {
+      font-size: 21px;
+      letter-spacing: .5px;
+    }
+
+    .logo-text span {
+      color: #3f8cff;
+    }
+
+    .logo-text p {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #9ca8ba;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .sidebar.collapsed .logo-text,
+    .sidebar.collapsed .menu-title,
+    .sidebar.collapsed .menu a span,
+    .sidebar.collapsed .sidebar-footer-info {
+      display: none;
+    }
+
+    .menu {
+      padding: 22px 14px;
+    }
+
+    .menu-title {
+      color: #7f8da3;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      margin: 14px 12px 10px;
+    }
+
+    .menu a {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #c9d2e3;
+      text-decoration: none;
+      padding: 0 15px;
+      border-radius: 13px;
+      margin-bottom: 7px;
+      transition: .25s;
+      white-space: nowrap;
+    }
+
+    .menu a i {
+      width: 22px;
+      text-align: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: rgba(47,124,255,.16);
+      color: #fff;
+    }
+
+    .menu a.active {
+      border: 1px solid rgba(47,124,255,.45);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-footer i {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(47,124,255,.18);
+      color: #3f8cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer-info h4 {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-footer-info p {
+      color: #9ca8ba;
+      font-size: 12px;
+    }
+
+    .main {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      transition: .3s;
+      min-height: 100vh;
+    }
+
+    .main.expanded {
+      margin-left: 82px;
+      width: calc(100% - 82px);
+    }
+
+    .topbar {
+      height: 78px;
+      background: #fff;
+      border-bottom: 1px solid #e5eaf2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .menu-toggle {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      background: #f1f5fb;
+      color: #172033;
+      cursor: pointer;
+      font-size: 18px;
+      transition: .25s;
+    }
+
+    .menu-toggle:hover {
+      background: #e8eef7;
+    }
+
+    .page-title h1 {
+      font-size: 23px;
+      margin-bottom: 4px;
+    }
+
+    .page-title p {
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .search-box {
+      width: 320px;
+      height: 44px;
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+    }
+
+    .search-box i {
+      color: #8793a6;
+      margin-right: 10px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      border-radius: 13px;
+      cursor: pointer;
+      color: #48576b;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 16px;
+      padding: 7px 12px 7px 7px;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1464ff, #3f8cff);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .user-info h4 {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .user-info p {
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .welcome-card {
+      background:
+        linear-gradient(135deg, rgba(7,20,40,.96), rgba(16,48,95,.92)),
+        url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=1400&q=80");
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      border-radius: 24px;
+      padding: 34px;
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 26px;
+      overflow: hidden;
+    }
+
+    .welcome-card h2 {
+      font-size: 30px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-card p {
+      color: #c9d2e3;
+      max-width: 620px;
+      line-height: 1.6;
+    }
+
+    .welcome-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      height: 46px;
+      padding: 0 18px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .primary-btn {
+      background: #2f7cff;
+      color: #fff;
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.22);
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      font-weight: 700;
+      color: #16a34a;
+      background: #eaf8ef;
+      padding: 5px 8px;
+      border-radius: 999px;
+    }
+
+    .stat-change.negative {
+      color: #dc2626;
+      background: #fee2e2;
+    }
+
+    .stat-card h3 {
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .stat-card p {
+      color: #7a8799;
+      font-size: 14px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 22px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header h3 {
+      font-size: 18px;
+    }
+
+    .panel-header a {
+      color: #2f7cff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 16px 24px;
+      text-align: left;
+      border-bottom: 1px solid #edf1f7;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      color: #7a8799;
+      font-size: 12px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      background: #fbfcfe;
+    }
+
+    td {
+      color: #263548;
+    }
+
+    .status {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status.production {
+      background: #fff7e6;
+      color: #b76b00;
+    }
+
+    .status.completed {
+      background: #eaf8ef;
+      color: #15803d;
+    }
+
+    .status.waiting {
+      background: #eef5ff;
+      color: #2563eb;
+    }
+
+    .status.cancelled {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .quick-list {
+      padding: 18px;
+    }
+
+    .quick-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .quick-item:hover {
+      background: #f5f8fc;
+    }
+
+    .quick-item i {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .quick-item h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .quick-item p {
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .empty-row {
+      text-align: center;
+      color: #7a8799;
+      padding: 26px;
+    }
+
+
+    /* KPI 2.0 */
+    .kpi-2-section {
+      margin-bottom: 26px;
+    }
+
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title-row h2 {
+      font-size: 20px;
+      color: #172033;
+    }
+
+    .section-title-row p {
+      color: #7a8799;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .user-dropdown{
+    position:absolute;
+    top:72px;
+    right:28px;
+    width:240px;
+    background:#fff;
+    border:1px solid #e5eaf2;
+    border-radius:18px;
+    box-shadow:0 18px 40px rgba(0,0,0,.12);
+    display:none;
+    overflow:hidden;
+    z-index:9999;
+}
+
+.user-dropdown.show{
+    display:block;
+    animation:fadeMenu .18s ease;
+}
+
+@keyframes fadeMenu{
+    from{
+        opacity:0;
+        transform:translateY(-8px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.user-dropdown-header{
+    padding:18px;
+    border-bottom:1px solid #edf1f7;
+}
+
+.user-dropdown-header h4{
+    font-size:15px;
+    margin-bottom:4px;
+}
+
+.user-dropdown-header p{
+    font-size:12px;
+    color:#7a8799;
+}
+
+.user-dropdown a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 18px;
+    text-decoration:none;
+    color:#172033;
+    transition:.2s;
+}
+
+.user-dropdown a:hover{
+    background:#f5f8fc;
+}
+
+.user-dropdown a.logout{
+    color:#dc2626;
+}
+
+.user-dropdown a.logout:hover{
+    background:#fff1f2;
+}
+
+.user-dropdown i{
+    width:18px;
+    text-align:center;
+}
+
+    .kpi-refresh {
+      height: 40px;
+      padding: 0 14px;
+      border: 1px solid #dbe5f2;
+      background: #fff;
+      color: #2f7cff;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .kpi-refresh:hover {
+      background: #eef5ff;
+      transform: translateY(-1px);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::after {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      right: -38px;
+      top: -38px;
+      border-radius: 999px;
+      background: rgba(47,124,255,.08);
+    }
+
+    .kpi-card.warning::after {
+      background: rgba(245,158,11,.12);
+    }
+
+    .kpi-card.danger::after {
+      background: rgba(239,68,68,.12);
+    }
+
+    .kpi-card.success::after {
+      background: rgba(22,163,74,.11);
+    }
+
+    .kpi-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-size: 17px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-card.warning .kpi-icon {
+      background: #fff7e6;
+      color: #b76b00;
+    }
+
+    .kpi-card.danger .kpi-icon {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .kpi-card.success .kpi-icon {
+      background: #eaf8ef;
+      color: #15803d;
+    }
+
+    .kpi-card h3 {
+      font-size: 24px;
+      margin-bottom: 5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-card p {
+      color: #7a8799;
+      font-size: 13px;
+      line-height: 1.35;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .kpi-panel-body {
+      padding: 20px 22px;
+    }
+
+    .alert-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      border-radius: 15px;
+      background: #f8fafc;
+      border: 1px solid #edf1f7;
+    }
+
+    .alert-item i {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: #eef5ff;
+      color: #2f7cff;
+    }
+
+    .alert-item.danger i {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .alert-item.warning i {
+      background: #fff7e6;
+      color: #b76b00;
+    }
+
+    .alert-item.success i {
+      background: #eaf8ef;
+      color: #15803d;
+    }
+
+    .alert-item h4 {
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .alert-item p {
+      color: #7a8799;
+      font-size: 12px;
+    }
+
+    .stock-chart {
+      height: 210px;
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      padding-top: 12px;
+      border-bottom: 1px solid #e5eaf2;
+    }
+
+    .chart-bar-wrap {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .chart-value {
+      font-size: 11px;
+      color: #48576b;
+      font-weight: 800;
+    }
+
+    .chart-bar {
+      width: 100%;
+      max-width: 34px;
+      min-height: 8px;
+      border-radius: 10px 10px 0 0;
+      background: linear-gradient(180deg, #3f8cff, #1464ff);
+      transition: .25s;
+    }
+
+    .chart-label {
+      font-size: 11px;
+      color: #7a8799;
+      margin-bottom: 4px;
+    }
+
+    .kpi-note {
+      margin-top: 12px;
+      color: #7a8799;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1200px) {
+
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .kpi-detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box {
+        display: none;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar.collapsed {
+        width: 280px;
+      }
+
+      .main,
+      .main.expanded {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .user-info {
+        display: none;
+      }
+
+      .welcome-card {
+        flex-direction: column;
+      }
+
+      .welcome-actions {
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 560px) {
+
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .content {
+        padding: 18px;
+      }
+
+      .topbar {
+        padding: 0 18px;
+      }
+
+      .page-title p {
+        display: none;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome-card h2 {
+        font-size: 24px;
+      }
+    }
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+
+    /* UNIVERSAL SEARCH */
+    .search-box{
+      position:relative;
+      overflow:visible;
+      flex-shrink:0;
+    }
+
+    #searchResults{
+      position:absolute;
+      top:52px;
+      left:0;
+      right:0;
+      width:100%;
+      background:#fff;
+      border:1px solid #e5eaf2;
+      border-radius:16px;
+      box-shadow:0 18px 45px rgba(31,54,91,.18);
+      display:none;
+      max-height:430px;
+      overflow-y:auto;
+      z-index:99999;
+      padding:8px;
+    }
+
+    #searchResults::-webkit-scrollbar{
+      width:6px;
+    }
+
+    #searchResults::-webkit-scrollbar-track{
+      background:#f1f5fb;
+      border-radius:10px;
+    }
+
+    #searchResults::-webkit-scrollbar-thumb{
+      background:#2f7cff;
+      border-radius:10px;
+    }
+
+    .search-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      border-radius:13px;
+      cursor:pointer;
+      transition:.2s;
+      color:#172033;
+    }
+
+    .search-item:hover,
+    .search-item.active{
+      background:#f1f6ff;
+    }
+
+    .search-icon{
+      width:42px;
+      height:42px;
+      border-radius:13px;
+      background:#eef5ff;
+      color:#2f7cff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      font-size:16px;
+    }
+
+    .search-content{
+      min-width:0;
+      flex:1;
+    }
+
+    .search-title{
+      font-weight:800;
+      font-size:14px;
+      color:#172033;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .search-sub{
+      font-size:12px;
+      color:#7a8799;
+      margin-top:3px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .search-extra{
+      font-size:11px;
+      color:#9aa7ba;
+      margin-top:2px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .search-empty,
+    .search-loading{
+      padding:14px;
+      color:#7a8799;
+      font-size:13px;
+      text-align:center;
+    }
+
+    .search-error{
+      padding:14px;
+      color:#dc2626;
+      background:#fff1f2;
+      border-radius:12px;
+      font-size:13px;
+      text-align:center;
+    }
+
+
+    /* TOPBAR NOTIFICATION DROPDOWN */
+    .notification-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .notification-dropdown {
+      position: absolute;
+      top: 54px;
+      right: 0;
+      width: 390px;
+      max-width: calc(100vw - 28px);
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(31,54,91,.18);
+      display: none;
+      overflow: hidden;
+      z-index: 99999;
+    }
+
+    .notification-dropdown.show {
+      display: block;
+      animation: fadeMenu .18s ease;
+    }
+
+    .notification-dropdown-header {
+      padding: 15px 16px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fbfcfe;
+    }
+
+    .notification-dropdown-header h4 {
+      font-size: 15px;
+      margin-bottom: 3px;
+      color: #172033;
+    }
+
+    .notification-dropdown-header p {
+      font-size: 12px;
+      color: #7a8799;
+    }
+
+    .notification-dropdown-header button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid #dbe5f2;
+      background: #eef5ff;
+      color: #2f7cff;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .notification-dropdown-header button:hover {
+      background: #dbeafe;
+    }
+
+    .notification-dropdown-list {
+      max-height: 365px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .notification-dropdown-list::-webkit-scrollbar { width: 6px; }
+    .notification-dropdown-list::-webkit-scrollbar-track { background: #f1f5fb; }
+    .notification-dropdown-list::-webkit-scrollbar-thumb { background: #2f7cff; border-radius: 10px; }
+
+    .notification-mini-item {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 11px;
+      padding: 12px;
+      border: 1px solid #edf1f7;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      background: #fff;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .notification-mini-item:hover {
+      background: #f5f8fc;
+      transform: translateY(-1px);
+    }
+
+    .notification-mini-item.unread {
+      border-left: 4px solid #2f7cff;
+      background: #f4f8ff;
+    }
+
+    .notification-mini-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eef5ff;
+      color: #2563eb;
+      font-size: 15px;
+    }
+
+    .notification-mini-icon.warning { background: #fff7e6; color: #b76b00; }
+    .notification-mini-icon.danger { background: #fee2e2; color: #dc2626; }
+    .notification-mini-icon.success { background: #eaf8ef; color: #15803d; }
+    .notification-mini-icon.info { background: #eef5ff; color: #2563eb; }
+
+    .notification-mini-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #172033;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .notification-mini-message {
+      font-size: 12px;
+      color: #66758a;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .notification-mini-meta {
+      margin-top: 7px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      color: #8a95a6;
+    }
+
+    .notification-mini-pill {
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #f1f5fb;
+      color: #536176;
+      font-weight: 800;
+    }
+
+    .notification-mini-pill.unread { background: #dbeafe; color: #1d4ed8; }
+    .notification-mini-pill.read { background: #eaf8ef; color: #15803d; }
+
+    .notification-dropdown-empty,
+    .notification-dropdown-error {
+      padding: 24px 14px;
+      text-align: center;
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .notification-dropdown-error {
+      color: #dc2626;
+      background: #fff1f2;
+      border-radius: 12px;
+    }
+
+    .notification-dropdown-footer {
+      border-top: 1px solid #edf1f7;
+      padding: 11px;
+      background: #fbfcfe;
+      text-align: center;
+    }
+
+    .notification-dropdown-footer a {
+      color: #2f7cff;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    @media (max-width: 560px) {
+      .notification-dropdown {
+        right: -62px;
+        width: calc(100vw - 24px);
+      }
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+<div class="logo-icon" id="companyLogoBox">
+    <img id="companyLogo"
+         src=""
+         style="display:none;width:42px;height:42px;border-radius:13px;object-fit:cover;">
+
+    <i id="defaultLogo"
+       class="fa-solid fa-cube"></i>
+</div>
+        <div class="logo-text">
+          <h2 id="sidebarBrandName"></h2>
+          <p id="sidebarCompanyName"></p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+      </nav>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="page-title">
+            <h1>Anasayfa</h1>
+            <p>Üretim, teklif ve tahsilat süreçlerinizi takip edin.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              id="globalSearch"
+              type="text"
+              placeholder="ERP'de ara: müşteri, stok, teklif..."
+              autocomplete="off"
+            >
+            <div id="searchResults"></div>
+          </div>
+
+<div class="notification-wrapper" id="notificationWrapper">
+  <button class="icon-btn" id="notificationButton" type="button" aria-label="Bildirimleri aç">
+    <i class="fa-regular fa-bell"></i>
+    <span class="badge" id="notificationCount">0</span>
+  </button>
+
+  <div class="notification-dropdown" id="notificationDropdown">
+    <div class="notification-dropdown-header">
+      <div>
+        <h4>Bildirimler</h4>
+        <p id="notificationDropdownSub">Son bildirimler</p>
+      </div>
+      <button type="button" id="notificationMarkAllBtn">
+        <i class="fa-solid fa-check-double"></i>
+      </button>
+    </div>
+
+    <div class="notification-dropdown-list" id="notificationMiniList">
+      <div class="notification-dropdown-empty">Bildirimler yükleniyor...</div>
+    </div>
+
+    <div class="notification-dropdown-footer">
+      <a href="bildirimler.html">Tüm Bildirimleri Gör</a>
+    </div>
+  </div>
+</div>
+
+<div class="user-menu" id="userMenu">
+              <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <h4 id="topUserName">Yükleniyor...</h4>
+              <p id="topUserRole">-</p>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+
+      <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-header">
+          <h4 id="dropUserName">Yükleniyor...</h4>
+          <p id="dropUserRole">-</p>
+        </div>
+
+        <a href="ayarlar.html">
+          <i class="fa-regular fa-user"></i>
+          Profilim
+        </a>
+
+        <a href="sirketbilgileri.html">
+          <i class="fa-solid fa-building"></i>
+          Şirket Bilgileri
+        </a>
+
+        <a href="ayarlar.html">
+          <i class="fa-solid fa-gear"></i>
+          Ayarlar
+        </a>
+
+        <a href="#" class="logout" onclick="logout()">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Çıkış Yap
+        </a>
+      </div>
+
+      <section class="content">
+
+        <div class="welcome-card">
+          <div>
+            <h2>Hoş geldin, <span id="welcomeUser">-</span> 👋</h2>
+            <p>
+              ERP panelinden günlük üretim durumunu, açık teklifleri,
+              yaklaşan tahsilatları ve aktif iş emirlerini tek ekrandan yönetebilirsin.
+            </p>
+          </div>
+
+          <div class="welcome-actions">
+            <button class="primary-btn" onclick="window.location.href='teklifler.html'">
+              <i class="fa-solid fa-plus"></i> Yeni Teklif
+            </button>
+            <button class="secondary-btn" onclick="window.location.href='isemirleri.html'">
+              <i class="fa-solid fa-industry"></i> İş Emri Aç
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+              <span class="stat-change" id="customerChange">0%</span>
+            </div>
+            <h3 id="customerCount">0</h3>
+            <p>Aktif Müşteri</p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-file-signature"></i></div>
+              <span class="stat-change" id="offerChange">0%</span>
+            </div>
+            <h3 id="offerCount">0</h3>
+            <p>Açık Teklif</p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-industry"></i></div>
+              <span class="stat-change" id="workOrderChange">0%</span>
+            </div>
+            <h3 id="workOrderCount">0</h3>
+            <p>Aktif İş Emri</p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
+              <span class="stat-change" id="paymentChange">0%</span>
+            </div>
+            <h3 id="paymentTotal">₺0</h3>
+            <p>Bekleyen Tahsilat</p>
+          </div>
+        </div>
+
+
+        <div class="kpi-2-section">
+          <div class="section-title-row">
+            <div>
+              <h2>Dashboard KPI 2.0</h2>
+              <p>Üretim, stok, satın alma ve finans durumunu tek bakışta takip et.</p>
+            </div>
+            <button class="kpi-refresh" onclick="loadKpi2()">
+              <i class="fa-solid fa-rotate-right"></i> KPI Yenile
+            </button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-card success">
+              <div class="kpi-icon"><i class="fa-solid fa-calendar-day"></i></div>
+              <h3 id="todayProductionCount">0</h3>
+              <p>Bugünkü Üretim Adedi</p>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class="fa-solid fa-list-check"></i></div>
+              <h3 id="openWorkOrdersKpi">0</h3>
+              <p>Açık İş Emri</p>
+            </div>
+
+            <div class="kpi-card danger">
+              <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <h3 id="lateWorkOrdersKpi">0</h3>
+              <p>Geciken İş Emri</p>
+            </div>
+
+            <div class="kpi-card warning">
+              <div class="kpi-icon"><i class="fa-solid fa-box-open"></i></div>
+              <h3 id="criticalStockKpi">0</h3>
+              <p>Kritik Stok</p>
+            </div>
+
+            <div class="kpi-card warning">
+              <div class="kpi-icon"><i class="fa-solid fa-file-circle-plus"></i></div>
+              <h3 id="pendingPurchaseRequestsKpi">0</h3>
+              <p>Bekleyen Satın Alma Talebi</p>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+              <h3 id="pendingPurchaseOrdersKpi">0</h3>
+              <p>Onay Bekleyen Sipariş</p>
+            </div>
+
+            <div class="kpi-card success">
+              <div class="kpi-icon"><i class="fa-solid fa-chart-column"></i></div>
+              <h3 id="monthlyOfferTotalKpi">₺0</h3>
+              <p>Aylık Teklif / Satış Tutarı</p>
+            </div>
+
+            <div class="kpi-card danger">
+              <div class="kpi-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+              <h3 id="receivableTotalKpi">₺0</h3>
+              <p>Tahsilat Bekleyen Cari</p>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class="fa-solid fa-gauge-high"></i></div>
+              <h3 id="machineOccupancyKpi">0%</h3>
+              <p>Makine Doluluk Oranı</p>
+            </div>
+
+            <div class="kpi-card danger">
+              <div class="kpi-icon"><i class="fa-solid fa-recycle"></i></div>
+              <h3 id="scrapRateKpi">0%</h3>
+              <p>Hurda / Fire Oranı</p>
+            </div>
+
+            <div class="kpi-card success">
+              <div class="kpi-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+              <h3 id="maintenanceOpenKpi">0</h3>
+              <p>Açık Bakım Kaydı</p>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon"><i class="fa-solid fa-award"></i></div>
+              <h3 id="qualityFailKpi">0</h3>
+              <p>Uygunsuz Kalite Kaydı</p>
+            </div>
+          </div>
+
+          <div class="kpi-detail-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Kritik Uyarılar</h3>
+                <a href="bildirimler.html">Bildirimlere Git</a>
+              </div>
+              <div class="kpi-panel-body">
+                <div class="alert-list" id="kpiAlerts">
+                  <div class="alert-item">
+                    <i class="fa-solid fa-spinner"></i>
+                    <div>
+                      <h4>KPI verileri yükleniyor</h4>
+                      <p>Sunucudan güncel durum bilgileri alınıyor.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Son 7 Gün Stok Hareketi</h3>
+                <a href="stokhareketleri.html">Detaylar</a>
+              </div>
+              <div class="kpi-panel-body">
+                <div class="stock-chart" id="stockMovementChart">
+                  <div class="empty-row">Grafik verisi yükleniyor...</div>
+                </div>
+                <p class="kpi-note">
+                  Grafik, son 7 gündeki stok hareket kayıt sayısını gösterir. Giriş, çıkış, transfer ve sayım hareketleri dahil edilebilir.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Son İş Emirleri</h3>
+              <a href="#">Tümünü Gör</a>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>İş Emri</th>
+                    <th>Müşteri</th>
+                    <th>Parça</th>
+                    <th>Teslim Tarihi</th>
+                    <th>Durum</th>
+                  </tr>
+                </thead>
+                <tbody id="workOrdersTable">
+                  <tr>
+                    <td colspan="5" class="empty-row">Veriler yükleniyor...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Hızlı İşlemler</h3>
+              <a href="#">Kısayollar</a>
+            </div>
+
+            <div class="quick-list">
+              <div class="quick-item">
+                <i class="fa-solid fa-user-plus"></i>
+                <div>
+                  <h4>Yeni Müşteri Ekle</h4>
+                  <p>Müşteri kartı oluştur</p>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-file-circle-plus"></i>
+                <div>
+                  <h4>Teklif Oluştur</h4>
+                  <p>PDF teklif hazırlama</p>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-gears"></i>
+                <div>
+                  <h4>İş Emri Başlat</h4>
+                  <p>Üretim süreci aç</p>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-money-check-dollar"></i>
+                <div>
+                  <h4>Tahsilat Gir</h4>
+                  <p>Ödeme kaydı oluştur</p>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-bell"></i>
+                <div>
+                  <h4>Bildirimleri Gör</h4>
+                  <p>Yaklaşan işler ve uyarılar</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+
+      if (window.innerWidth <= 850) {
+        sidebar.classList.toggle("mobile-open");
+      } else {
+        sidebar.classList.toggle("collapsed");
+        main.classList.toggle("expanded");
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      const sidebar = document.getElementById("sidebar");
+      const toggle = document.querySelector(".menu-toggle");
+
+      if (
+        window.innerWidth <= 850 &&
+        sidebar.classList.contains("mobile-open") &&
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)
+      ) {
+        sidebar.classList.remove("mobile-open");
+      }
+    });
+
+    function formatMoney(value) {
+      const number = Number(value || 0);
+
+      if (number >= 1000000) {
+        return "₺" + (number / 1000000).toFixed(1).replace(".", ",") + "M";
+      }
+
+      if (number >= 1000) {
+        return "₺" + Math.round(number / 1000) + "K";
+      }
+
+      return "₺" + number.toLocaleString("tr-TR");
+    }
+
+    function authHeaders() {
+  return {
+    "Content-Type": "application/json",
+    "x-user-id": localStorage.getItem("userId") || "",
+    "x-user-name": localStorage.getItem("fullName") || "",
+    "x-user-role": localStorage.getItem("userRole") || ""
+  };
+}
+
+let topbarNotifications = [];
+
+function getNotificationRows(payload) {
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.notifications)) return payload.notifications;
+  if (Array.isArray(payload)) return payload;
+  return [];
+}
+
+function getNotificationType(item) {
+  return item.notification_type || item.type || "info";
+}
+
+function getNotificationModule(item) {
+  return item.module_key || item.module_name || item.moduleName || item.module || "Genel";
+}
+
+function getNotificationUrl(item) {
+  return item.url || item.target_url || item.targetUrl || "";
+}
+
+function getNotificationIcon(type) {
+  const icons = {
+    warning: "fa-triangle-exclamation",
+    danger: "fa-circle-exclamation",
+    success: "fa-circle-check",
+    info: "fa-circle-info"
+  };
+
+  return icons[type] || icons.info;
+}
+
+function formatNotificationDate(value) {
+  if (!value) return "-";
+
+  const date = new Date(String(value).replace(" ", "T"));
+  if (Number.isNaN(date.getTime())) return value;
+
+  return date.toLocaleString("tr-TR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+async function loadNotificationCount() {
+  try {
+    const response = await fetch("/api/notifications/count", {
+      headers: authHeaders()
+    });
+
+    const data = await response.json();
+    const count = Number(data.unreadCount ?? data.unread_count ?? 0);
+    const badge = document.getElementById("notificationCount");
+
+    if (badge) {
+      badge.textContent = count > 99 ? "99+" : count;
+      badge.style.display = count > 0 ? "flex" : "none";
+    }
+
+    return count;
+  } catch (error) {
+    console.error("Bildirim sayısı alınamadı:", error);
+    return 0;
+  }
+}
+
+async function loadNotifications() {
+  const list = document.getElementById("notificationMiniList");
+  const sub = document.getElementById("notificationDropdownSub");
+
+  if (list) {
+    list.innerHTML = `<div class="notification-dropdown-empty">Bildirimler yükleniyor...</div>`;
+  }
+
+  try {
+    const response = await fetch("/api/notifications?limit=8", {
+      headers: authHeaders()
+    });
+
+    const text = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch (jsonError) {
+      throw new Error("Bildirim API JSON dönmedi.");
+    }
+
+    if (!response.ok || data.success === false) {
+      throw new Error(data.message || "Bildirimler alınamadı.");
+    }
+
+    topbarNotifications = getNotificationRows(data);
+    await loadNotificationCount();
+    renderTopbarNotifications();
+
+    if (sub) {
+      const unread = topbarNotifications.filter(x => Number(x.is_read || x.isRead || 0) === 0).length;
+      sub.textContent = unread > 0 ? `${unread} okunmamış bildirim` : "Son bildirimler";
+    }
+  } catch (error) {
+    console.error("Bildirimler alınamadı:", error);
+
+    if (list) {
+      list.innerHTML = `<div class="notification-dropdown-error">${escapeHtml(error.message || "Bildirimler alınamadı.")}</div>`;
+    }
+  }
+}
+
+function renderTopbarNotifications() {
+  const list = document.getElementById("notificationMiniList");
+  if (!list) return;
+
+  if (!topbarNotifications.length) {
+    list.innerHTML = `<div class="notification-dropdown-empty">Bildirim yok.</div>`;
+    return;
+  }
+
+  list.innerHTML = topbarNotifications.map(item => {
+    const id = item.id;
+    const isRead = Number(item.is_read || item.isRead || 0) === 1;
+    const type = getNotificationType(item);
+    const moduleName = getNotificationModule(item);
+    const url = getNotificationUrl(item);
+    const icon = getNotificationIcon(type);
+
+    return `
+      <div class="notification-mini-item ${isRead ? "" : "unread"}" data-id="${escapeHtml(id)}" data-url="${escapeHtml(url)}">
+        <div class="notification-mini-icon ${escapeHtml(type)}">
+          <i class="fa-solid ${icon}"></i>
+        </div>
+        <div>
+          <div class="notification-mini-title">${escapeHtml(item.title || "Bildirim")}</div>
+          <div class="notification-mini-message">${escapeHtml(item.message || "")}</div>
+          <div class="notification-mini-meta">
+            <span class="notification-mini-pill">${escapeHtml(moduleName)}</span>
+            <span class="notification-mini-pill ${isRead ? "read" : "unread"}">${isRead ? "Okundu" : "Okunmadı"}</span>
+            <span><i class="fa-regular fa-clock"></i> ${escapeHtml(formatNotificationDate(item.created_at || item.createdAt))}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function markNotificationRead(id) {
+  if (!id) return;
+
+  try {
+    await fetch(`/api/notifications/${encodeURIComponent(id)}/read`, {
+      method: "PUT",
+      headers: authHeaders()
+    });
+  } catch (error) {
+    console.warn("Bildirim okundu yapılamadı:", error);
+  }
+}
+
+async function markAllTopbarNotificationsRead(event) {
+  if (event) event.stopPropagation();
+
+  try {
+    await fetch("/api/notifications/read-all", {
+      method: "PUT",
+      headers: authHeaders()
+    });
+
+    await loadNotifications();
+  } catch (error) {
+    console.error("Tüm bildirimler okundu yapılamadı:", error);
+  }
+}
+
+function initTopbarNotificationDropdown() {
+  const wrapper = document.getElementById("notificationWrapper");
+  const button = document.getElementById("notificationButton");
+  const dropdown = document.getElementById("notificationDropdown");
+  const list = document.getElementById("notificationMiniList");
+  const markAllBtn = document.getElementById("notificationMarkAllBtn");
+
+  if (!wrapper || !button || !dropdown) return;
+
+  button.addEventListener("click", async function(e) {
+    e.stopPropagation();
+    dropdown.classList.toggle("show");
+
+    if (dropdown.classList.contains("show")) {
+      await loadNotifications();
+    }
+  });
+
+  dropdown.addEventListener("click", function(e) {
+    e.stopPropagation();
+  });
+
+  markAllBtn?.addEventListener("click", markAllTopbarNotificationsRead);
+
+  list?.addEventListener("click", async function(e) {
+    const item = e.target.closest(".notification-mini-item");
+    if (!item) return;
+
+    const id = item.dataset.id;
+    const url = item.dataset.url;
+
+    await markNotificationRead(id);
+    await loadNotificationCount();
+
+    if (url) {
+      window.location.href = url;
+    } else {
+      await loadNotifications();
+    }
+  });
+
+  document.addEventListener("click", function() {
+    dropdown.classList.remove("show");
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  initTopbarNotificationDropdown();
+  loadNotificationCount();
+});
+    function formatChange(elementId, value) {
+      const el = document.getElementById(elementId);
+      const number = Number(value || 0);
+
+      el.textContent = (number > 0 ? "+" : "") + number + "%";
+
+      if (number < 0) {
+        el.classList.add("negative");
+      } else {
+        el.classList.remove("negative");
+      }
+    }
+
+    function getFirstLetter(fullName) {
+      if (!fullName) return "-";
+      return fullName.trim().charAt(0).toUpperCase();
+    }
+
+    function getFirstName(fullName) {
+      if (!fullName) return "-";
+      return fullName.trim().split(" ")[0];
+    }
+
+    function getUserProfilePhoto(userData) {
+      if (!userData) return "";
+
+      return (
+        userData.profilePhoto ||
+        userData.profile_photo ||
+        userData.photo ||
+        userData.avatarUrl ||
+        userData.avatar_url ||
+        ""
+      );
+    }
+
+    function setUserAvatar(fullName, profilePhoto) {
+      const avatar = document.getElementById("userAvatar");
+      if (!avatar) return;
+
+      const photo = String(profilePhoto || "").trim();
+
+      if (photo) {
+        avatar.innerHTML = `<img src="${photo}" alt="Kullanıcı fotoğrafı">`;
+        avatar.style.background = "#eef5ff";
+      } else {
+        avatar.textContent = getFirstLetter(fullName);
+        avatar.style.background = "linear-gradient(135deg, #1464ff, #3f8cff)";
+      }
+    }
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (user && (user.fullName || user.username)) {
+      const fullName = user.fullName || user.full_name || user.username || "-";
+
+      document.getElementById("topUserName").textContent = fullName;
+      document.getElementById("topUserRole").textContent = user.role || "-";
+      document.getElementById("welcomeUser").textContent = getFirstName(fullName);
+
+      setUserAvatar(fullName, getUserProfilePhoto(user));
+    }
+
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function formatPercent(value) {
+      const number = Number(value || 0);
+      return number.toFixed(number % 1 === 0 ? 0 : 1).replace(".", ",") + "%";
+    }
+
+    function normalizeKpiPayload(data) {
+      return data.kpi || data.data || data || {};
+    }
+
+    function renderKpiAlerts(kpi) {
+      const alerts = [];
+
+      if (Number(kpi.lateWorkOrders || 0) > 0) {
+        alerts.push({
+          type: "danger",
+          icon: "fa-triangle-exclamation",
+          title: `${kpi.lateWorkOrders} geciken iş emri var`,
+          text: "Teslim tarihi geçen iş emirlerini kontrol et."
+        });
+      }
+
+      if (Number(kpi.criticalStock || 0) > 0) {
+        alerts.push({
+          type: "warning",
+          icon: "fa-box-open",
+          title: `${kpi.criticalStock} kritik stok var`,
+          text: "Minimum stok seviyesinin altındaki malzemeler için satın alma talebi açılabilir."
+        });
+      }
+
+      if (Number(kpi.pendingPurchaseRequests || 0) > 0) {
+        alerts.push({
+          type: "warning",
+          icon: "fa-file-circle-plus",
+          title: `${kpi.pendingPurchaseRequests} bekleyen satın alma talebi var`,
+          text: "Talep onay sürecini hızlandırmak için satın alma ekranını kontrol et."
+        });
+      }
+
+      if (Number(kpi.receivableTotal || 0) > 0) {
+        alerts.push({
+          type: "danger",
+          icon: "fa-hand-holding-dollar",
+          title: `${formatMoney(kpi.receivableTotal)} tahsilat bekliyor`,
+          text: "Cari hareketlerde açık bakiye bulunan müşterileri incele."
+        });
+      }
+
+      if (alerts.length === 0) {
+        alerts.push({
+          type: "success",
+          icon: "fa-circle-check",
+          title: "Kritik uyarı yok",
+          text: "Üretim, stok, satın alma ve finans göstergeleri normal görünüyor."
+        });
+      }
+
+      document.getElementById("kpiAlerts").innerHTML = alerts.map(item => `
+        <div class="alert-item ${item.type}">
+          <i class="fa-solid ${item.icon}"></i>
+          <div>
+            <h4>${item.title}</h4>
+            <p>${item.text}</p>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderStockMovementChart(rows) {
+      const chart = document.getElementById("stockMovementChart");
+      const data = Array.isArray(rows) ? rows : [];
+
+      if (data.length === 0) {
+        chart.innerHTML = `<div class="empty-row">Son 7 gün için stok hareketi bulunmuyor.</div>`;
+        return;
+      }
+
+      const maxValue = Math.max(...data.map(x => Number(x.movementCount || x.count || 0)), 1);
+
+      chart.innerHTML = data.map(item => {
+        const value = Number(item.movementCount || item.count || 0);
+        const height = Math.max((value / maxValue) * 170, 8);
+        const rawDay = item.day || item.date || "-";
+        const label = rawDay && rawDay.includes("-") ? rawDay.split("-").slice(1).reverse().join(".") : rawDay;
+
+        return `
+          <div class="chart-bar-wrap">
+            <div class="chart-value">${value}</div>
+            <div class="chart-bar" style="height:${height}px"></div>
+            <div class="chart-label">${label}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadKpi2() {
+      try {
+        const response = await fetch("/api/dashboard/kpi-2", {
+          headers: authHeaders()
+        });
+
+        if (!response.ok) {
+          throw new Error("KPI API hatası: " + response.status);
+        }
+
+        const data = await response.json();
+        const kpi = normalizeKpiPayload(data);
+
+        setText("todayProductionCount", kpi.todayProductionCount || kpi.todayProduction || 0);
+        setText("openWorkOrdersKpi", kpi.openWorkOrders || 0);
+        setText("lateWorkOrdersKpi", kpi.lateWorkOrders || 0);
+        setText("criticalStockKpi", kpi.criticalStock || 0);
+        setText("pendingPurchaseRequestsKpi", kpi.pendingPurchaseRequests || 0);
+        setText("pendingPurchaseOrdersKpi", kpi.pendingPurchaseOrders || 0);
+        setText("monthlyOfferTotalKpi", formatMoney(kpi.monthlyOfferTotal || kpi.monthlySalesTotal || 0));
+        setText("receivableTotalKpi", formatMoney(kpi.receivableTotal || 0));
+        setText("machineOccupancyKpi", formatPercent(kpi.machineOccupancyRate || kpi.machineOccupancy || 0));
+        setText("scrapRateKpi", formatPercent(kpi.scrapRate || kpi.wasteRate || 0));
+        setText("maintenanceOpenKpi", kpi.maintenanceOpen || kpi.openMaintenanceOrders || 0);
+        setText("qualityFailKpi", kpi.qualityFailCount || kpi.nonConformingQualityCount || 0);
+
+        renderKpiAlerts(kpi);
+        renderStockMovementChart(kpi.stockMovementChart || kpi.stockMovementsLast7Days || []);
+
+      } catch (error) {
+        console.error("KPI 2.0 verileri alınamadı:", error);
+
+        const fallback = {
+          lateWorkOrders: 0,
+          criticalStock: 0,
+          pendingPurchaseRequests: 0,
+          receivableTotal: 0,
+          stockMovementChart: []
+        };
+
+        renderKpiAlerts(fallback);
+        renderStockMovementChart([]);
+
+        const alertBox = document.getElementById("kpiAlerts");
+        alertBox.innerHTML = `
+          <div class="alert-item warning">
+            <i class="fa-solid fa-wifi"></i>
+            <div>
+              <h4>KPI 2.0 endpointi bulunamadı veya cevap vermedi</h4>
+              <p>Backend tarafında /api/dashboard/kpi-2 endpointini ekleyince bu alan otomatik dolacak.</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadKpi2);
+
+async function loadCurrentUserPhoto() {
+    try {
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const userId = localStorage.getItem("userId") || storedUser.id || storedUser.userId || "";
+
+        if (!userId) return;
+
+        const response = await fetch(`/api/users/${userId}`, {
+            headers: authHeaders()
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+        const currentUser = result.user || result.data || result || {};
+        const fullName = currentUser.fullName || currentUser.full_name || storedUser.fullName || storedUser.username || "-";
+        const photo = getUserProfilePhoto(currentUser);
+
+        if (fullName && fullName !== "-") {
+            document.getElementById("topUserName").textContent = fullName;
+            document.getElementById("welcomeUser").textContent = getFirstName(fullName);
+        }
+
+        if (currentUser.role) {
+            document.getElementById("topUserRole").textContent = currentUser.role;
+        }
+
+        setUserAvatar(fullName, photo);
+
+        const updatedUser = {
+            ...storedUser,
+            ...currentUser,
+            fullName: fullName,
+            profilePhoto: photo || storedUser.profilePhoto || ""
+        };
+
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+
+    } catch (err) {
+        console.error("Kullanıcı fotoğrafı alınamadı:", err);
+    }
+}
+
+async function loadCompanyBrand() {
+    try {
+
+        const response = await fetch("/api/company-info");
+        const result = await response.json();
+
+        if (!result.success) return;
+
+        const company = result.data || {};
+
+        document.getElementById("sidebarBrandName").textContent =
+            company.brand_name || "";
+
+        document.getElementById("sidebarCompanyName").textContent =
+            company.company_name || "";
+
+        const img = document.getElementById("companyLogo");
+        const icon = document.getElementById("defaultLogo");
+
+        if (company.logo && company.logo.trim() !== "") {
+            img.src = company.logo;
+            img.style.display = "block";
+            icon.style.display = "none";
+        } else {
+            img.style.display = "none";
+            icon.style.display = "flex";
+        }
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+    async function loadDashboard() {
+      try {
+        const response = await fetch("/api/dashboard");
+
+        if (!response.ok) {
+          throw new Error("API hatası: " + response.status);
+        }
+
+        const data = await response.json();
+
+        const dashboardUser = data.user || {};
+        const dashboardFullName = dashboardUser.fullName || dashboardUser.full_name || dashboardUser.username || "-";
+        const dashboardPhoto = getUserProfilePhoto(dashboardUser) || getUserProfilePhoto(user);
+
+        document.getElementById("topUserName").textContent = dashboardFullName;
+        document.getElementById("topUserRole").textContent = dashboardUser.role || user.role || "-";
+        document.getElementById("welcomeUser").textContent = getFirstName(dashboardFullName);
+        setUserAvatar(dashboardFullName, dashboardPhoto);
+
+        if (dashboardPhoto) {
+          const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+          storedUser.profilePhoto = dashboardPhoto;
+          storedUser.fullName = dashboardFullName;
+          storedUser.role = dashboardUser.role || storedUser.role || "";
+          localStorage.setItem("user", JSON.stringify(storedUser));
+        }
+
+        loadNotificationCount();
+
+        document.getElementById("customerCount").textContent = data.stats.customers || 0;
+        document.getElementById("offerCount").textContent = data.stats.offers || 0;
+        document.getElementById("workOrderCount").textContent = data.stats.workOrders || 0;
+        document.getElementById("paymentTotal").textContent = formatMoney(data.stats.payments);
+
+        formatChange("customerChange", data.stats.customerChange);
+        formatChange("offerChange", data.stats.offerChange);
+        formatChange("workOrderChange", data.stats.workOrderChange);
+        formatChange("paymentChange", data.stats.paymentChange);
+
+        const tbody = document.getElementById("workOrdersTable");
+        tbody.innerHTML = "";
+
+        if (!data.workOrders || data.workOrders.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty-row">Henüz iş emri bulunmuyor.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        data.workOrders.forEach(order => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${order.no || "-"}</td>
+              <td>${order.customer || "-"}</td>
+              <td>${order.part || "-"}</td>
+              <td>${order.deliveryDate || "-"}</td>
+              <td>
+                <span class="status ${order.status || "waiting"}">
+                  ${order.statusText || "Beklemede"}
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+
+      } catch (error) {
+        console.error("Dashboard verileri alınamadı:", error);
+
+        document.getElementById("workOrdersTable").innerHTML = `
+          <tr>
+            <td colspan="5" class="empty-row">Veriler yüklenemedi. Sunucu bağlantısını kontrol et.</td>
+          </tr>
+        `;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadCompanyBrand();
+      await loadDashboard();
+      await loadCurrentUserPhoto();
+    });
+
+
+    /* UNIVERSAL SEARCH */
+    const globalSearchInput = document.getElementById("globalSearch");
+    const searchResultsBox = document.getElementById("searchResults");
+
+    let universalSearchTimer = null;
+    let universalSearchAbortController = null;
+    let selectedSearchIndex = -1;
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function openSearchResults() {
+      if (searchResultsBox && searchResultsBox.innerHTML.trim() !== "") {
+        searchResultsBox.style.display = "block";
+      }
+    }
+
+    function closeSearchResults() {
+      if (searchResultsBox) {
+        searchResultsBox.style.display = "none";
+      }
+      selectedSearchIndex = -1;
+    }
+
+    function setSearchMessage(html) {
+      searchResultsBox.innerHTML = html;
+      searchResultsBox.style.display = "block";
+      selectedSearchIndex = -1;
+    }
+
+    function updateSelectedSearchItem() {
+      const items = Array.from(searchResultsBox.querySelectorAll(".search-item[data-url]"));
+
+      items.forEach((item, index) => {
+        item.classList.toggle("active", index === selectedSearchIndex);
+      });
+
+      if (selectedSearchIndex >= 0 && items[selectedSearchIndex]) {
+        items[selectedSearchIndex].scrollIntoView({
+          block: "nearest"
+        });
+      }
+    }
+
+    function goSelectedSearchItem() {
+      const items = Array.from(searchResultsBox.querySelectorAll(".search-item[data-url]"));
+
+      if (selectedSearchIndex >= 0 && items[selectedSearchIndex]) {
+        const url = items[selectedSearchIndex].dataset.url;
+        if (url) window.location.href = url;
+      }
+    }
+
+    async function runUniversalSearch() {
+      const q = globalSearchInput.value.trim();
+
+      if (q.length < 2) {
+        searchResultsBox.innerHTML = "";
+        closeSearchResults();
+        return;
+      }
+
+      if (universalSearchAbortController) {
+        universalSearchAbortController.abort();
+      }
+
+      universalSearchAbortController = new AbortController();
+
+      setSearchMessage(`<div class="search-loading">Aranıyor...</div>`);
+
+      try {
+        const response = await fetch(
+          "/api/universal-search?q=" + encodeURIComponent(q),
+          {
+            headers: authHeaders(),
+            signal: universalSearchAbortController.signal
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Arama API hatası: " + response.status);
+        }
+
+        const json = await response.json();
+        const rows = Array.isArray(json.data) ? json.data : [];
+
+        if (!json.success || rows.length === 0) {
+          setSearchMessage(`<div class="search-empty">Sonuç bulunamadı.</div>`);
+          return;
+        }
+
+        searchResultsBox.innerHTML = rows.map(item => {
+          const url = escapeHtml(item.url || "#");
+          const icon = escapeHtml(item.icon || "fa-magnifying-glass");
+          const title = escapeHtml(item.title || "-");
+          const type = escapeHtml(item.type || "Kayıt");
+          const subtitle = escapeHtml(item.subtitle || "");
+          const extra = escapeHtml(item.extra || "");
+
+          return `
+            <div class="search-item" data-url="${url}">
+              <div class="search-icon">
+                <i class="fa-solid ${icon}"></i>
+              </div>
+              <div class="search-content">
+                <div class="search-title">${title}</div>
+                <div class="search-sub">${type}${subtitle ? " • " + subtitle : ""}</div>
+                ${extra ? `<div class="search-extra">${extra}</div>` : ""}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        selectedSearchIndex = -1;
+        searchResultsBox.style.display = "block";
+
+      } catch (error) {
+        if (error.name === "AbortError") return;
+
+        console.error("Universal Search hatası:", error);
+
+        setSearchMessage(`
+          <div class="search-error">
+            Arama sırasında hata oluştu. Backend endpointini kontrol et.
+          </div>
+        `);
+      }
+    }
+
+    if (globalSearchInput && searchResultsBox) {
+      globalSearchInput.addEventListener("input", function () {
+        clearTimeout(universalSearchTimer);
+
+        const q = this.value.trim();
+
+        if (q.length < 2) {
+          searchResultsBox.innerHTML = "";
+          closeSearchResults();
+          return;
+        }
+
+        universalSearchTimer = setTimeout(runUniversalSearch, 250);
+      });
+
+      globalSearchInput.addEventListener("focus", openSearchResults);
+
+      globalSearchInput.addEventListener("keydown", function (e) {
+        const items = Array.from(searchResultsBox.querySelectorAll(".search-item[data-url]"));
+
+        if (e.key === "Escape") {
+          closeSearchResults();
+          return;
+        }
+
+        if (e.key === "ArrowDown" && items.length > 0) {
+          e.preventDefault();
+          selectedSearchIndex = Math.min(selectedSearchIndex + 1, items.length - 1);
+          updateSelectedSearchItem();
+          return;
+        }
+
+        if (e.key === "ArrowUp" && items.length > 0) {
+          e.preventDefault();
+          selectedSearchIndex = Math.max(selectedSearchIndex - 1, 0);
+          updateSelectedSearchItem();
+          return;
+        }
+
+        if (e.key === "Enter") {
+          if (selectedSearchIndex >= 0) {
+            e.preventDefault();
+            goSelectedSearchItem();
+          } else if (items.length === 1) {
+            e.preventDefault();
+            window.location.href = items[0].dataset.url;
+          }
+        }
+      });
+
+      searchResultsBox.addEventListener("click", function (e) {
+        const item = e.target.closest(".search-item[data-url]");
+        if (!item) return;
+
+        const url = item.dataset.url;
+        if (url) window.location.href = url;
+      });
+
+      document.addEventListener("click", function (e) {
+        if (!e.target.closest(".search-box")) {
+          closeSearchResults();
+        }
+      });
+    }
+
+    const userMenu = document.getElementById("userMenu");
+    const userDropdown = document.getElementById("userDropdown");
+
+    if (userMenu && userDropdown) {
+      userMenu.addEventListener("click", function(e){
+        e.stopPropagation();
+
+        userDropdown.classList.toggle("show");
+
+        document.getElementById("dropUserName").textContent =
+          document.getElementById("topUserName").textContent;
+
+        document.getElementById("dropUserRole").textContent =
+          document.getElementById("topUserRole").textContent;
+      });
+
+      userDropdown.addEventListener("click", function(e){
+        e.stopPropagation();
+      });
+
+      document.addEventListener("click", function(){
+        userDropdown.classList.remove("show");
+      });
+    }
+
+function logout(){
+
+    localStorage.clear();
+
+    window.location.href="giris.html";
+
+}
+
+
+  </script>
+<!-- <script>
+async function checkPagePermission() {
+
+    const user =
+        JSON.parse(localStorage.getItem("user") || "{}");
+
+    const roleKey =
+        user.role || localStorage.getItem("userRole");
+
+    if (!roleKey) {
+        window.location.href = "giris.html";
+        return;
+    }
+
+    if (roleKey === "superadmin") {
+        return;
+    }
+
+    const currentPage =
+        "/" +
+        window.location.pathname.split("/").pop();
+
+    const response = await fetch(
+        `/api/auth/can-access?roleKey=${roleKey}&pageUrl=${currentPage}`
+    );
+
+    const data = await response.json();
+
+    if (!data.canAccess) {
+
+        appAlert(
+            "Bu sayfaya erişim yetkiniz bulunmamaktadır."
+        );
+
+        window.location.href = "anasayfa.html";
+    }
+}
+
+checkPagePermission();
+</script> -->
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+  <script>
+    
+  </script>
+</body>
+</html>

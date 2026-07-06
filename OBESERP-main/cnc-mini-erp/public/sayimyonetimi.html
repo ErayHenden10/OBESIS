@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBES ERP - Sayım Yönetimi</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+body{background:#f4f7fb;color:#172033;overflow-x:hidden}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto}
+.sidebar.collapsed{width:82px}
+.sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}.logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba}
+.sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+.menu{padding:22px 14px 120px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+.menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+.menu a i{width:22px;text-align:center}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+.sidebar-footer{position:fixed;left:14px;bottom:18px;width:252px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;gap:12px}
+.sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+.sidebar-footer-info h4{font-size:13px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+.main{margin-left:280px;width:calc(100% - 280px);transition:.3s}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+.topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-left,.topbar-right{display:flex;align-items:center;gap:18px}
+.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer;font-size:18px}
+.page-title h1{font-size:23px}.page-title p{color:#7a8799;font-size:13px}
+.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;position:relative}
+.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.user-info h4{font-size:13px}.user-info p{font-size:12px;color:#7a8799}
+.content{padding:28px}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+.summary-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:22px;box-shadow:0 12px 32px rgba(31,54,91,.06)}
+.summary-icon{width:48px;height:48px;border-radius:15px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px}
+.summary-card h3{font-size:28px;margin-bottom:6px}.summary-card p{color:#7a8799;font-size:14px}
+.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden;margin-bottom:22px}
+.panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.panel-actions{display:flex;gap:10px;flex-wrap:wrap}
+.primary-btn,.secondary-btn,.danger-btn{min-height:42px;padding:0 16px;border-radius:12px;border:none;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.primary-btn{background:#2f7cff;color:#fff}.secondary-btn{background:#f1f5fb;color:#172033;border:1px solid #e2e8f2}.danger-btn{background:#fee2e2;color:#b91c1c}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:15px 20px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}
+th{color:#7a8799;font-size:12px;text-transform:uppercase;background:#fbfcfe}.empty-row{text-align:center;color:#7a8799;padding:30px}
+.status{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}.draft{background:#eef5ff;color:#2563eb}.approved{background:#eaf8ef;color:#15803d}
+.small-btn{height:35px;padding:0 11px;border-radius:10px;border:1px solid #e2e8f2;background:#fff;cursor:pointer;font-weight:700;color:#48576b}.small-btn.blue{background:#2f7cff;color:#fff}.small-btn.green{background:#16a34a;color:#fff}.small-btn.red{background:#fee2e2;color:#b91c1c}
+.modal-overlay{position:fixed;inset:0;background:rgba(7,20,40,.58);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}.modal-overlay.show{display:flex}
+.modal{width:100%;max-width:760px;background:#fff;border-radius:24px;overflow:hidden}.modal.large{max-width:1100px}
+.modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;justify-content:space-between;align-items:center}.modal-body{padding:24px}.modal-footer{padding:18px 24px;border-top:1px solid #edf1f7;display:flex;justify-content:flex-end;gap:10px}
+.modal-close{width:38px;height:38px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-group{display:flex;flex-direction:column;gap:8px}.form-group.full{grid-column:1/-1}
+.form-group label{font-size:13px;font-weight:800;color:#48576b}.form-group input,.form-group select,.form-group textarea{border:1px solid #dbe5f2;border-radius:13px;padding:12px;outline:none}.form-group textarea{min-height:90px}
+@media(max-width:1200px){.summary-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}}@media(max-width:560px){.content{padding:18px}.summary-grid,.form-grid{grid-template-columns:1fr}.panel-header{flex-direction:column;align-items:flex-start}}
+/* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div><div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div></div>
+  <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer"><i class="fa-solid fa-shield-halved"></i><div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div></div>
+      </nav>
+</aside>
+
+<main class="main" id="main">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="page-title"><h1>Sayım Yönetimi</h1><p>ERP stok ile fiziksel stok farklarını yönetin.</p></div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="window.location.href='bildirimler.html'"><i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span></button>
+    <div class="user-menu"><div class="avatar" id="userAvatar">-</div><div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div></div>
+  </div>
+</header>
+
+<section class="content">
+  <div class="summary-grid">
+    <div class="summary-card"><div class="summary-icon"><i class="fa-solid fa-clipboard-list"></i></div><h3 id="totalCounts">0</h3><p>Toplam Sayım</p></div>
+    <div class="summary-card"><div class="summary-icon"><i class="fa-solid fa-pen-ruler"></i></div><h3 id="draftCounts">0</h3><p>Taslak Sayım</p></div>
+    <div class="summary-card"><div class="summary-icon"><i class="fa-solid fa-circle-check"></i></div><h3 id="approvedCounts">0</h3><p>Onaylı Sayım</p></div>
+    <div class="summary-card"><div class="summary-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 id="diffCounts">0</h3><p>Farklı Sayım</p></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3>Sayım Fişleri</h3>
+      <div class="panel-actions">
+        <button class="secondary-btn" onclick="loadStockCounts()"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
+        <button class="primary-btn" onclick="openCreateModal()"><i class="fa-solid fa-plus"></i> Sayım Fişi Oluştur</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Sayım No</th><th>Tarih</th><th>Durum</th><th>Satır</th><th>Fark</th><th>Oluşturan</th><th>İşlem</th></tr></thead>
+        <tbody id="countsTable"><tr><td colspan="7" class="empty-row">Sayım fişleri yükleniyor...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal-overlay" id="createModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Sayım Fişi Oluştur</h3><button class="modal-close" onclick="closeCreateModal()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Depo ID</label><input type="number" id="warehouse_id" placeholder="Boş bırakılabilir"></div>
+        <div class="form-group full"><label>Açıklama</label><textarea id="description" placeholder="Örn: Haziran ayı genel stok sayımı"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="secondary-btn" onclick="closeCreateModal()">Vazgeç</button><button class="primary-btn" onclick="createStockCount()">Oluştur</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal large">
+    <div class="modal-header"><h3 id="detailTitle">Sayım Detayı</h3><button class="modal-close" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="panel-actions" style="margin-bottom:16px">
+        <select id="stockSelect" style="height:42px;border:1px solid #dbe5f2;border-radius:12px;padding:0 12px;min-width:280px"></select>
+        <button class="primary-btn" onclick="addStockLine()"><i class="fa-solid fa-plus"></i> Stok Ekle</button>
+        <button class="secondary-btn" onclick="loadDetail(currentCountId)"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Stok Kodu</th><th>Parça</th><th>Birim</th><th>ERP Miktar</th><th>Sayılan</th><th>Fark</th><th>İşlem</th></tr></thead>
+          <tbody id="linesTable"><tr><td colspan="7" class="empty-row">Satırlar yükleniyor...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-btn" onclick="closeDetailModal()">Kapat</button>
+      <button class="primary-btn" id="approveBtn" onclick="approveStockCount()"><i class="fa-solid fa-check"></i> Sayımı Onayla</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let stockCounts = [];
+let currentCountId = null;
+let currentCountStatus = null;
+
+function toggleSidebar(){
+  const sidebar=document.getElementById("sidebar");
+  const main=document.getElementById("main");
+  if(window.innerWidth<=850){sidebar.classList.toggle("mobile-open")}
+  else{sidebar.classList.toggle("collapsed");main.classList.toggle("expanded")}
+}
+
+function authHeaders(){
+  return {
+    "Content-Type":"application/json",
+    "x-user-id":localStorage.getItem("userId") || "",
+    "x-user-name":localStorage.getItem("fullName") || "",
+    "x-user-role":localStorage.getItem("userRole") || ""
+  };
+}
+
+function setUserInfo(){
+  const user=JSON.parse(localStorage.getItem("user") || "{}");
+  const fullName=user.fullName || localStorage.getItem("fullName") || "Kullanıcı";
+  const role=user.role || localStorage.getItem("userRole") || "-";
+  document.getElementById("topUserName").textContent=fullName;
+  document.getElementById("topUserRole").textContent=role;
+  document.getElementById("userAvatar").textContent=fullName.charAt(0).toUpperCase();
+}
+
+function formatDate(v){
+  if(!v) return "-";
+  const d=new Date(String(v).replace(" ","T"));
+  if(isNaN(d.getTime())) return v;
+  return d.toLocaleDateString("tr-TR")+" "+d.toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});
+}
+
+function statusClass(status){return status==="Onaylandı" ? "approved" : "draft"}
+
+async function loadNotificationsCount(){
+  try{
+    const r=await fetch("/api/notifications",{headers:authHeaders()});
+    const d=await r.json();
+    document.getElementById("notificationCount").textContent=d.unreadCount || 0;
+  }catch(e){}
+}
+
+async function loadStockCounts(){
+  const tbody=document.getElementById("countsTable");
+  try{
+    const r=await fetch("/api/stock-counts",{headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Sayım fişleri alınamadı");
+    stockCounts=d.stockCounts || [];
+    renderCounts();
+    updateSummary();
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-row">${e.message}</td></tr>`;
+  }
+}
+
+function updateSummary(){
+  document.getElementById("totalCounts").textContent=stockCounts.length;
+  document.getElementById("draftCounts").textContent=stockCounts.filter(x=>x.status!=="Onaylandı").length;
+  document.getElementById("approvedCounts").textContent=stockCounts.filter(x=>x.status==="Onaylandı").length;
+  document.getElementById("diffCounts").textContent=stockCounts.filter(x=>Number(x.total_difference || 0)!==0).length;
+}
+
+function renderCounts(){
+  const tbody=document.getElementById("countsTable");
+  if(!stockCounts.length){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-row">Henüz sayım fişi yok.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML=stockCounts.map(x=>`
+    <tr>
+      <td><b>${x.count_no || "-"}</b></td>
+      <td>${formatDate(x.created_at)}</td>
+      <td><span class="status ${statusClass(x.status)}">${x.status || "Taslak"}</span></td>
+      <td>${x.line_count || 0}</td>
+      <td>${Number(x.total_difference || 0)}</td>
+      <td>${x.created_by || "-"}</td>
+      <td>
+        <button class="small-btn blue" onclick="openDetail(${x.id})">Detay</button>
+        ${x.status!=="Onaylandı" ? `<button class="small-btn red" onclick="deleteStockCount(${x.id})">Sil</button>` : ""}
+      </td>
+    </tr>
+  `).join("");
+}
+
+function openCreateModal(){document.getElementById("createModal").classList.add("show")}
+function closeCreateModal(){document.getElementById("createModal").classList.remove("show")}
+
+async function createStockCount(){
+  try{
+    const r=await fetch("/api/stock-counts",{
+      method:"POST",
+      headers:authHeaders(),
+      body:JSON.stringify({
+        warehouse_id:document.getElementById("warehouse_id").value || null,
+        description:document.getElementById("description").value || null
+      })
+    });
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Sayım oluşturulamadı");
+    closeCreateModal();
+    await loadStockCounts();
+    openDetail(d.id);
+  }catch(e){appAlert(e.message)}
+}
+
+async function openDetail(id){
+  currentCountId=id;
+  document.getElementById("detailModal").classList.add("show");
+  await loadStocks();
+  await loadDetail(id);
+}
+
+function closeDetailModal(){
+  document.getElementById("detailModal").classList.remove("show");
+  currentCountId=null;
+}
+
+async function loadStocks(){
+  const select=document.getElementById("stockSelect");
+  try{
+    const r=await fetch("/api/stocks",{headers:authHeaders()});
+    const d=await r.json();
+    const rows=d.stocks || d.data || [];
+    select.innerHTML=`<option value="">Stok seçiniz</option>`;
+    rows.forEach(s=>{
+      select.innerHTML+=`<option value="${s.id}">${s.stock_code || s.code || "-"} - ${s.part_name || s.name || ""}</option>`;
+    });
+  }catch(e){
+    select.innerHTML=`<option value="">Stoklar alınamadı</option>`;
+  }
+}
+
+async function loadDetail(id){
+  const tbody=document.getElementById("linesTable");
+  try{
+    const r=await fetch(`/api/stock-counts/${id}`,{headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Sayım detayı alınamadı");
+
+    currentCountStatus=d.stockCount.status;
+    document.getElementById("detailTitle").textContent=`Sayım Detayı - ${d.stockCount.count_no}`;
+    document.getElementById("approveBtn").style.display=currentCountStatus==="Onaylandı" ? "none" : "inline-flex";
+
+    const lines=d.lines || [];
+    if(!lines.length){
+      tbody.innerHTML=`<tr><td colspan="7" class="empty-row">Henüz satır yok. Yukarıdan stok ekleyebilirsin.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML=lines.map(line=>`
+      <tr>
+        <td>${line.stock_code || "-"}</td>
+        <td>${line.part_name || "-"}</td>
+        <td>${line.unit || "-"}</td>
+        <td>${Number(line.erp_quantity || 0)}</td>
+        <td>
+          ${currentCountStatus==="Onaylandı"
+            ? Number(line.counted_quantity || 0)
+            : `<input type="number" id="counted_${line.id}" value="${Number(line.counted_quantity || 0)}" style="width:110px;padding:8px;border:1px solid #dbe5f2;border-radius:10px">`
+          }
+        </td>
+        <td>${Number(line.difference_quantity || 0)}</td>
+        <td>
+          ${currentCountStatus==="Onaylandı" ? "-" : `
+            <button class="small-btn green" onclick="updateLine(${line.id})">Kaydet</button>
+            <button class="small-btn red" onclick="deleteLine(${line.id})">Sil</button>
+          `}
+        </td>
+      </tr>
+    `).join("");
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-row">${e.message}</td></tr>`;
+  }
+}
+
+async function addStockLine(){
+  const stockId=document.getElementById("stockSelect").value;
+  if(!stockId){appAlert("Stok seçmelisin.");return;}
+
+  try{
+    const r=await fetch(`/api/stock-counts/${currentCountId}/lines/add-stock`,{
+      method:"POST",
+      headers:authHeaders(),
+      body:JSON.stringify({stock_id:stockId})
+    });
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Stok eklenemedi");
+    await loadDetail(currentCountId);
+  }catch(e){appAlert(e.message)}
+}
+
+async function updateLine(id){
+  const qty=document.getElementById(`counted_${id}`).value;
+  try{
+    const r=await fetch(`/api/stock-count-lines/${id}`,{
+      method:"PUT",
+      headers:authHeaders(),
+      body:JSON.stringify({counted_quantity:qty})
+    });
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Satır güncellenemedi");
+    await loadDetail(currentCountId);
+    await loadStockCounts();
+  }catch(e){appAlert(e.message)}
+}
+
+async function deleteLine(id){
+  if (!(await appConfirm("Satırı silmek istiyor musun?"))) return;
+  try{
+    const r=await fetch(`/api/stock-count-lines/${id}`,{method:"DELETE",headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Satır silinemedi");
+    await loadDetail(currentCountId);
+    await loadStockCounts();
+  }catch(e){appAlert(e.message)}
+}
+
+async function approveStockCount(){
+  if (!(await appConfirm("Sayım onaylanınca stok miktarları güncellenecek. Emin misin?"))) return;
+  try{
+    const r=await fetch(`/api/stock-counts/${currentCountId}/approve`,{method:"PUT",headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Sayım onaylanamadı");
+    appAlert("Sayım onaylandı.");
+    closeDetailModal();
+    await loadStockCounts();
+  }catch(e){appAlert(e.message)}
+}
+
+async function deleteStockCount(id){
+  if (!(await appConfirm("Sayım fişini silmek istiyor musun?"))) return;
+  try{
+    const r=await fetch(`/api/stock-counts/${id}`,{method:"DELETE",headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Sayım silinemedi");
+    await loadStockCounts();
+  }catch(e){appAlert(e.message)}
+}
+
+document.addEventListener("DOMContentLoaded", async ()=>{
+  setUserInfo();
+  await loadNotificationsCount();
+  await loadStockCounts();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

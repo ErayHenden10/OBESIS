@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>OBES ERP - Makine Bakım</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow:hidden}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer;font-size:18px}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}
+    .page-head{background:#fff;border:1px solid #e5eaf2;border-radius:22px;padding:24px;box-shadow:0 12px 32px rgba(31,54,91,.06);display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:16px}
+    .page-head h2{font-size:24px;margin-bottom:6px}.page-head p{color:#7a8799;font-size:14px}
+    .head-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .primary-btn{height:46px;padding:0 18px;border-radius:12px;border:none;background:#2f7cff;color:#fff;font-weight:700;cursor:pointer}
+    .secondary-btn{height:44px;padding:0 16px;border-radius:12px;border:1px solid #dce3ee;background:#fff;font-weight:700;cursor:pointer}
+    .danger-btn{height:44px;padding:0 16px;border-radius:12px;border:none;background:#dc2626;color:#fff;font-weight:700;cursor:pointer}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+    .stat-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:18px;box-shadow:0 12px 32px rgba(31,54,91,.05);display:flex;align-items:center;gap:14px}
+    .stat-icon{width:46px;height:46px;border-radius:14px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;font-size:18px}.stat-info h3{font-size:22px}.stat-info p{font-size:13px;color:#7a8799;margin-top:3px}
+    .filter-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:18px;margin-bottom:20px;display:grid;grid-template-columns:1fr 220px 220px 160px;gap:14px;box-shadow:0 12px 32px rgba(31,54,91,.05)}
+    .input{height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;font-size:14px;width:100%}
+    textarea.input{height:92px;padding:12px;resize:vertical}
+    .input:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden;margin-bottom:20px}
+    .panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:16px 24px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}
+    th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}td{color:#263548}
+    .status{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+    .active{background:#eaf8ef;color:#15803d}.passive{background:#fee2e2;color:#dc2626}.maintenance{background:#fff7e6;color:#b76b00}.critical{background:#fee2e2;color:#dc2626}.planned{background:#eef5ff;color:#2f7cff}.completed{background:#eaf8ef;color:#15803d}.open{background:#fff7e6;color:#b76b00}
+    .action-btn{width:34px;height:34px;border:none;border-radius:10px;background:#eef5ff;color:#2f7cff;cursor:pointer;margin-right:6px}.action-btn.danger{background:#fee2e2;color:#dc2626}.action-btn.success{background:#eaf8ef;color:#15803d}.action-btn.warning{background:#fff7e6;color:#b76b00}
+
+    .panel,.stat-card,.page-head,.filter-card{content-visibility:auto;contain-intrinsic-size:1px 260px}
+    tbody tr{contain:layout paint}
+    .action-btn,.primary-btn,.secondary-btn,.danger-btn,.menu-toggle,.icon-btn{touch-action:manipulation}
+    .empty-row{text-align:center;color:#7a8799;padding:26px}
+    .modal{position:fixed;inset:0;background:rgba(7,20,40,.55);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+    .modal.show{display:flex}.modal-card{width:100%;max-width:980px;max-height:92vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}
+    .small-modal{max-width:720px}.modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between}.modal-header h3{font-size:20px}
+    .close-btn{width:38px;height:38px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+    .modal-body{padding:24px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}.full{grid-column:1 / -1}
+    .modal-footer{padding:18px 24px;border-top:1px solid #edf1f7;display:flex;justify-content:flex-end;gap:10px}
+    .history-box{margin-top:18px;border:1px solid #edf1f7;border-radius:16px;overflow:hidden}.history-title{padding:14px 16px;background:#fbfcfe;font-weight:800;color:#172033;border-bottom:1px solid #edf1f7}.history-list{max-height:240px;overflow:auto}.history-item{padding:14px 16px;border-bottom:1px solid #edf1f7}.history-item:last-child{border-bottom:none}.history-item h4{font-size:14px;margin-bottom:5px}.history-item p{font-size:13px;color:#7a8799;line-height:1.45}
+    @media(max-width:1050px){.stats-grid{grid-template-columns:repeat(2,1fr)}.filter-card{grid-template-columns:1fr 1fr}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.page-head{flex-direction:column;align-items:flex-start}.filter-card,.stats-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1" defer></script>
+  <script src="module-reports.js?v=1" defer></script>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+      <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+    </div>
+
+    <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+    </div>
+      </nav>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title">
+          <h1>Makine Bakım</h1>
+          <p>Makine kartları, bakım emirleri ve periyodik bakım takibi.</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge" id="criticalBadge">0</span></button>
+        <div class="user-menu">
+          <div class="avatar" id="userAvatar">-</div>
+          <div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h2>Makine Bakım Yönetimi</h2>
+          <p>Makine durumlarını izle, bakım emri oluştur, bakım geçmişini takip et.</p>
+        </div>
+        <div class="head-actions">
+          <button class="secondary-btn" onclick="openMaintenanceModal()"><i class="fa-solid fa-clipboard-list"></i> Bakım Emri</button>
+          <button class="primary-btn" onclick="openMachineModal()"><i class="fa-solid fa-plus"></i> Yeni Makine</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-industry"></i></div><div class="stat-info"><h3 id="totalMachines">0</h3><p>Toplam Makine</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div><div class="stat-info"><h3 id="activeMachines">0</h3><p>Aktif Makine</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="stat-info"><h3 id="maintenanceDue">0</h3><p>Bakımı Gelen</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-clipboard-list"></i></div><div class="stat-info"><h3 id="openOrders">0</h3><p>Açık Bakım Emri</p></div></div>
+      </div>
+
+      <div class="filter-card">
+        <input class="input" id="searchInput" placeholder="Makine kodu, adı, lokasyon ara..." oninput="filterMachines()">
+        <select class="input" id="statusFilter" onchange="filterMachines()">
+          <option value="">Tüm Durumlar</option>
+          <option value="active">Aktif</option>
+          <option value="maintenance">Bakımda</option>
+          <option value="passive">Pasif</option>
+          <option value="critical">Bakımı Gelen</option>
+        </select>
+        <select class="input" id="typeFilter" onchange="filterMachines()">
+          <option value="">Tüm Makine Tipleri</option>
+          <option value="OBES Torna">OBES Torna</option>
+          <option value="OBES Freze">OBES Freze</option>
+          <option value="Manuel Torna">Manuel Torna</option>
+          <option value="Taşlama">Taşlama</option>
+          <option value="Pres">Pres</option>
+          <option value="Diğer">Diğer</option>
+        </select>
+        <button class="primary-btn" onclick="loadMachines()">Yenile</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Makine Listesi</h3>
+          <span id="machineTotal">0 kayıt</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Makine Kodu</th>
+                <th>Makine Adı</th>
+                <th>Tip</th>
+                <th>Lokasyon</th>
+                <th>Son Bakım</th>
+                <th>Sonraki Bakım</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="machinesTable">
+              <tr><td colspan="8" class="empty-row">Veriler yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Açık Bakım Emirleri</h3>
+          <span id="orderTotal">0 kayıt</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Emir No</th>
+                <th>Makine</th>
+                <th>Bakım Tipi</th>
+                <th>Planlanan Tarih</th>
+                <th>Sorumlu</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable">
+              <tr><td colspan="7" class="empty-row">Veriler yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="machineModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="machineModalTitle">Yeni Makine Oluştur</h3>
+      <button class="close-btn" onclick="closeMachineModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <form onsubmit="saveMachine(event)">
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Makine Kodu *</label>
+            <input class="input" id="machineCode" required placeholder="MKN-0001">
+          </div>
+
+          <div class="form-group">
+            <label>Makine Adı *</label>
+            <input class="input" id="machineName" required placeholder="Örn: OBES Torna 1">
+          </div>
+
+          <div class="form-group">
+            <label>Makine Tipi</label>
+            <select class="input" id="machineType">
+              <option value="OBES Torna">OBES Torna</option>
+              <option value="OBES Freze">OBES Freze</option>
+              <option value="Manuel Torna">Manuel Torna</option>
+              <option value="Taşlama">Taşlama</option>
+              <option value="Pres">Pres</option>
+              <option value="Diğer">Diğer</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Lokasyon</label>
+            <input class="input" id="location" placeholder="Örn: Üretim Alanı A">
+          </div>
+
+          <div class="form-group">
+            <label>Seri No</label>
+            <input class="input" id="serialNo" placeholder="Seri numarası">
+          </div>
+
+          <div class="form-group">
+            <label>Marka / Model</label>
+            <input class="input" id="brandModel" placeholder="Örn: Mazak QT-200">
+          </div>
+
+          <div class="form-group">
+            <label>Son Bakım Tarihi</label>
+            <input class="input" id="lastMaintenanceDate" type="date">
+          </div>
+
+          <div class="form-group">
+            <label>Sonraki Bakım Tarihi</label>
+            <input class="input" id="nextMaintenanceDate" type="date">
+          </div>
+
+          <div class="form-group">
+            <label>Durum</label>
+            <select class="input" id="machineStatus">
+              <option value="active">Aktif</option>
+              <option value="maintenance">Bakımda</option>
+              <option value="passive">Pasif</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Sorumlu Personel</label>
+            <input class="input" id="responsible" placeholder="Örn: Ahmet Yılmaz">
+          </div>
+
+          <div class="form-group full">
+            <label>Açıklama</label>
+            <textarea class="input" id="description" placeholder="Makine açıklaması..."></textarea>
+          </div>
+        </div>
+
+        <div class="history-box" id="historyBox" style="display:none;">
+          <div class="history-title">Bakım Geçmişi</div>
+          <div class="history-list" id="historyList"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="secondary-btn" onclick="closeMachineModal()">Vazgeç</button>
+        <button type="submit" class="primary-btn">Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="maintenanceModal">
+  <div class="modal-card small-modal">
+    <div class="modal-header">
+      <h3 id="maintenanceModalTitle">Bakım Emri Oluştur</h3>
+      <button class="close-btn" onclick="closeMaintenanceModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <form onsubmit="saveMaintenanceOrder(event)">
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Emir No *</label>
+            <input class="input" id="orderNo" required placeholder="BKM-0001">
+          </div>
+
+          <div class="form-group">
+            <label>Makine *</label>
+            <select class="input" id="orderMachineId" required></select>
+          </div>
+
+          <div class="form-group">
+            <label>Bakım Tipi</label>
+            <select class="input" id="maintenanceType">
+              <option value="Periyodik Bakım">Periyodik Bakım</option>
+              <option value="Arıza Bakımı">Arıza Bakımı</option>
+              <option value="Yağlama">Yağlama</option>
+              <option value="Kontrol">Kontrol</option>
+              <option value="Parça Değişimi">Parça Değişimi</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Planlanan Tarih</label>
+            <input class="input" id="plannedDate" type="date">
+          </div>
+
+          <div class="form-group">
+            <label>Sorumlu</label>
+            <input class="input" id="orderResponsible" placeholder="Bakımı yapacak kişi">
+          </div>
+
+          <div class="form-group">
+            <label>Durum</label>
+            <select class="input" id="orderStatus">
+              <option value="open">Açık</option>
+              <option value="planned">Planlandı</option>
+              <option value="completed">Tamamlandı</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label>Yapılacak İşlem / Not</label>
+            <textarea class="input" id="orderNote" placeholder="Bakımda yapılacak işlemler..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="secondary-btn" onclick="closeMaintenanceModal()">Vazgeç</button>
+        <button type="submit" class="primary-btn">Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let machines = [];
+  let maintenanceOrders = [];
+  let editingMachineId = null;
+  let editingOrderId = null;
+  let machineMap = new Map();
+  let filterTimer = null;
+
+  const qs = (id) => document.getElementById(id);
+  const safeAlert = (msg) => typeof appAlert === "function" ? appAlert(msg) : alert(msg);
+  const safeConfirm = (msg) => typeof appConfirm === "function" ? appConfirm(msg) : Promise.resolve(confirm(msg));
+  const safePrompt = (msg, val) => typeof appPrompt === "function" ? appPrompt(msg, val) : Promise.resolve(prompt(msg, val));
+
+  const dom = {};
+  function bindDom() {
+    [
+      "sidebar", "main", "criticalBadge", "topUserName", "topUserRole", "userAvatar",
+      "totalMachines", "activeMachines", "maintenanceDue", "openOrders",
+      "searchInput", "statusFilter", "typeFilter", "machinesTable", "ordersTable",
+      "machineTotal", "orderTotal", "orderMachineId", "machineModal", "maintenanceModal",
+      "machineModalTitle", "maintenanceModalTitle", "historyBox", "historyList"
+    ].forEach(id => dom[id] = qs(id));
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function toggleSidebar() {
+    if (window.innerWidth <= 850) dom.sidebar.classList.toggle("mobile-open");
+    else {
+      dom.sidebar.classList.toggle("collapsed");
+      dom.main.classList.toggle("expanded");
+    }
+  }
+
+  function loadUserInfo() {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user) {
+      window.location.href = "giris.html";
+      return;
+    }
+
+    const displayName = user.fullName || user.username || "-";
+    dom.topUserName.textContent = displayName;
+    dom.topUserRole.textContent = user.role || "-";
+    dom.userAvatar.textContent = displayName.charAt(0).toUpperCase();
+  }
+
+  function generateMachineCode() {
+    return `MKN-${Math.floor(Math.random() * 90000) + 10000}`;
+  }
+
+  function generateOrderNo() {
+    return `BKM-${Math.floor(Math.random() * 90000) + 10000}`;
+  }
+
+  function todayString() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function isMaintenanceDue(nextDate) {
+    if (!nextDate) return false;
+    const next = new Date(nextDate);
+    if (Number.isNaN(next.getTime())) return false;
+    return next <= new Date(todayString());
+  }
+
+  function formatDate(dateValue) {
+    if (!dateValue) return "-";
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return escapeHtml(dateValue);
+    return date.toLocaleDateString("tr-TR");
+  }
+
+  function machineStatusText(status, nextDate) {
+    if (isMaintenanceDue(nextDate)) return "Bakımı Gelen";
+    return ({ active: "Aktif", maintenance: "Bakımda", passive: "Pasif" })[status] || "Aktif";
+  }
+
+  function machineStatusClass(status, nextDate) {
+    if (isMaintenanceDue(nextDate)) return "critical";
+    return status || "active";
+  }
+
+  function orderStatusText(status) {
+    return ({ open: "Açık", planned: "Planlandı", completed: "Tamamlandı" })[status] || "Açık";
+  }
+
+  function normalizeMachine(m) {
+    return {
+      raw: m,
+      id: m.id,
+      code: m.machineCode || m.machine_code || "-",
+      name: m.machineName || m.machine_name || "-",
+      type: m.machineType || m.machine_type || "-",
+      location: m.location || "-",
+      serialNo: m.serialNo || m.serial_no || "",
+      lastDate: m.lastMaintenanceDate || m.last_maintenance_date || "",
+      nextDate: m.nextMaintenanceDate || m.next_maintenance_date || "",
+      status: m.status || "active"
+    };
+  }
+
+  async function fetchJson(url, options) {
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error(`${url} HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function loadMachines({ skipRender = false } = {}) {
+    try {
+      const data = await fetchJson("/api/machines");
+      machines = data.machines || data || [];
+      machineMap = new Map(machines.map(m => [String(m.id), m]));
+
+      if (!skipRender) {
+        renderMachines(machines);
+        fillMachineSelect();
+        updateStats();
+      }
+    } catch (error) {
+      console.error(error);
+      dom.machinesTable.innerHTML = `<tr><td colspan="8" class="empty-row">Sunucu bağlantı hatası.</td></tr>`;
+    }
+  }
+
+  async function loadMaintenanceOrders({ skipRender = false } = {}) {
+    try {
+      const data = await fetchJson("/api/maintenance-orders");
+      maintenanceOrders = data.orders || data.maintenanceOrders || data || [];
+
+      if (!skipRender) {
+        renderOrders(maintenanceOrders.filter(o => (o.status || "open") !== "completed"));
+        updateStats();
+      }
+    } catch (error) {
+      console.error(error);
+      dom.ordersTable.innerHTML = `<tr><td colspan="7" class="empty-row">Sunucu bağlantı hatası.</td></tr>`;
+    }
+  }
+
+  async function loadInitialData() {
+    await Promise.all([
+      loadMachines({ skipRender: true }),
+      loadMaintenanceOrders({ skipRender: true })
+    ]);
+
+    renderMachines(machines);
+    renderOrders(maintenanceOrders.filter(o => (o.status || "open") !== "completed"));
+    fillMachineSelect();
+    updateStats();
+  }
+
+  function loadMachinesAndOrders() {
+    return Promise.all([loadMachines({ skipRender: true }), loadMaintenanceOrders({ skipRender: true })])
+      .then(() => {
+        renderMachines(machines);
+        renderOrders(maintenanceOrders.filter(o => (o.status || "open") !== "completed"));
+        fillMachineSelect();
+        updateStats();
+      });
+  }
+
+  function renderMachines(list) {
+    dom.machineTotal.textContent = `${list.length} kayıt`;
+
+    if (!list.length) {
+      dom.machinesTable.innerHTML = `<tr><td colspan="8" class="empty-row">Makine kaydı bulunamadı.</td></tr>`;
+      return;
+    }
+
+    const rows = list.map(item => {
+      const m = normalizeMachine(item);
+      const statusClass = machineStatusClass(m.status, m.nextDate);
+      const statusText = machineStatusText(m.status, m.nextDate);
+
+      return `
+        <tr>
+          <td><strong>${escapeHtml(m.code)}</strong></td>
+          <td>${escapeHtml(m.name)}</td>
+          <td>${escapeHtml(m.type)}</td>
+          <td>${escapeHtml(m.location)}</td>
+          <td>${formatDate(m.lastDate)}</td>
+          <td>${formatDate(m.nextDate)}</td>
+          <td><span class="status ${escapeHtml(statusClass)}">${escapeHtml(statusText)}</span></td>
+          <td>
+            <button class="action-btn" onclick="editMachine(${Number(m.id)})" title="Düzenle"><i class="fa-solid fa-pen"></i></button>
+            <button class="action-btn warning" onclick="openMaintenanceModal(${Number(m.id)})" title="Bakım Emri"><i class="fa-solid fa-clipboard-list"></i></button>
+            <button class="action-btn success" onclick="completeQuickMaintenance(${Number(m.id)})" title="Bakımı Tamamla"><i class="fa-solid fa-check"></i></button>
+            <button class="action-btn danger" onclick="deleteMachine(${Number(m.id)})" title="Sil"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>`;
+    }).join("");
+
+    dom.machinesTable.innerHTML = rows;
+  }
+
+  function renderOrders(list) {
+    dom.orderTotal.textContent = `${list.length} kayıt`;
+
+    if (!list.length) {
+      dom.ordersTable.innerHTML = `<tr><td colspan="7" class="empty-row">Açık bakım emri bulunamadı.</td></tr>`;
+      return;
+    }
+
+    dom.ordersTable.innerHTML = list.map(o => {
+      const machine = getMachineById(o.machineId || o.machine_id);
+      const status = o.status || "open";
+      const machineName = machine
+        ? (machine.machineName || machine.machine_name || "-")
+        : (o.machineName || o.machine_name || "-");
+
+      return `
+        <tr>
+          <td><strong>${escapeHtml(o.orderNo || o.order_no || "-")}</strong></td>
+          <td>${escapeHtml(machineName)}</td>
+          <td>${escapeHtml(o.maintenanceType || o.maintenance_type || "-")}</td>
+          <td>${formatDate(o.plannedDate || o.planned_date)}</td>
+          <td>${escapeHtml(o.responsible || "-")}</td>
+          <td><span class="status ${escapeHtml(status)}">${escapeHtml(orderStatusText(status))}</span></td>
+          <td>
+            <button class="action-btn" onclick="editMaintenanceOrder(${Number(o.id)})" title="Düzenle"><i class="fa-solid fa-pen"></i></button>
+            <button class="action-btn success" onclick="completeMaintenanceOrder(${Number(o.id)})" title="Tamamla"><i class="fa-solid fa-check"></i></button>
+            <button class="action-btn danger" onclick="deleteMaintenanceOrder(${Number(o.id)})" title="Sil"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>`;
+    }).join("");
+  }
+
+  function filterMachines() {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(() => {
+      const search = dom.searchInput.value.trim().toLowerCase();
+      const statusFilter = dom.statusFilter.value;
+      const typeFilter = dom.typeFilter.value;
+
+      const filtered = machines.filter(m => {
+        const nm = normalizeMachine(m);
+        const realStatus = isMaintenanceDue(nm.nextDate) ? "critical" : nm.status;
+        const text = `${nm.code} ${nm.name} ${nm.location} ${nm.serialNo}`.toLowerCase();
+
+        return (!search || text.includes(search))
+          && (!statusFilter || realStatus === statusFilter)
+          && (!typeFilter || nm.type === typeFilter);
+      });
+
+      renderMachines(filtered);
+    }, 120);
+  }
+
+  function updateStats() {
+    const stats = machines.reduce((acc, m) => {
+      const nextDate = m.nextMaintenanceDate || m.next_maintenance_date;
+      if (isMaintenanceDue(nextDate)) acc.due++;
+      if ((m.status || "active") === "active") acc.active++;
+      return acc;
+    }, { due: 0, active: 0 });
+
+    const openCount = maintenanceOrders.reduce((count, o) => count + ((o.status || "open") !== "completed" ? 1 : 0), 0);
+
+    dom.totalMachines.textContent = machines.length;
+    dom.activeMachines.textContent = stats.active;
+    dom.maintenanceDue.textContent = stats.due;
+    dom.openOrders.textContent = openCount;
+    dom.criticalBadge.textContent = stats.due;
+  }
+
+  function fillMachineSelect(selectedId = "") {
+    dom.orderMachineId.innerHTML = `<option value="">Makine seçiniz</option>` + machines.map(m => {
+      const nm = normalizeMachine(m);
+      return `<option value="${escapeHtml(nm.id)}">${escapeHtml(nm.code)} - ${escapeHtml(nm.name)}</option>`;
+    }).join("");
+
+    if (selectedId) dom.orderMachineId.value = String(selectedId);
+  }
+
+  function getMachineById(id) {
+    return machineMap.get(String(id));
+  }
+
+  function openMachineModal() {
+    editingMachineId = null;
+    qs("machineModalTitle").textContent = "Yeni Makine Oluştur";
+    document.querySelector("#machineModal form").reset();
+    qs("machineCode").value = generateMachineCode();
+    qs("machineStatus").value = "active";
+    qs("historyBox").style.display = "none";
+    dom.machineModal.classList.add("show");
+  }
+
+  function closeMachineModal() {
+    dom.machineModal.classList.remove("show");
+    editingMachineId = null;
+  }
+
+  async function saveMachine(event) {
+    event.preventDefault();
+
+    const payload = {
+      machineCode: qs("machineCode").value.trim(),
+      machineName: qs("machineName").value.trim(),
+      machineType: qs("machineType").value,
+      location: qs("location").value.trim(),
+      serialNo: qs("serialNo").value.trim(),
+      brandModel: qs("brandModel").value.trim(),
+      lastMaintenanceDate: qs("lastMaintenanceDate").value,
+      nextMaintenanceDate: qs("nextMaintenanceDate").value,
+      status: qs("machineStatus").value,
+      responsible: qs("responsible").value.trim(),
+      description: qs("description").value.trim()
+    };
+
+    const url = editingMachineId ? `/api/machines/${editingMachineId}` : "/api/machines";
+    const method = editingMachineId ? "PUT" : "POST";
+
+    try {
+      const data = await fetchJson(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (data.success === false) return safeAlert(data.message || "İşlem başarısız.");
+      closeMachineModal();
+      await loadMachinesAndOrders();
+    } catch (error) {
+      console.error(error);
+      safeAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function editMachine(id) {
+    try {
+      const data = await fetchJson(`/api/machines/${id}`);
+      const m = data.machine || data;
+
+      editingMachineId = id;
+      qs("machineModalTitle").textContent = "Makine Düzenle";
+      qs("machineCode").value = m.machineCode || m.machine_code || "";
+      qs("machineName").value = m.machineName || m.machine_name || "";
+      qs("machineType").value = m.machineType || m.machine_type || "Diğer";
+      qs("location").value = m.location || "";
+      qs("serialNo").value = m.serialNo || m.serial_no || "";
+      qs("brandModel").value = m.brandModel || m.brand_model || "";
+      qs("lastMaintenanceDate").value = (m.lastMaintenanceDate || m.last_maintenance_date || "").split("T")[0];
+      qs("nextMaintenanceDate").value = (m.nextMaintenanceDate || m.next_maintenance_date || "").split("T")[0];
+      qs("machineStatus").value = m.status || "active";
+      qs("responsible").value = m.responsible || "";
+      qs("description").value = m.description || "";
+
+      renderHistory(id, data.history || data.maintenanceHistory || []);
+      dom.machineModal.classList.add("show");
+    } catch (error) {
+      console.error(error);
+      safeAlert("Makine detayı alınamadı.");
+    }
+  }
+
+  function renderHistory(machineId, historyFromApi = []) {
+    const list = historyFromApi.length
+      ? historyFromApi
+      : maintenanceOrders.filter(o => String(o.machineId || o.machine_id) === String(machineId) && (o.status || "open") === "completed");
+
+    qs("historyBox").style.display = "block";
+
+    if (!list.length) {
+      qs("historyList").innerHTML = `<div class="history-item"><p>Bu makine için bakım geçmişi bulunamadı.</p></div>`;
+      return;
+    }
+
+    qs("historyList").innerHTML = list.map(h => `
+      <div class="history-item">
+        <h4>${escapeHtml(h.orderNo || h.order_no || "Bakım Kaydı")} - ${escapeHtml(h.maintenanceType || h.maintenance_type || "Bakım")}</h4>
+        <p><strong>Tarih:</strong> ${formatDate(h.completedDate || h.completed_date || h.plannedDate || h.planned_date)} | <strong>Sorumlu:</strong> ${escapeHtml(h.responsible || "-")}</p>
+        <p>${escapeHtml(h.note || h.orderNote || h.order_note || "-")}</p>
+      </div>
+    `).join("");
+  }
+
+  async function deleteMachine(id) {
+    if (!(await safeConfirm("Bu makine kartını silmek istiyor musun?"))) return;
+
+    try {
+      const data = await fetchJson(`/api/machines/${id}`, { method: "DELETE" });
+      if (data.success === false) return safeAlert(data.message || "Makine silinemedi.");
+      await loadMachinesAndOrders();
+    } catch (error) {
+      console.error(error);
+      safeAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  function openMaintenanceModal(machineId = "") {
+    editingOrderId = null;
+    qs("maintenanceModalTitle").textContent = "Bakım Emri Oluştur";
+    document.querySelector("#maintenanceModal form").reset();
+    qs("orderNo").value = generateOrderNo();
+    qs("plannedDate").value = todayString();
+    qs("orderStatus").value = "open";
+    fillMachineSelect(machineId);
+    dom.maintenanceModal.classList.add("show");
+  }
+
+  function closeMaintenanceModal() {
+    dom.maintenanceModal.classList.remove("show");
+    editingOrderId = null;
+  }
+
+  async function saveMaintenanceOrder(event) {
+    event.preventDefault();
+
+    const payload = {
+      orderNo: qs("orderNo").value.trim(),
+      machineId: qs("orderMachineId").value,
+      maintenanceType: qs("maintenanceType").value,
+      plannedDate: qs("plannedDate").value,
+      responsible: qs("orderResponsible").value.trim(),
+      status: qs("orderStatus").value,
+      note: qs("orderNote").value.trim()
+    };
+
+    const url = editingOrderId ? `/api/maintenance-orders/${editingOrderId}` : "/api/maintenance-orders";
+    const method = editingOrderId ? "PUT" : "POST";
+
+    try {
+      const data = await fetchJson(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (data.success === false) return safeAlert(data.message || "Bakım emri kaydedilemedi.");
+      closeMaintenanceModal();
+      await loadMachinesAndOrders();
+    } catch (error) {
+      console.error(error);
+      safeAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function editMaintenanceOrder(id) {
+    try {
+      const data = await fetchJson(`/api/maintenance-orders/${id}`);
+      const o = data.order || data.maintenanceOrder || data;
+
+      editingOrderId = id;
+      qs("maintenanceModalTitle").textContent = "Bakım Emri Düzenle";
+      fillMachineSelect(o.machineId || o.machine_id || "");
+      qs("orderNo").value = o.orderNo || o.order_no || "";
+      qs("maintenanceType").value = o.maintenanceType || o.maintenance_type || "Periyodik Bakım";
+      qs("plannedDate").value = (o.plannedDate || o.planned_date || "").split("T")[0];
+      qs("orderResponsible").value = o.responsible || "";
+      qs("orderStatus").value = o.status || "open";
+      qs("orderNote").value = o.note || o.orderNote || o.order_note || "";
+      dom.maintenanceModal.classList.add("show");
+    } catch (error) {
+      console.error(error);
+      safeAlert("Bakım emri detayı alınamadı.");
+    }
+  }
+
+  async function completeMaintenanceOrder(id) {
+    if (!(await safeConfirm("Bakım emrini tamamlandı olarak işaretlemek istiyor musun?"))) return;
+
+    try {
+      const data = await fetchJson(`/api/maintenance-orders/${id}/complete`, { method: "PUT" });
+      if (data.success === false) return safeAlert(data.message || "Bakım emri tamamlanamadı.");
+      await loadMachinesAndOrders();
+    } catch (error) {
+      console.error(error);
+      safeAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function completeQuickMaintenance(machineId) {
+    const nextDate = await safePrompt("Sonraki bakım tarihini gir: YYYY-AA-GG", todayString());
+    if (!nextDate) return;
+
+    try {
+      const data = await fetchJson(`/api/machines/${machineId}/maintenance-complete`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lastMaintenanceDate: todayString(),
+          nextMaintenanceDate: nextDate,
+          status: "active"
+        })
+      });
+
+      if (data.success === false) return safeAlert(data.message || "Bakım tamamlanamadı.");
+      await loadMachinesAndOrders();
+    } catch (error) {
+      console.error(error);
+      safeAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function deleteMaintenanceOrder(id) {
+    if (!(await safeConfirm("Bu bakım emrini silmek istiyor musun?"))) return;
+
+    try {
+      const data = await fetchJson(`/api/maintenance-orders/${id}`, { method: "DELETE" });
+      if (data.success === false) return safeAlert(data.message || "Bakım emri silinemedi.");
+      await loadMachinesAndOrders();
+    } catch (error) {
+      console.error(error);
+      safeAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function checkPagePermission() {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const roleKey = user.role || localStorage.getItem("userRole");
+
+      if (!roleKey) {
+        window.location.href = "giris.html";
+        return false;
+      }
+
+      if (roleKey === "superadmin") return true;
+
+      const currentPage = "/" + window.location.pathname.split("/").pop();
+      const data = await fetchJson(`/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(currentPage)}`);
+
+      if (!data.canAccess) {
+        safeAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+        window.location.href = "anasayfa.html";
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Yetki kontrolü yapılamadı:", error);
+      return true;
+    }
+  }
+
+  function markActiveMenuItem() {
+    const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+    document.querySelectorAll(".menu a").forEach(link => {
+      const href = (link.getAttribute("href") || "").toLowerCase();
+      if (href === currentPage) link.classList.add("active");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    bindDom();
+    loadUserInfo();
+    markActiveMenuItem();
+    await checkPagePermission();
+    await loadInitialData();
+  });
+</script>
+
+</body>
+</html>

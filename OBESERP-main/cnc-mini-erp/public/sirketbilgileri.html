@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CNC ERP - Şirket Bilgileri</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .logo-icon{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#1464ff,#3f8cff);display:flex;align-items:center;justify-content:center;font-size:20px}
+    .logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px}
+    .menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center;font-size:17px}
+    .menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+    .menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:static;margin:14px 0 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}
+    .main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}
+    .menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+
+    .content{padding:28px}
+    .page-head{background:#fff;border:1px solid #e5eaf2;border-radius:22px;padding:24px;box-shadow:0 12px 32px rgba(31,54,91,.06);display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:16px}
+    .page-head h2{font-size:24px;margin-bottom:6px}.page-head p{color:#7a8799;font-size:14px}
+    .primary-btn{height:46px;padding:0 18px;border-radius:12px;border:none;background:#2f7cff;color:#fff;font-weight:700;cursor:pointer;transition:.25s}
+    .primary-btn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(47,124,255,.22)}
+    .secondary-btn{height:44px;padding:0 16px;border-radius:12px;border:1px solid #dce3ee;background:#fff;font-weight:700;cursor:pointer}
+
+    .layout{display:grid;grid-template-columns:340px 1fr;gap:22px}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+    .panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between}
+    .panel-header h3{font-size:18px}
+    .panel-body{padding:24px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#172033}
+    .input{height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;font-size:14px;width:100%}
+    textarea.input{height:96px;padding:12px 14px;resize:vertical}
+    .input:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+    .full{grid-column:1/-1}
+    .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+
+    .logo-box{border:2px dashed #dce3ee;border-radius:20px;padding:20px;text-align:center;background:#fbfcfe}
+    .logo-preview{width:180px;height:180px;border-radius:22px;background:#eef5ff;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#2f7cff;font-size:44px}
+    .logo-preview img{width:100%;height:100%;object-fit:contain;background:#fff}
+    .hint{font-size:12px;color:#7a8799;margin-top:8px;line-height:1.5}
+    .info-card{margin-top:16px;background:#f8fafc;border:1px solid #e5eaf2;border-radius:16px;padding:14px}
+    .info-card p{font-size:13px;color:#64748b;line-height:1.6}
+    .toast{position:fixed;right:24px;bottom:24px;background:#172033;color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.2);display:none;z-index:9999}
+    .toast.show{display:block}
+
+    @media(max-width:1100px){.layout{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.page-head{flex-direction:column;align-items:flex-start}}
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+<div class="logo-text">
+    <h2 id="sidebarBrandName"></h2>
+    <p id="sidebarCompanyName"></p>
+</div>
+    </div>
+
+    <nav class="menu">
+      <div class="menu-title">GENEL</div>
+      <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+      <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+      <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+      <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+
+      <div class="menu-title">ÜRETİM</div>
+      <a href="uretim.html"><i class="fa-solid fa-gears"></i><span>Üretim</span></a>
+      <a href="uretimtakip.html"><i class="fa-solid fa-chart-line"></i><span>Üretim Takip</span></a>
+      <a href="stokyonetimi.html"><i class="fa-solid fa-boxes-stacked"></i><span>Stok Yönetimi</span></a>
+      <a href="bom.html"><i class="fa-solid fa-sitemap"></i><span>Ürün Reçeteleri (BOM)</span></a>
+      <a href="mrp.html"><i class="fa-solid fa-calculator"></i><span>MRP</span></a>
+      <a href="makinebakim.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Makine Bakım</span></a>
+      <a href="kalite.html"><i class="fa-solid fa-award"></i><span>Kalite</span></a>
+      <a href="kalitekontrol.html"><i class="fa-solid fa-clipboard-check"></i><span>Kalite Kontrol</span></a>
+
+      <div class="menu-title">SATIN ALMA</div>
+      <a href="tedarikciler.html"><i class="fa-solid fa-truck"></i><span>Tedarikçiler</span></a>
+      <a href="satinalmatalepleri.html"><i class="fa-solid fa-file-circle-plus"></i><span>Satın Alma Talepleri</span></a>
+      <a href="satinalmaonay.html"><i class="fa-solid fa-circle-check"></i><span>Satın Alma Onayları</span></a>
+      <a href="satinalmasiparisleri.html"><i class="fa-solid fa-cart-shopping"></i><span>Satın Alma Siparişleri</span></a>
+
+      <div class="menu-title">FİNANS</div>
+      <a href="cariler.html"><i class="fa-solid fa-address-book"></i><span>Cariler</span></a>
+      <a href="carihareketler.html"><i class="fa-solid fa-money-bill-transfer"></i><span>Cari Hareketleri</span></a>
+      <a href="cariekstre.html"><i class="fa-solid fa-file-invoice-dollar"></i><span>Cari Ekstre</span></a>
+      <a href="kasa.html"><i class="fa-solid fa-cash-register"></i><span>Kasalar</span></a>
+      <a href="bankalar.html"><i class="fa-solid fa-building-columns"></i><span>Bankalar</span></a>
+      <a href="tahsilatlar.html"><i class="fa-solid fa-wallet"></i><span>Tahsilatlar</span></a>
+
+      <div class="menu-title">YÖNETİM</div>
+      <a href="kullanicilar.html"><i class="fa-solid fa-users-gear"></i><span>Kullanıcılar</span></a>
+      <a href="roller.html"><i class="fa-solid fa-user-shield"></i><span>Rol Yönetimi</span></a>
+      <a href="sirketbilgileri.html" class="active"><i class="fa-solid fa-building"></i><span>Şirket Bilgileri</span></a>
+      <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+
+      <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title">
+          <h1>Şirket Bilgileri</h1>
+          <p>Logo, adres, vergi, iletişim ve yasal şirket bilgilerini yönetin.</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge" id="notificationCount">0</span>
+        </button>
+        <div class="user-menu">
+          <div class="avatar" id="userAvatar">-</div>
+          <div class="user-info">
+            <h4 id="topUserName">Yükleniyor...</h4>
+            <p id="topUserRole">-</p>
+          </div>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h2>Firma Kartı</h2>
+          <p>Bu bilgiler teklif, irsaliye, fatura, rapor ve çıktı ekranlarında kullanılabilir.</p>
+        </div>
+        <button class="primary-btn" onclick="saveCompanyInfo()">
+          <i class="fa-solid fa-floppy-disk"></i> Kaydet
+        </button>
+      </div>
+
+      <div class="layout">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Şirket Logosu</h3>
+          </div>
+          <div class="panel-body">
+            <div class="logo-box">
+              <div class="logo-preview" id="logoPreview">
+                <i class="fa-solid fa-building"></i>
+              </div>
+              <input class="input" type="file" id="companyLogo" accept="image/*" onchange="previewLogo(event)">
+              <p class="hint">PNG, JPG veya WEBP logo yükleyebilirsin. Logo base64 olarak DB’ye kaydedilir.</p>
+            </div>
+
+            <div class="info-card">
+              <p>
+                <strong>Not:</strong> Sistemde tek şirket kartı tutulur. Sayfa her açıldığında kayıtlı bilgiler otomatik yüklenir.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Genel Bilgiler</h3>
+          </div>
+
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Şirket Ünvanı *</label>
+                <input class="input" id="companyName" placeholder="Örn: OBES CNC San. ve Tic. Ltd. Şti.">
+              </div>
+
+              <div class="form-group">
+                <label>Kısa Ad / Marka</label>
+                <input class="input" id="brandName" placeholder="Örn: OBES">
+              </div>
+
+              <div class="form-group">
+                <label>Vergi Dairesi</label>
+                <input class="input" id="taxOffice" placeholder="Örn: Bulancak V.D.">
+              </div>
+
+              <div class="form-group">
+                <label>Vergi No</label>
+                <input class="input" id="taxNo" placeholder="Vergi numarası">
+              </div>
+
+              <div class="form-group">
+                <label>Mersis No</label>
+                <input class="input" id="mersisNo" placeholder="Mersis numarası">
+              </div>
+
+              <div class="form-group">
+                <label>Ticaret Sicil No</label>
+                <input class="input" id="tradeRegistryNo" placeholder="Ticaret sicil numarası">
+              </div>
+
+              <div class="form-group">
+                <label>Telefon</label>
+                <input class="input" id="phone" placeholder="+90 ...">
+              </div>
+
+              <div class="form-group">
+                <label>E-Posta</label>
+                <input class="input" id="email" placeholder="info@firma.com">
+              </div>
+
+              <div class="form-group">
+                <label>Web Sitesi</label>
+                <input class="input" id="website" placeholder="www.firma.com">
+              </div>
+
+              <div class="form-group">
+                <label>Yetkili Kişi</label>
+                <input class="input" id="authorizedPerson" placeholder="Ad Soyad">
+              </div>
+
+              <div class="form-group">
+                <label>IBAN</label>
+                <input class="input" id="iban" placeholder="TR...">
+              </div>
+
+              <div class="form-group">
+                <label>Banka Adı</label>
+                <input class="input" id="bankName" placeholder="Banka adı">
+              </div>
+
+              <div class="form-group full">
+                <label>Adres</label>
+                <textarea class="input" id="address" placeholder="Şirket açık adresi"></textarea>
+              </div>
+
+              <div class="form-group full">
+                <label>Fatura / Teklif Alt Notu</label>
+                <textarea class="input" id="footerNote" placeholder="Örn: Ödemelerde açıklama kısmına teklif/fatura numarası yazınız."></textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="secondary-btn" onclick="loadCompanyInfo()">
+                <i class="fa-solid fa-rotate"></i> Yenile
+              </button>
+              <button class="primary-btn" onclick="saveCompanyInfo()">
+                <i class="fa-solid fa-floppy-disk"></i> Bilgileri Kaydet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let logoBase64 = "";
+
+function toggleSidebar(){
+  const sidebar=document.getElementById("sidebar");
+  const main=document.getElementById("main");
+  if(window.innerWidth<=850){sidebar.classList.toggle("mobile-open")}
+  else{sidebar.classList.toggle("collapsed");main.classList.toggle("expanded")}
+}
+
+function showToast(message){
+  const toast=document.getElementById("toast");
+  toast.textContent=message;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"),2600);
+}
+
+function loadUserInfo(){
+  const user=JSON.parse(localStorage.getItem("user"));
+  if(!user){window.location.href="giris.html";return}
+  document.getElementById("topUserName").textContent=user.fullName||user.username||"-";
+  document.getElementById("topUserRole").textContent=user.role||"-";
+  document.getElementById("userAvatar").textContent=(user.fullName||user.username||"-").charAt(0).toUpperCase();
+}
+
+function previewLogo(event){
+  const file=event.target.files[0];
+  if(!file)return;
+
+  const reader=new FileReader();
+  reader.onload=function(e){
+    logoBase64=e.target.result;
+    document.getElementById("logoPreview").innerHTML=`<img src="${logoBase64}" alt="Şirket Logosu">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function loadCompanyInfo(){
+  try{
+    const res=await fetch("/api/company-info");
+    const data=await res.json();
+
+    if(!data.success){
+      showToast(data.message || "Şirket bilgileri alınamadı.");
+      return;
+    }
+
+    const c=data.data || {};
+
+    document.getElementById("companyName").value=c.company_name || "";
+    document.getElementById("brandName").value=c.brand_name || "";
+    document.getElementById("taxOffice").value=c.tax_office || "";
+    document.getElementById("taxNo").value=c.tax_no || "";
+    document.getElementById("mersisNo").value=c.mersis_no || "";
+    document.getElementById("tradeRegistryNo").value=c.trade_registry_no || "";
+    document.getElementById("phone").value=c.phone || "";
+    document.getElementById("email").value=c.email || "";
+    document.getElementById("website").value=c.website || "";
+    document.getElementById("authorizedPerson").value=c.authorized_person || "";
+    document.getElementById("iban").value=c.iban || "";
+    document.getElementById("bankName").value=c.bank_name || "";
+    document.getElementById("address").value=c.address || "";
+    document.getElementById("footerNote").value=c.footer_note || "";
+
+    logoBase64=c.logo || "";
+
+    if(logoBase64){
+      document.getElementById("logoPreview").innerHTML=`<img src="${logoBase64}" alt="Şirket Logosu">`;
+    }else{
+      document.getElementById("logoPreview").innerHTML=`<i class="fa-solid fa-building"></i>`;
+    }
+    // Sidebar'daki firma adı
+const brandElement = document.getElementById("sidebarBrandName");
+if (brandElement) {
+    brandElement.textContent = c.brand_name || "";
+}
+
+// Altındaki yazı (istersen şirket ünvanı, istersen boş bırak)
+const companyElement = document.getElementById("sidebarCompanyName");
+if (companyElement) {
+    companyElement.textContent = c.company_name || "";
+}
+  }catch(err){
+    console.error(err);
+    showToast("Sunucu bağlantı hatası.");
+  }
+}
+
+async function saveCompanyInfo(){
+  const companyName=document.getElementById("companyName").value.trim();
+
+  if(!companyName){
+    showToast("Şirket ünvanı zorunludur.");
+    return;
+  }
+
+  const payload={
+    company_name:companyName,
+    brand_name:document.getElementById("brandName").value.trim(),
+    tax_office:document.getElementById("taxOffice").value.trim(),
+    tax_no:document.getElementById("taxNo").value.trim(),
+    mersis_no:document.getElementById("mersisNo").value.trim(),
+    trade_registry_no:document.getElementById("tradeRegistryNo").value.trim(),
+    phone:document.getElementById("phone").value.trim(),
+    email:document.getElementById("email").value.trim(),
+    website:document.getElementById("website").value.trim(),
+    authorized_person:document.getElementById("authorizedPerson").value.trim(),
+    iban:document.getElementById("iban").value.trim(),
+    bank_name:document.getElementById("bankName").value.trim(),
+    address:document.getElementById("address").value.trim(),
+    footer_note:document.getElementById("footerNote").value.trim(),
+    logo:logoBase64
+  };
+
+  try{
+    const res=await fetch("/api/company-info",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+
+    const data=await res.json();
+
+    if(!data.success){
+      showToast(data.message || "Kayıt başarısız.");
+      return;
+    }
+
+    showToast("Şirket bilgileri kaydedildi.");
+    await loadCompanyInfo();
+  }catch(err){
+    console.error(err);
+    showToast("Sunucu bağlantı hatası.");
+  }
+}
+
+async function checkPagePermission(){
+  const user=JSON.parse(localStorage.getItem("user")||"{}");
+  const roleKey=user.role||localStorage.getItem("userRole");
+
+  if(!roleKey){window.location.href="giris.html";return}
+  if(roleKey==="superadmin")return;
+
+  const currentPage="/"+window.location.pathname.split("/").pop();
+
+  try{
+    const response=await fetch(`/api/auth/can-access?roleKey=${roleKey}&pageUrl=${currentPage}`);
+    const data=await response.json();
+
+    if(!data.canAccess){
+      alert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+      window.location.href="anasayfa.html";
+    }
+  }catch(e){
+    console.error(e);
+  }
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  loadUserInfo();
+  loadCompanyInfo();
+  checkPagePermission();
+});
+</script>
+
+<script>
+(function markActiveMenuItem(){
+  const currentPage=decodeURIComponent((window.location.pathname.split("/").pop()||"anasayfa.html").toLowerCase());
+  document.querySelectorAll(".menu a").forEach((link)=>{
+    const href=(link.getAttribute("href")||"").toLowerCase();
+    if(href===currentPage)link.classList.add("active");
+  });
+})();
+</script>
+</body>
+</html>

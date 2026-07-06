@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Satın Alma Talepleri</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow:hidden}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px;letter-spacing:.5px}
+    .logo-text span{color:#3f8cff}
+    .logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px}
+    .menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}
+    .menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+    .menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}
+    .sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}
+    .main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}
+    .menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}
+    .menu-toggle:hover{background:#e8eef7}
+    .page-title h1{font-size:23px;margin-bottom:4px}
+    .page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .user-info h4{font-size:13px;margin-bottom:2px}
+    .user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}
+    .page-head{background:#fff;border:1px solid #e5eaf2;border-radius:22px;padding:24px;box-shadow:0 12px 32px rgba(31,54,91,.06);display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:16px}
+    .page-head h2{font-size:24px;margin-bottom:6px}
+    .page-head p{color:#7a8799;font-size:14px}
+    .primary-btn{height:46px;padding:0 18px;border-radius:12px;border:none;background:#2f7cff;color:#fff;font-weight:700;cursor:pointer;transition:.25s}
+    .primary-btn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(47,124,255,.22)}
+    .filter-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:18px;margin-bottom:20px;display:grid;grid-template-columns:1fr 220px 160px;gap:14px;box-shadow:0 12px 32px rgba(31,54,91,.05)}
+    .input{height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;font-size:14px;width:100%}
+    .input:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+    .panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between}
+    .panel-header h3{font-size:18px}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:16px 24px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}
+    th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}
+    td{color:#263548}
+    .badge-pill{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+    .urgency.low{background:#eaf8ef;color:#15803d}
+    .urgency.normal{background:#eef5ff;color:#2f7cff}
+    .urgency.high{background:#fff7ed;color:#c2410c}
+    .urgency.urgent{background:#fee2e2;color:#dc2626}
+    .status.draft{background:#f1f5f9;color:#475569}
+    .status.pending{background:#fff7ed;color:#c2410c}
+    .status.waiting{background:#fff7ed;color:#c2410c}
+    .status.approved{background:#eaf8ef;color:#15803d}
+    .status.rejected{background:#fee2e2;color:#dc2626}
+    .status.ordered{background:#eef5ff;color:#2f7cff}
+    .action-btn{width:34px;height:34px;border:none;border-radius:10px;background:#eef5ff;color:#2f7cff;cursor:pointer;margin-right:6px}
+    .action-btn:hover{transform:translateY(-1px)}
+    .action-btn.send{background:#dbeafe;color:#2563eb}
+    .action-btn.order{background:#dcfce7;color:#15803d}
+    .action-btn.disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed}
+    .action-btn.danger{background:#fee2e2;color:#dc2626}
+    .step-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:12px;font-weight:800}
+    .approver-cell{font-weight:700;color:#172033}
+    .approver-role{display:block;font-size:11px;color:#7a8799;margin-top:3px;font-weight:600}
+    .history-list{padding:20px 24px;display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow:auto}
+    .history-item{border:1px solid #e5eaf2;border-radius:16px;padding:14px 16px;background:#fbfcfe;display:grid;grid-template-columns:90px 1fr 150px;gap:12px;align-items:center}
+    .history-step{font-weight:900;color:#2f7cff}
+    .history-title{font-weight:800;color:#172033;margin-bottom:4px}
+    .history-meta{font-size:12px;color:#7a8799;line-height:1.5}
+    .history-note{font-size:12px;color:#48576b;margin-top:6px}
+    @media(max-width:850px){.history-item{grid-template-columns:1fr}}
+    .empty-row{text-align:center;color:#7a8799;padding:26px}
+    .modal{position:fixed;inset:0;background:rgba(7,20,40,.55);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+    .modal.show{display:flex}
+    .modal-card{width:100%;max-width:760px;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25);overflow:hidden}
+    .modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between}
+    .modal-header h3{font-size:20px}
+    .close-btn{width:38px;height:38px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+    .modal-body{padding:24px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#172033}
+    .modal-footer{padding:18px 24px;border-top:1px solid #edf1f7;display:flex;justify-content:flex-end;gap:10px}
+    .secondary-btn{height:44px;padding:0 16px;border-radius:12px;border:1px solid #dce3ee;background:#fff;font-weight:700;cursor:pointer}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.page-head{flex-direction:column;align-items:flex-start}.filter-card{grid-template-columns:1fr}.modal-body{grid-template-columns:1fr}}
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+        <div class="logo-text">
+          <h2>OBES <span>ERP</span></h2>
+          <p>AKILLI ÜRETİM</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+      </nav>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title">
+            <h1>Satın Alma Talepleri</h1>
+            <p>Malzeme ihtiyaçları, talep eden kişi, miktar ve aciliyet takibi.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="icon-btn">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge" id="notificationCount">0</span>
+          </button>
+
+          <div class="user-menu">
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <h4 id="topUserName">Yükleniyor...</h4>
+              <p id="topUserRole">-</p>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="page-head">
+          <div>
+            <h2>Satın Alma / Talep Yönetimi</h2>
+            <p>Personel veya departman bazlı satın alma taleplerini oluştur ve takip et.</p>
+          </div>
+          <button class="primary-btn" onclick="openModal()">
+            <i class="fa-solid fa-plus"></i> Yeni Talep
+          </button>
+        </div>
+
+        <div class="filter-card">
+          <input class="input" id="searchInput" placeholder="Talep no, talep eden veya malzeme ara..." oninput="filterRequests()">
+          <select class="input" id="statusFilter" onchange="filterRequests()">
+            <option value="">Tüm Durumlar</option>
+            <option value="draft">Taslak</option>
+            <option value="pending">Beklemede</option>
+            <option value="waiting">Onay Bekliyor</option>
+            <option value="approved">Onaylandı</option>
+            <option value="rejected">Reddedildi</option>
+            <option value="ordered">Siparişe Döndü</option>
+          </select>
+          <button class="primary-btn" onclick="loadRequests()">Yenile</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Talep Listesi</h3>
+            <span id="requestTotal">0 kayıt</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Talep No</th>
+                  <th>Talep Eden</th>
+                  <th>Tedarikçi</th>
+                  <th>Malzeme</th>
+                  <th>Miktar</th>
+                  <th>Aciliyet</th>
+                  <th>Durum</th>
+                  <th>Onay Kimde</th>
+                  <th>Adım</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="requestsTable">
+                <tr>
+                  <td colspan="10" class="empty-row">Veriler yükleniyor...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="requestModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Yeni Satın Alma Talebi</h3>
+        <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="saveRequest(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Talep No *</label>
+            <input class="input" id="requestNo" required placeholder="Örn: SAT202600001">
+          </div>
+
+          <div class="form-group">
+            <label>Talep Eden</label>
+            <input class="input" id="requestedBy" placeholder="Örn: Eray Henden">
+          </div>
+<div class="form-group">
+  <label>Tedarikçi *</label>
+  <select class="input" id="supplierId" required>
+    <option value="">Tedarikçi Seçiniz</option>
+  </select>
+</div>
+          <div class="form-group">
+            <label>Malzeme *</label>
+            <input class="input" id="materialName" required placeholder="Örn: Alüminyum Lama">
+          </div>
+
+          <div class="form-group">
+            <label>Miktar</label>
+            <input class="input" id="quantity" type="number" step="0.01" min="0">
+          </div>
+
+          <div class="form-group">
+            <label>Aciliyet</label>
+            <select class="input" id="urgency">
+              <option value="low">Düşük</option>
+              <option value="normal" selected>Normal</option>
+              <option value="high">Yüksek</option>
+              <option value="urgent">Acil</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="secondary-btn" onclick="closeModal()">Vazgeç</button>
+          <button type="submit" class="primary-btn">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="historyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="historyTitle">Onay Geçmişi</h3>
+        <button class="close-btn" onclick="closeHistoryModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-row">Onay geçmişi yükleniyor...</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="secondary-btn" onclick="closeHistoryModal()">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let editingRequestId = null;
+    let requests = [];
+    let suppliers = [];
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+
+      if (window.innerWidth <= 850) {
+        sidebar.classList.toggle("mobile-open");
+      } else {
+        sidebar.classList.toggle("collapsed");
+        main.classList.toggle("expanded");
+      }
+    }
+
+async function loadSuppliers() {
+
+  try {
+
+    const response = await fetch("/api/suppliers");
+    const data = await response.json();
+
+    if (!data.success) return;
+
+    suppliers = data.suppliers || [];
+
+    const select = document.getElementById("supplierId");
+
+    select.innerHTML =
+      '<option value="">Tedarikçi Seçiniz</option>';
+
+    suppliers.forEach(supplier => {
+
+      select.innerHTML += `
+        <option value="${supplier.id}">
+          ${supplier.companyName || supplier.company_name || supplier.name || "-"}
+        </option>
+      `;
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+}
+
+    function loadUserInfo() {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (!user) {
+        window.location.href = "giris.html";
+        return;
+      }
+
+      document.getElementById("topUserName").textContent = user.fullName || user.username || "-";
+      document.getElementById("topUserRole").textContent = user.role || "-";
+      document.getElementById("userAvatar").textContent = (user.fullName || user.username || "-").charAt(0).toUpperCase();
+
+      if (!editingRequestId) {
+        const requestedByInput = document.getElementById("requestedBy");
+        if (requestedByInput) {
+          requestedByInput.value = user.fullName || user.username || "";
+        }
+      }
+    }
+
+    async function loadRequests() {
+      try {
+        const response = await fetch("/api/purchase-requests");
+        const data = await response.json();
+
+        if (!data.success) {
+          appAlert(data.message || "Satın alma talepleri alınamadı.");
+          return;
+        }
+
+        requests = data.requests || [];
+        renderRequests(requests);
+
+      } catch (error) {
+        console.error(error);
+        document.getElementById("requestsTable").innerHTML = `
+          <tr>
+            <td colspan="10" class="empty-row">Sunucu bağlantı hatası.</td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderRequests(list) {
+      const tbody = document.getElementById("requestsTable");
+      document.getElementById("requestTotal").textContent = `${list.length} kayıt`;
+
+      if (!list.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="empty-row">Satın alma talebi bulunamadı.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = "";
+
+      list.forEach(request => {
+        const statusKey = normalizeStatus(request.status);
+        const canEdit = ["draft", "pending", "rejected"].includes(statusKey);
+        const canSendApproval = ["draft", "pending", "rejected"].includes(statusKey);
+        const canConvertOrder = statusKey === "approved";
+        const approverName = request.approverName || request.approver_name || "";
+        const approverRole = request.approverRole || request.approver_role || "";
+        const stepNo = request.stepNo || request.step_no || "";
+
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${escapeHtml(request.requestNo || "-")}</strong></td>
+            <td>${escapeHtml(request.requestedBy || "-")}</td>
+            <td>${escapeHtml(request.supplierName || "-")}</td>
+            <td>${escapeHtml(request.materialName || "-")}</td>
+            <td>${formatNumber(request.quantity)}</td>
+            <td>
+              <span class="badge-pill urgency ${request.urgency || "normal"}">
+                ${getUrgencyText(request.urgency)}
+              </span>
+            </td>
+            <td>
+              <span class="badge-pill status ${statusKey}">
+                ${getStatusText(request.status)}
+              </span>
+            </td>
+            <td>
+              <span class="approver-cell">${escapeHtml(approverName || "-")}</span>
+              ${approverRole ? `<span class="approver-role">${escapeHtml(approverRole)}</span>` : ""}
+            </td>
+            <td>
+              ${stepNo ? `<span class="step-badge">${stepNo}/4</span>` : "-"}
+            </td>
+            <td>
+              <button class="action-btn ${canEdit ? "" : "disabled"}"
+                      title="Düzenle"
+                      ${canEdit ? `onclick="editRequest(${request.id})"` : "disabled"}>
+                <i class="fa-solid fa-pen"></i>
+              </button>
+
+              <button class="action-btn send ${canSendApproval ? "" : "disabled"}"
+                      title="Onaya Gönder"
+                      ${canSendApproval ? `onclick="sendApproval(${request.id})"` : "disabled"}>
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+
+              <button class="action-btn"
+                      title="Onay Geçmişi"
+                      onclick="openApprovalHistory(${request.id})">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </button>
+
+              <button class="action-btn order ${canConvertOrder ? "" : "disabled"}"
+                      title="Siparişe Çevir"
+                      ${canConvertOrder ? `onclick="convertToOrder(${request.id})"` : "disabled"}>
+                <i class="fa-solid fa-file-invoice"></i>
+              </button>
+
+              <button class="action-btn danger"
+                      title="Sil"
+                      onclick="deleteRequest(${request.id})">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function filterRequests() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const status = document.getElementById("statusFilter").value;
+
+      const filtered = requests.filter(r => {
+        const text = `
+          ${r.requestNo || ""}
+          ${r.requestedBy || ""}
+          ${r.materialName || ""}
+          ${r.approverName || r.approver_name || ""}
+          ${r.approverRole || r.approver_role || ""}
+          ${getUrgencyText(r.urgency)}
+          ${getStatusText(r.status)}
+        `.toLowerCase();
+
+        return text.includes(search) && (!status || normalizeStatus(r.status) === status);
+      });
+
+      renderRequests(filtered);
+    }
+
+    function openModal() {
+      if (!editingRequestId) {
+        resetRequestForm();
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        document.getElementById("requestedBy").value = user?.fullName || user?.username || "";
+        document.getElementById("requestNo").value = generateRequestNo();
+      }
+
+      document.getElementById("requestModal").classList.add("show");
+    }
+
+    function closeModal() {
+      document.getElementById("requestModal").classList.remove("show");
+      resetRequestForm();
+    }
+async function sendApproval(id) {
+  const request = requests.find(x => x.id === id);
+
+  if (!request) {
+    appAlert("Talep bulunamadı.");
+    return;
+  }
+
+  const statusKey = normalizeStatus(request.status);
+
+  if (!["draft", "pending", "rejected"].includes(statusKey)) {
+    appAlert("Bu talep mevcut durumunda onaya gönderilemez.");
+    return;
+  }
+
+  if (!(await appConfirm("Bu satın alma talebi onaya gönderilsin mi?"))) {
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  try {
+    const response = await fetch(`/api/purchase-requests/${id}/send-approval`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        approved_by: user.fullName || user.username || "Sistem"
+      })
+    });
+
+    const data = await response.json();
+
+    appAlert(data.message || (data.success ? "Talep onaya gönderildi." : "Talep onaya gönderilemedi."));
+
+    if (data.success) {
+      await loadRequests();
+    }
+
+  } catch (err) {
+    console.error(err);
+    appAlert("Talep onaya gönderilemedi.");
+  }
+}
+
+async function openApprovalHistory(id) {
+  const request = requests.find(x => x.id === id);
+  const title = document.getElementById("historyTitle");
+  const list = document.getElementById("historyList");
+
+  title.textContent = `Onay Geçmişi${request?.requestNo ? " - " + request.requestNo : ""}`;
+  list.innerHTML = `<div class="empty-row">Onay geçmişi yükleniyor...</div>`;
+  document.getElementById("historyModal").classList.add("show");
+
+  try {
+    const response = await fetch(`/api/purchase-approvals/${id}/history`);
+    const data = await response.json();
+
+    if (!data.success) {
+      list.innerHTML = `<div class="empty-row">${escapeHtml(data.message || "Onay geçmişi alınamadı.")}</div>`;
+      return;
+    }
+
+    const history = data.history || [];
+
+    if (!history.length) {
+      list.innerHTML = `<div class="empty-row">Bu talep henüz onay akışına gönderilmemiş.</div>`;
+      return;
+    }
+
+    list.innerHTML = history.map(item => {
+      const statusKey = normalizeApprovalStatus(item.status);
+      const approverName = item.approver_name || item.approverName || "-";
+      const approverRole = item.approver_role || item.approverRole || "-";
+      const approvedBy = item.approved_by || item.approvedBy || "-";
+      const actionDate = item.action_date || item.actionDate || "";
+      const note = item.note || "";
+
+      return `
+        <div class="history-item">
+          <div class="history-step">Adım ${item.step_no || item.stepNo || "-"}/4</div>
+          <div>
+            <div class="history-title">${escapeHtml(approverName)}</div>
+            <div class="history-meta">
+              Rol: ${escapeHtml(approverRole)}<br>
+              İşlem yapan: ${escapeHtml(approvedBy)}
+              ${actionDate ? `<br>Tarih: ${escapeHtml(formatDateTime(actionDate))}` : ""}
+            </div>
+            ${note ? `<div class="history-note">Not: ${escapeHtml(note)}</div>` : ""}
+          </div>
+          <div>
+            <span class="badge-pill status ${statusKey}">
+              ${escapeHtml(getApprovalStatusText(item.status))}
+            </span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = `<div class="empty-row">Onay geçmişi alınamadı.</div>`;
+  }
+}
+
+function closeHistoryModal() {
+  document.getElementById("historyModal").classList.remove("show");
+}
+
+async function convertToOrder(id) {
+  const request = requests.find(x => x.id === id);
+
+  if (!request) {
+    appAlert("Talep bulunamadı.");
+    return;
+  }
+
+  if (normalizeStatus(request.status) !== "approved") {
+    appAlert("Talep onaylanmadan satın alma siparişi oluşturulamaz.");
+    return;
+  }
+
+  if (!request.supplierId) {
+    appAlert("Bu talepte tedarikçi seçilmemiş. Önce talebi düzenleyip tedarikçi seçmelisin.");
+    return;
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const payload = {
+    orderNo: generateOrderNo(),
+    supplierId: request.supplierId,
+    orderDate: today,
+    deliveryDate: "",
+    status: "draft"
+  };
+
+  try {
+    const response = await fetch("/api/purchase-orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      appAlert(data.message || "Sipariş oluşturulamadı.");
+      return;
+    }
+
+    await fetch(`/api/purchase-requests/${request.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        requestNo: request.requestNo,
+        requestedBy: request.requestedBy,
+        supplierId: request.supplierId,
+        materialName: request.materialName,
+        quantity: request.quantity,
+        urgency: request.urgency,
+        status: "ordered"
+      })
+    });
+
+    appAlert("Satın alma siparişi oluşturuldu.");
+    await loadRequests();
+
+  } catch (err) {
+    console.error(err);
+    appAlert("Sipariş oluşturulamadı.");
+  }
+}
+
+function generateOrderNo() {
+  const now = new Date();
+  return "SIP" + now.getFullYear() + Date.now();
+}
+    function resetRequestForm() {
+      editingRequestId = null;
+      document.querySelector(".modal-header h3").textContent = "Yeni Satın Alma Talebi";
+
+      document.getElementById("requestNo").value = "";
+      document.getElementById("requestedBy").value = "";
+      document.getElementById("supplierId").value = "";
+      document.getElementById("materialName").value = "";
+      document.getElementById("quantity").value = "";
+      document.getElementById("urgency").value = "normal";
+    }
+
+    function editRequest(id) {
+      const request = requests.find(r => r.id === id);
+
+      if (!request) {
+        appAlert("Talep bulunamadı.");
+        return;
+      }
+
+      editingRequestId = id;
+
+      document.querySelector(".modal-header h3").textContent = "Satın Alma Talebini Düzenle";
+
+      document.getElementById("requestNo").value = request.requestNo || "";
+      document.getElementById("requestedBy").value = request.requestedBy || "";
+      document.getElementById("supplierId").value = request.supplierId || "";
+      document.getElementById("materialName").value = request.materialName || "";
+      document.getElementById("quantity").value = request.quantity || "";
+      document.getElementById("urgency").value = request.urgency || "normal";
+
+      document.getElementById("requestModal").classList.add("show");
+    }
+
+    async function saveRequest(event) {
+      event.preventDefault();
+
+const payload = {
+    requestNo: document.getElementById("requestNo").value.trim(),
+    requestedBy: document.getElementById("requestedBy").value.trim(),
+
+    supplierId: document.getElementById("supplierId").value,
+
+    materialName: document.getElementById("materialName").value.trim(),
+    quantity: document.getElementById("quantity").value,
+    urgency: document.getElementById("urgency").value,
+    status: editingRequestId
+      ? (requests.find(r => r.id === editingRequestId)?.status || "pending")
+      : "pending"
+};
+
+      try {
+        const url = editingRequestId
+          ? `/api/purchase-requests/${editingRequestId}`
+          : "/api/purchase-requests";
+
+        const method = editingRequestId ? "PUT" : "POST";
+
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          appAlert(data.message || "İşlem başarısız.");
+          return;
+        }
+
+        closeModal();
+        await loadRequests();
+
+      } catch (error) {
+        console.error(error);
+        appAlert("Sunucu bağlantı hatası.");
+      }
+    }
+
+    async function deleteRequest(id) {
+      if (!(await appConfirm("Bu satın alma talebini silmek istiyor musun?"))) return;
+
+      try {
+        const response = await fetch(`/api/purchase-requests/${id}`, {
+          method: "DELETE"
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          appAlert(data.message || "Talep silinemedi.");
+          return;
+        }
+
+        await loadRequests();
+
+      } catch (error) {
+        console.error(error);
+        appAlert("Sunucu bağlantı hatası.");
+      }
+    }
+
+    function generateRequestNo() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const time = String(now.getHours()).padStart(2, "0") + String(now.getMinutes()).padStart(2, "0") + String(now.getSeconds()).padStart(2, "0");
+      return `SAT${year}${month}${day}${time}`;
+    }
+
+    function getUrgencyText(value) {
+      switch (value) {
+        case "low": return "Düşük";
+        case "normal": return "Normal";
+        case "high": return "Yüksek";
+        case "urgent": return "Acil";
+        default: return "-";
+      }
+    }
+
+    function normalizeStatus(value) {
+      const status = String(value || "").trim().toLowerCase();
+
+      if (status === "taslak" || status === "draft") return "draft";
+      if (status === "beklemede" || status === "pending") return "pending";
+      if (status === "onay bekliyor" || status === "waiting" || status === "approval_waiting") return "waiting";
+      if (status === "onaylandı" || status === "approved") return "approved";
+      if (status === "reddedildi" || status === "rejected") return "rejected";
+      if (status === "siparişe döndü" || status === "ordered") return "ordered";
+
+      return status || "pending";
+    }
+
+    function getStatusText(value) {
+      switch (normalizeStatus(value)) {
+        case "draft": return "Taslak";
+        case "pending": return "Beklemede";
+        case "waiting": return "Onay Bekliyor";
+        case "approved": return "Onaylandı";
+        case "rejected": return "Reddedildi";
+        case "ordered": return "Siparişe Döndü";
+        default: return "-";
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeApprovalStatus(value) {
+      const status = String(value || "").trim().toLowerCase();
+
+      if (status === "beklemede" || status === "pending") return "waiting";
+      if (status === "sırada" || status === "sirada" || status === "queued") return "draft";
+      if (status === "onaylandı" || status === "approved") return "approved";
+      if (status === "reddedildi" || status === "rejected") return "rejected";
+      if (status === "iptal" || status === "cancelled" || status === "canceled") return "rejected";
+
+      return status || "draft";
+    }
+
+    function getApprovalStatusText(value) {
+      const raw = String(value || "").trim();
+
+      switch (normalizeApprovalStatus(value)) {
+        case "waiting": return raw === "Beklemede" ? "Beklemede" : "Onay Bekliyor";
+        case "draft": return raw || "Sırada";
+        case "approved": return "Onaylandı";
+        case "rejected": return raw || "Reddedildi";
+        default: return raw || "-";
+      }
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+
+      return date.toLocaleString("tr-TR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function formatNumber(value) {
+      return Number(value || 0).toLocaleString("tr-TR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+    }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  loadUserInfo();
+
+  loadSuppliers();
+
+  loadRequests();
+
+});
+  </script>
+  <script>
+async function checkPagePermission() {
+
+    const user =
+        JSON.parse(localStorage.getItem("user") || "{}");
+
+    const roleKey =
+        user.role || localStorage.getItem("userRole");
+
+    if (!roleKey) {
+        window.location.href = "giris.html";
+        return;
+    }
+
+    if (roleKey === "superadmin") {
+        return;
+    }
+
+    const currentPage =
+        "/" +
+        window.location.pathname.split("/").pop();
+
+    const response = await fetch(
+        `/api/auth/can-access?roleKey=${roleKey}&pageUrl=${currentPage}`
+    );
+
+    const data = await response.json();
+
+    if (!data.canAccess) {
+
+        appAlert(
+            "Bu sayfaya erişim yetkiniz bulunmamaktadır."
+        );
+
+        window.location.href = "anasayfa.html";
+    }
+}
+
+checkPagePermission();
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

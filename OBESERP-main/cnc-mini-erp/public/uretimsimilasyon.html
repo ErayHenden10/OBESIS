@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>OBES ERP - Üretim Simülasyonu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+body{background:#f4f7fb;color:#172033}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;background:#071428;color:#fff;position:fixed;top:0;bottom:0;left:0;overflow:auto}
+.sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}.logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba}
+.menu{padding:22px 14px 120px}.menu-title{color:#7f8da3;font-size:11px;font-weight:800;margin:14px 12px 10px}
+.menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px}
+.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a i{width:22px;text-align:center}
+.main{margin-left:280px;width:calc(100% - 280px);min-height:100vh}
+.topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20}
+.page-title h1{font-size:23px}.page-title p{color:#7a8799;font-size:13px;margin-top:4px}
+.content{padding:28px}
+.hero{background:linear-gradient(135deg,#071428,#12396d);color:#fff;border-radius:24px;padding:30px 34px;margin-bottom:24px;display:flex;justify-content:space-between;gap:20px}
+.hero h2{font-size:28px;margin-bottom:10px}.hero p{color:#c9d2e3;line-height:1.6}
+.badge{height:44px;padding:0 18px;border-radius:999px;background:rgba(47,124,255,.2);display:flex;align-items:center;gap:10px;font-weight:800;white-space:nowrap}
+.grid{display:grid;grid-template-columns:420px 1fr;gap:20px}
+.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+.panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7}
+.panel-header h3{font-size:18px}.panel-header p{font-size:12px;color:#7a8799;margin-top:4px}
+.panel-body{padding:22px 24px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:800;margin-bottom:8px;color:#27364a}
+.input{width:100%;height:46px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;font-size:14px;outline:none}
+.input:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+.btn{height:44px;padding:0 16px;border:0;border-radius:12px;background:#2f7cff;color:#fff;font-weight:800;cursor:pointer}
+.btn.full{width:100%}
+.result-card{background:#fbfcfe;border:1px solid #e5eaf2;border-radius:18px;padding:18px;margin-bottom:14px}
+.result-card h4{font-size:14px;margin-bottom:10px;color:#7a8799}
+.big-time{font-size:32px;font-weight:900;color:#172033}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid #e5eaf2;border-radius:18px;padding:18px}
+.kpi p{font-size:12px;color:#7a8799;margin-bottom:8px}.kpi h3{font-size:24px}
+.risk{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:900}
+.high{background:#fee2e2;color:#b91c1c}.medium{background:#fff7e6;color:#b76b00}.low{background:#eaf8ef;color:#15803d}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:13px 10px;border-bottom:1px solid #edf1f7;text-align:left;font-size:13px}
+.table th{color:#7a8799;background:#fbfcfe;text-transform:uppercase;font-size:11px}
+.empty{text-align:center;color:#7a8799;padding:28px}
+@media(max-width:1200px){.grid{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr}}
+/* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+      <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>SIMULATION</p></div>
+    </div>
+
+    <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+      <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+      </div>
+      </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="page-title">
+        <h1>Üretim Simülasyonu</h1>
+        <p>İş emri, makine, setup ve operasyon süresine göre tahmini bitiş hesaplar.</p>
+      </div>
+      <button class="btn" onclick="loadInitialData()"><i class="fa-solid fa-rotate"></i> Yenile</button>
+    </header>
+
+    <section class="content">
+      <div class="hero">
+        <div>
+          <h2>İş Emri Bitiş Tahmini</h2>
+          <p>Seçilen iş emri için makine, operasyon süresi, setup süresi ve adet bilgisini kullanarak teslim riski ve tahmini bitiş saatini hesaplar.</p>
+        </div>
+        <div class="badge"><i class="fa-solid fa-star"></i> Premium Simülasyon</div>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Simülasyon Parametreleri</h3>
+            <p>İş emri ve üretim sürelerini gir</p>
+          </div>
+
+          <div class="panel-body">
+            <div class="form-group">
+              <label>İş Emri</label>
+              <select class="input" id="workOrderId" onchange="loadOperations()"></select>
+            </div>
+
+            <div class="form-group">
+              <label>Makine</label>
+              <select class="input" id="machineId"></select>
+            </div>
+
+            <div class="form-group">
+              <label>Başlangıç Tarihi/Saati</label>
+              <input class="input" id="startDateTime" type="datetime-local">
+            </div>
+
+            <div class="form-group">
+              <label>Adet</label>
+              <input class="input" id="quantity" type="number" min="1" value="1">
+            </div>
+
+            <div class="form-group">
+              <label>Setup Süresi / Dakika</label>
+              <input class="input" id="setupMinutes" type="number" min="0" value="45">
+            </div>
+
+            <div class="form-group">
+              <label>Operasyon Süresi / Dakika</label>
+              <input class="input" id="operationMinutes" type="number" min="0" value="60">
+            </div>
+
+            <button class="btn full" onclick="calculateSimulation()">
+              <i class="fa-solid fa-calculator"></i> Hesapla
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="kpi-grid">
+            <div class="kpi"><p>Toplam Süre</p><h3 id="totalHours">0 sa</h3></div>
+            <div class="kpi"><p>Setup</p><h3 id="setupResult">0 dk</h3></div>
+            <div class="kpi"><p>Operasyon</p><h3 id="operationResult">0 dk</h3></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Simülasyon Sonucu</h3>
+              <p>Makine ve tahmini bitiş bilgisi</p>
+            </div>
+
+            <div class="panel-body" id="resultArea">
+              <div class="empty">Henüz hesaplama yapılmadı.</div>
+            </div>
+          </div>
+
+          <br>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>İş Emri Operasyonları</h3>
+              <p>Seçili iş emrine bağlı operasyonlar</p>
+            </div>
+
+            <div class="panel-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Sıra</th>
+                    <th>Operasyon</th>
+                    <th>Makine Tipi</th>
+                    <th>Süre</th>
+                  </tr>
+                </thead>
+                <tbody id="operationRows">
+                  <tr><td colspan="4" class="empty">İş emri seçiniz.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+function getCurrentRole(){
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  return String(localStorage.getItem("userRole") || user.role || "")
+    .trim().toLowerCase()
+    .replace("yönetici","admin")
+    .replace("yonetici","admin")
+    .replace("süper admin","superadmin")
+    .replace("super admin","superadmin");
+}
+
+async function apiGet(url){
+  const res = await fetch(url,{headers:{"x-user-role":getCurrentRole()}});
+  const data = await res.json();
+  if(!res.ok || data.success === false) throw new Error(data.message || "API hatası");
+  return data;
+}
+
+async function apiPost(url, body){
+  const res = await fetch(url,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-user-role":getCurrentRole()
+    },
+    body:JSON.stringify(body)
+  });
+  const data = await res.json();
+  if(!res.ok || data.success === false) throw new Error(data.message || "API hatası");
+  return data;
+}
+
+function toInputDateTime(date){
+  const d = new Date(date);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0,16);
+}
+
+function trDateTime(value){
+  if(!value) return "-";
+  return new Date(value).toLocaleString("tr-TR");
+}
+
+async function loadInitialData(){
+  try{
+    const [woData, machineData] = await Promise.all([
+      apiGet("/api/production-simulation/work-orders"),
+      apiGet("/api/production-simulation/machines")
+    ]);
+
+    document.getElementById("workOrderId").innerHTML = (woData.workOrders || []).map(x => `
+      <option value="${x.id}">
+        ${x.workOrderNo || "-"} - ${x.partName || x.title || "-"}
+      </option>
+    `).join("");
+
+    document.getElementById("machineId").innerHTML = (machineData.machines || []).map(x => `
+      <option value="${x.id}">
+        ${x.machineName || x.machineCode || "-"} ${x.machineType ? " / " + x.machineType : ""}
+      </option>
+    `).join("");
+
+    document.getElementById("startDateTime").value = toInputDateTime(new Date());
+
+    await loadOperations();
+
+  }catch(err){
+    console.error(err);
+    appAlert(err.message);
+  }
+}
+
+async function loadOperations(){
+  const workOrderId = document.getElementById("workOrderId").value;
+
+  if(!workOrderId){
+    document.getElementById("operationRows").innerHTML = `<tr><td colspan="4" class="empty">İş emri bulunamadı.</td></tr>`;
+    return;
+  }
+
+  const data = await apiGet(`/api/production-simulation/work-orders/${workOrderId}/operations`);
+  const rows = data.operations || [];
+
+  document.getElementById("operationRows").innerHTML = rows.length ? rows.map(x => `
+    <tr>
+      <td>${x.sequenceNo || "-"}</td>
+      <td>${x.operationName || x.operationCode || "-"}</td>
+      <td>${x.machineType || "-"}</td>
+      <td>${x.plannedTime || 0} dk</td>
+    </tr>
+  `).join("") : `<tr><td colspan="4" class="empty">Bu iş emrine bağlı operasyon bulunamadı.</td></tr>`;
+
+  if(rows.length){
+    const totalPlanned = rows.reduce((sum, x) => sum + Number(x.plannedTime || 0), 0);
+    document.getElementById("operationMinutes").value = totalPlanned || 60;
+  }
+}
+
+async function calculateSimulation(){
+  try{
+    const payload = {
+      workOrderId: Number(document.getElementById("workOrderId").value),
+      machineId: Number(document.getElementById("machineId").value),
+      startDateTime: document.getElementById("startDateTime").value,
+      quantity: Number(document.getElementById("quantity").value || 1),
+      setupMinutes: Number(document.getElementById("setupMinutes").value || 0),
+      operationMinutes: Number(document.getElementById("operationMinutes").value || 0)
+    };
+
+    const data = await apiPost("/api/production-simulation/calculate", payload);
+    const s = data.simulation;
+
+    document.getElementById("totalHours").textContent = `${s.totalHours} sa`;
+    document.getElementById("setupResult").textContent = `${s.setupMinutes} dk`;
+    document.getElementById("operationResult").textContent = `${s.operationMinutes} dk`;
+
+    const riskText = {
+      high:"Yüksek Risk",
+      medium:"Orta Risk",
+      low:"Düşük Risk"
+    }[s.riskLevel] || "Risk Yok";
+
+    document.getElementById("resultArea").innerHTML = `
+      <div class="result-card">
+        <h4>Makine</h4>
+        <div class="big-time">${s.machineName || "-"}</div>
+        <p>${s.machineCode || ""} ${s.machineType ? " / " + s.machineType : ""}</p>
+      </div>
+
+      <div class="result-card">
+        <h4>Tahmini Bitiş</h4>
+        <div class="big-time">${trDateTime(s.finishDateTime)}</div>
+      </div>
+
+      <div class="result-card">
+        <h4>İş Emri</h4>
+        <strong>${s.workOrderNo || "-"}</strong><br>
+        ${s.partName || s.title || "-"}<br>
+        Müşteri: ${s.customerName || "-"}<br>
+        Teslim: ${s.deliveryDate || "-"}
+      </div>
+
+      <div class="result-card">
+        <h4>Teslim Riski</h4>
+        <span class="risk ${s.riskLevel}">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          ${riskText} - ${s.riskText}
+        </span>
+      </div>
+    `;
+
+  }catch(err){
+    console.error(err);
+    appAlert(err.message);
+  }
+}
+
+async function checkPagePermission(){
+  const roleKey = getCurrentRole();
+  if(!roleKey){ window.location.href = "giris.html"; return; }
+  if(roleKey === "superadmin") return;
+
+  const currentPage = "/" + window.location.pathname.split("/").pop();
+  const res = await fetch(`/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(currentPage)}`);
+  const data = await res.json();
+
+  if(!data.canAccess){
+    appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+    window.location.href = "anasayfa.html";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await checkPagePermission();
+  await loadInitialData();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

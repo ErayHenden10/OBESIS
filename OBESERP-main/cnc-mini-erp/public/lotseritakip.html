@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBES ERP - Seri No / Lot Takibi</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=njVyg-lJVuHAj1JAuECcnDGrbLBOz90kkl9YLAwINpfbCBGIsZkqmVp8_i5SEe2fX33bATqO5t7y2wiqbYRTwVYv0gF5SsDgPwk9ej2xMPxYW0Zun4ZzSupngT0sk90LDk62nDdqMD-s4B0_myO7jDELCvxT_6NuMhi53Lx0ImdD5mWcN3l-e0ZQ1rAsq0i1S17cTbDdoVZECmgZ2A7X7hxZ4sZmuYr1MmWs9YEhEW-9NpuFFSgEzPpfOSs_zKTbC8uHIV9hvLuE8rVoXlPHjkA1iCkdhkCK5hybrRRTv-e-NDfMpEi1J-OORP-MTx-1" charset="UTF-8"></script><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+.sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-track{background:#071428}.sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+.sidebar.collapsed{width:82px}
+.sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}.logo-text h2{font-size:21px;letter-spacing:.5px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+.sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+.menu{padding:22px 14px 110px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+.menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+.menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+.sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+.sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+.main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+.topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}.menu-toggle:hover{background:#e8eef7}
+.page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+.topbar-right{display:flex;align-items:center;gap:14px}.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}
+.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+.content{padding:28px}
+.hero{background:linear-gradient(135deg,#071428,#10305f);border-radius:24px;padding:30px;color:#fff;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.hero h2{font-size:28px;margin-bottom:8px}.hero p{color:#c9d2e3;line-height:1.5;max-width:760px}
+.primary-btn,.secondary-btn,.danger-btn{height:44px;padding:0 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px}
+.primary-btn{background:#2f7cff;color:#fff}.secondary-btn{background:#eef5ff;color:#2563eb}.danger-btn{background:#fee2e2;color:#dc2626}
+.primary-btn:hover,.secondary-btn:hover,.danger-btn:hover{transform:translateY(-2px)}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-bottom:22px}
+.stat-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:20px;box-shadow:0 12px 32px rgba(31,54,91,.06)}
+.stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.stat-icon{width:46px;height:46px;border-radius:15px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;font-size:19px}
+.stat-card h3{font-size:24px;margin-bottom:5px}.stat-card p{color:#7a8799;font-size:13px}
+.grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px}
+.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+.panel-header{padding:20px 22px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panel-header h3{font-size:18px}.panel-body{padding:20px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form-group{display:flex;flex-direction:column;gap:7px}.form-group.full{grid-column:1/-1}
+label{font-size:12px;color:#64748b;font-weight:800}
+input,select,textarea{width:100%;height:44px;border:1px solid #e2e8f2;border-radius:13px;background:#f8fafc;padding:0 13px;outline:none;font-size:14px;color:#172033}
+textarea{height:88px;padding-top:12px;resize:none}
+.table-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.table-tools input,.table-tools select{width:170px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:14px 18px;text-align:left;border-bottom:1px solid #edf1f7;font-size:13px;white-space:nowrap}th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}td{color:#263548}
+.status{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}.active{background:#eaf8ef;color:#15803d}.consumed{background:#f1f5f9;color:#475569}.blocked{background:#fee2e2;color:#dc2626}.passive{background:#f1f5f9;color:#475569}
+.action-btn{width:35px;height:35px;border:none;border-radius:10px;cursor:pointer;margin-right:5px;background:#eef5ff;color:#2563eb}.action-btn.green{background:#eaf8ef;color:#15803d}.action-btn.red{background:#fee2e2;color:#dc2626}.action-btn.orange{background:#fff7e6;color:#b76b00}
+.empty-row{text-align:center;color:#7a8799;padding:26px}
+.modal{position:fixed;inset:0;background:rgba(7,20,40,.58);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+.modal.open{display:flex}.modal-card{width:min(1080px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;justify-content:space-between;align-items:center}.modal-header h3{font-size:20px}
+.close-btn{width:40px;height:40px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+.record-box{background:#fbfcfe;border:1px solid #e5eaf2;border-radius:18px;padding:16px;margin-bottom:16px}
+.toast{position:fixed;right:24px;bottom:24px;background:#071428;color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 16px 40px rgba(7,20,40,.25);display:none;z-index:999}.toast.show{display:block}
+@media(max-width:1300px){.stats-grid{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.content{padding:18px}.topbar{padding:0 18px}.page-title p{display:none}.stats-grid{grid-template-columns:1fr}.hero h2{font-size:23px}.table-tools input,.table-tools select{width:100%}}
+/* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+    <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+  </div>
+
+  <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+  </div>
+      </nav>
+</aside>
+
+<main class="main" id="main">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="page-title"><h1>Seri No / Lot Takibi</h1><p>Hammadde lotu, ürün seri numarası ve iş emri izlenebilirliğini yönetin.</p></div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="window.location.href='bildirimler.html'"><i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span></button>
+    <div class="user-menu">
+      <div class="avatar" id="userAvatar">-</div>
+      <div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </div>
+</header>
+
+<section class="content">
+  <div class="hero">
+    <div>
+      <h2>İzlenebilirlik Merkezi</h2>
+      <p>Lot ve seri numaralarını stok, tedarikçi, iş emri ve sevkiyat hareketleriyle ilişkilendir. Bir malzemenin nereden geldiğini, nerede kullanıldığını ve ne kadar kaldığını takip et.</p>
+    </div>
+    <button class="primary-btn" onclick="createLotSerial()"><i class="fa-solid fa-plus"></i> Lot / Seri Ekle</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-barcode"></i></div></div><h3 id="totalLots">0</h3><p>Toplam Lot / Seri</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div></div><h3 id="activeLots">0</h3><p>Aktif Lot</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-box-open"></i></div></div><h3 id="consumedLots">0</h3><p>Tükenen Lot</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-ban"></i></div></div><h3 id="blockedLots">0</h3><p>Blokeli Lot</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-cubes"></i></div></div><h3 id="remainingQty">0</h3><p>Kalan İzlenebilir Miktar</p></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-header"><h3>Yeni Lot / Seri Kaydı</h3></div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Stok / Malzeme</label>
+            <select id="stockId" onchange="stockChanged()"></select>
+          </div>
+          <div class="form-group">
+            <label>Lot No</label>
+            <input id="lotNo" placeholder="LOT-2026-001">
+          </div>
+          <div class="form-group">
+            <label>Seri No</label>
+            <input id="serialNo" placeholder="SN-000001">
+          </div>
+          <div class="form-group">
+            <label>Tedarikçi</label>
+            <select id="supplierId" onchange="supplierChanged()"></select>
+          </div>
+          <div class="form-group">
+            <label>İş Emri</label>
+            <select id="workOrderId"></select>
+          </div>
+          <div class="form-group">
+            <label>Giriş Tarihi</label>
+            <input type="date" id="entryDate">
+          </div>
+          <div class="form-group">
+            <label>SKT / Geçerlilik</label>
+            <input type="date" id="expiryDate">
+          </div>
+          <div class="form-group">
+            <label>Giriş Miktarı</label>
+            <input type="number" step="0.01" id="initialQuantity" value="1">
+          </div>
+          <div class="form-group">
+            <label>Lokasyon</label>
+            <input id="location" placeholder="Depo / Raf">
+          </div>
+          <div class="form-group full">
+            <label>Not</label>
+            <textarea id="note" placeholder="Lot / seri açıklaması"></textarea>
+          </div>
+          <div class="form-group full">
+            <button class="primary-btn" onclick="createLotSerial()"><i class="fa-solid fa-floppy-disk"></i> Kaydı Oluştur</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Lot / Seri Listesi</h3>
+        <div class="table-tools">
+          <input id="searchInput" placeholder="Ara..." oninput="loadLotSerials()">
+          <select id="statusFilter" onchange="loadLotSerials()">
+            <option value="">Tüm Durumlar</option>
+            <option value="Aktif">Aktif</option>
+            <option value="Tükendi">Tükendi</option>
+            <option value="Blokeli">Blokeli</option>
+            <option value="Pasif">Pasif</option>
+          </select>
+          <button class="secondary-btn" onclick="refreshAll()"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Takip No</th>
+              <th>Malzeme</th>
+              <th>Lot</th>
+              <th>Seri</th>
+              <th>Tedarikçi</th>
+              <th>Kalan</th>
+              <th>Durum</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody id="lotTable"><tr><td colspan="8" class="empty-row">Veriler yükleniyor...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="detailModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle">Lot / Seri Detayı</h3>
+        <p id="modalSub" style="color:#7a8799;font-size:13px;margin-top:5px">-</p>
+      </div>
+      <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="panel-body">
+      <div class="record-box">
+        <h3 style="font-size:16px;margin-bottom:14px">Yeni Hareket</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Hareket Tipi</label>
+            <select id="movementType">
+              <option value="Çıkış">Çıkış</option>
+              <option value="İş Emrine Kullanım">İş Emrine Kullanım</option>
+              <option value="Sevkiyat">Sevkiyat</option>
+              <option value="İade">İade</option>
+              <option value="Giriş">Giriş</option>
+              <option value="Blokaj">Blokaj</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Miktar</label>
+            <input type="number" step="0.01" id="movementQty" value="1">
+          </div>
+          <div class="form-group">
+            <label>İş Emri</label>
+            <select id="movementWorkOrderId"></select>
+          </div>
+          <div class="form-group">
+            <label>Müşteri</label>
+            <input id="customerName" placeholder="Opsiyonel">
+          </div>
+          <div class="form-group full">
+            <label>Açıklama</label>
+            <textarea id="movementDescription" placeholder="Hareket açıklaması"></textarea>
+          </div>
+          <div class="form-group full">
+            <button class="primary-btn" onclick="createMovement()"><i class="fa-solid fa-right-left"></i> Hareket Oluştur</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Hareket No</th>
+              <th>Tip</th>
+              <th>Tarih</th>
+              <th>Miktar</th>
+              <th>Önceki</th>
+              <th>Sonraki</th>
+              <th>İş Emri</th>
+              <th>Müşteri</th>
+              <th>Açıklama</th>
+            </tr>
+          </thead>
+          <tbody id="movementTable"><tr><td colspan="9" class="empty-row">Hareket yok.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let stocks = [];
+let suppliers = [];
+let workOrders = [];
+let lots = [];
+let selectedLotId = null;
+
+function toggleSidebar(){
+  const sidebar=document.getElementById("sidebar");
+  const main=document.getElementById("main");
+  if(window.innerWidth<=850){sidebar.classList.toggle("mobile-open")}
+  else{sidebar.classList.toggle("collapsed");main.classList.toggle("expanded")}
+}
+
+function authHeaders(){
+  const user=JSON.parse(localStorage.getItem("user") || "{}");
+  return {
+    "Content-Type":"application/json",
+    "x-user-id": localStorage.getItem("userId") || user.id || "",
+    "x-user-name": localStorage.getItem("fullName") || user.fullName || "",
+    "x-user-role": localStorage.getItem("userRole") || user.role || ""
+  };
+}
+
+function initUser(){
+  const user=JSON.parse(localStorage.getItem("user") || "{}");
+  const fullName=user.fullName || localStorage.getItem("fullName") || "Kullanıcı";
+  const role=user.role || localStorage.getItem("userRole") || "-";
+  document.getElementById("topUserName").textContent=fullName;
+  document.getElementById("topUserRole").textContent=role;
+  document.getElementById("userAvatar").textContent=fullName.trim().charAt(0).toUpperCase();
+}
+
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2600);
+}
+
+function today(){
+  return new Date().toISOString().slice(0,10);
+}
+
+function statusClass(status){
+  if(status === "Tükendi") return "consumed";
+  if(status === "Blokeli") return "blocked";
+  if(status === "Pasif") return "passive";
+  return "active";
+}
+
+async function loadNotifications(){
+  try{
+    const r=await fetch("/api/notifications",{headers:authHeaders()});
+    const d=await r.json();
+    document.getElementById("notificationCount").textContent=d.unreadCount || 0;
+  }catch(e){}
+}
+
+async function loadStocks(){
+  const r=await fetch("/api/lot-serial/stocks",{headers:authHeaders()});
+  const data=await r.json();
+  stocks=data.stocks || [];
+
+  const select=document.getElementById("stockId");
+  select.innerHTML=`<option value="">Stok seç</option>`;
+  stocks.forEach(s=>{
+    select.innerHTML += `<option value="${s.id}">${s.stock_code || ""} - ${s.part_name || ""} / Stok: ${Number(s.quantity || 0)} ${s.unit || ""}</option>`;
+  });
+}
+
+async function loadSuppliers(){
+  try{
+    const r=await fetch("/api/suppliers",{headers:authHeaders()});
+    const data=await r.json();
+
+    if(!data.success){
+      throw new Error(data.message || "Tedarikçiler alınamadı.");
+    }
+
+    suppliers=data.suppliers || [];
+
+    const select=document.getElementById("supplierId");
+    select.innerHTML=`<option value="">Tedarikçi seçilmedi</option>`;
+
+    suppliers
+      .filter(s => (s.status || "active") !== "passive")
+      .forEach(s=>{
+        const supplierName = s.companyName || s.supplier_name || s.company_name || "-";
+        select.innerHTML += `<option value="${s.id}">${supplierName}</option>`;
+      });
+  }catch(err){
+    console.error("Tedarikçiler alınamadı:", err);
+    const select=document.getElementById("supplierId");
+    select.innerHTML=`<option value="">Tedarikçiler alınamadı</option>`;
+    appAlert("Tedarikçiler DB'den alınamadı: " + err.message);
+  }
+}
+
+async function loadWorkOrders(){
+  const r=await fetch("/api/lot-serial/work-orders",{headers:authHeaders()});
+  const data=await r.json();
+  workOrders=data.workOrders || [];
+
+  const selects=[document.getElementById("workOrderId"), document.getElementById("movementWorkOrderId")];
+  selects.forEach(select=>{
+    select.innerHTML=`<option value="">İş emri seçilmedi</option>`;
+    workOrders.forEach(w=>{
+      select.innerHTML += `<option value="${w.id}">${w.work_order_no || "-"} - ${w.part_name || w.title || "-"}</option>`;
+    });
+  });
+}
+
+function stockChanged(){
+  const id=document.getElementById("stockId").value;
+  const s=stocks.find(x=>String(x.id)===String(id));
+  if(!s) return;
+  document.getElementById("location").value=s.location || "";
+}
+
+function supplierChanged(){}
+
+async function loadKpi(){
+  try{
+    const r=await fetch("/api/lot-serials/kpi",{headers:authHeaders()});
+    const data=await r.json();
+    const k=data.kpi || {};
+
+    document.getElementById("totalLots").textContent=k.total || 0;
+    document.getElementById("activeLots").textContent=k.active || 0;
+    document.getElementById("consumedLots").textContent=k.consumed || 0;
+    document.getElementById("blockedLots").textContent=k.blocked || 0;
+    document.getElementById("remainingQty").textContent=Number(k.remainingQty || 0);
+  }catch(err){
+    console.error("KPI alınamadı:", err);
+  }
+}
+
+async function loadLotSerials(){
+  try{
+    const q=document.getElementById("searchInput").value || "";
+    const status=document.getElementById("statusFilter").value || "";
+
+    const params=new URLSearchParams();
+    if(q) params.append("q", q);
+    if(status) params.append("status", status);
+
+    const r=await fetch("/api/lot-serials?" + params.toString(),{headers:authHeaders()});
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    lots=data.lotSerials || [];
+    renderLots();
+  }catch(err){
+    console.error(err);
+    document.getElementById("lotTable").innerHTML=`<tr><td colspan="8" class="empty-row">Lot / seri kayıtları alınamadı.</td></tr>`;
+  }
+}
+
+function renderLots(){
+  const tbody=document.getElementById("lotTable");
+  tbody.innerHTML="";
+
+  if(!lots.length){
+    tbody.innerHTML=`<tr><td colspan="8" class="empty-row">Henüz lot / seri kaydı yok.</td></tr>`;
+    return;
+  }
+
+  lots.forEach(l=>{
+    const status=l.calculated_status || l.status || "Aktif";
+
+    tbody.innerHTML += `
+      <tr>
+        <td><b>${l.tracking_no || "-"}</b></td>
+        <td>
+          <b>${l.part_name || "-"}</b><br>
+          <span style="color:#7a8799;font-size:12px">${l.stock_code || "-"}</span>
+        </td>
+        <td>${l.lot_no || "-"}</td>
+        <td>${l.serial_no || "-"}</td>
+        <td>${l.supplier_name || "-"}</td>
+        <td>${Number(l.remaining_quantity || 0)} ${l.unit || ""}</td>
+        <td><span class="status ${statusClass(status)}">${status}</span></td>
+        <td>
+          <button class="action-btn green" onclick="openDetail(${l.id})"><i class="fa-solid fa-route"></i></button>
+          <button class="action-btn red" onclick="deleteLot(${l.id})"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function createLotSerial(){
+  try{
+    const user=JSON.parse(localStorage.getItem("user") || "{}");
+    const supplierId=document.getElementById("supplierId").value;
+    const supplier=suppliers.find(s=>String(s.id)===String(supplierId));
+
+    const body={
+      stock_id: document.getElementById("stockId").value,
+      lot_no: document.getElementById("lotNo").value || "",
+      serial_no: document.getElementById("serialNo").value || "",
+      supplier_id: supplierId || null,
+      supplier_name: supplier?.companyName || supplier?.supplier_name || supplier?.company_name || "",
+      work_order_id: document.getElementById("workOrderId").value || null,
+      entry_date: document.getElementById("entryDate").value || today(),
+      expiry_date: document.getElementById("expiryDate").value || null,
+      initial_quantity: document.getElementById("initialQuantity").value || 0,
+      location: document.getElementById("location").value || "",
+      note: document.getElementById("note").value || "",
+      created_by: user.fullName || localStorage.getItem("fullName") || "Sistem"
+    };
+
+    const r=await fetch("/api/lot-serials",{
+      method:"POST",
+      headers:authHeaders(),
+      body:JSON.stringify(body)
+    });
+
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    showToast("Lot / seri kaydı oluşturuldu.");
+    document.getElementById("lotNo").value="";
+    document.getElementById("serialNo").value="";
+    document.getElementById("initialQuantity").value=1;
+    document.getElementById("note").value="";
+    refreshAll();
+    openDetail(data.id);
+  }catch(err){
+    appAlert("Kayıt oluşturulamadı: " + err.message);
+  }
+}
+
+async function openDetail(id){
+  selectedLotId=id;
+
+  const r=await fetch(`/api/lot-serials/${id}`,{headers:authHeaders()});
+  const data=await r.json();
+
+  if(!data.success){
+    appAlert(data.message || "Detay alınamadı.");
+    return;
+  }
+
+  const l=data.lot;
+  document.getElementById("modalTitle").textContent=`${l.tracking_no} - ${l.part_name}`;
+  document.getElementById("modalSub").textContent=`Lot: ${l.lot_no || "-"} / Seri: ${l.serial_no || "-"} / Kalan: ${Number(l.remaining_quantity || 0)} ${l.unit || ""}`;
+
+  renderMovements(data.movements || []);
+  document.getElementById("movementQty").value=1;
+  document.getElementById("movementDescription").value="";
+  document.getElementById("customerName").value="";
+  document.getElementById("detailModal").classList.add("open");
+}
+
+function renderMovements(movements){
+  const tbody=document.getElementById("movementTable");
+  tbody.innerHTML="";
+
+  if(!movements.length){
+    tbody.innerHTML=`<tr><td colspan="9" class="empty-row">Hareket yok.</td></tr>`;
+    return;
+  }
+
+  movements.forEach(m=>{
+    tbody.innerHTML += `
+      <tr>
+        <td><b>${m.movement_no || "-"}</b></td>
+        <td>${m.movement_type || "-"}</td>
+        <td>${m.movement_date || "-"}</td>
+        <td>${Number(m.quantity || 0)}</td>
+        <td>${Number(m.previous_quantity || 0)}</td>
+        <td>${Number(m.next_quantity || 0)}</td>
+        <td>${m.work_order_no || "-"}</td>
+        <td>${m.customer_name || "-"}</td>
+        <td>${m.description || "-"}</td>
+      </tr>
+    `;
+  });
+}
+
+function closeModal(){
+  document.getElementById("detailModal").classList.remove("open");
+  selectedLotId=null;
+}
+
+async function createMovement(){
+  if(!selectedLotId) return;
+
+  try{
+    const user=JSON.parse(localStorage.getItem("user") || "{}");
+
+    const body={
+      movement_type: document.getElementById("movementType").value,
+      quantity: document.getElementById("movementQty").value || 0,
+      work_order_id: document.getElementById("movementWorkOrderId").value || null,
+      customer_name: document.getElementById("customerName").value || "",
+      description: document.getElementById("movementDescription").value || "",
+      created_by: user.fullName || localStorage.getItem("fullName") || "Sistem"
+    };
+
+    const r=await fetch(`/api/lot-serials/${selectedLotId}/movements`,{
+      method:"POST",
+      headers:authHeaders(),
+      body:JSON.stringify(body)
+    });
+
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    showToast("Lot hareketi oluşturuldu.");
+    await openDetail(selectedLotId);
+    refreshAll();
+  }catch(err){
+    appAlert("Hareket oluşturulamadı: " + err.message);
+  }
+}
+
+async function deleteLot(id){
+  if (!(await appConfirm("Lot / seri kaydı silinsin mi? Hareket geçmişi varsa pasifleştirilir."))) return;
+
+  try{
+    const r=await fetch(`/api/lot-serials/${id}`,{
+      method:"DELETE",
+      headers:authHeaders()
+    });
+
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    showToast(data.message || "İşlem tamamlandı.");
+    refreshAll();
+  }catch(err){
+    appAlert("Silme hatası: " + err.message);
+  }
+}
+
+async function refreshAll(){
+  await loadKpi();
+  await loadLotSerials();
+}
+
+async function checkPagePermission(){
+  try{
+    const user=JSON.parse(localStorage.getItem("user") || "{}");
+    const roleKey=user.role || localStorage.getItem("userRole");
+    if(!roleKey){window.location.href="giris.html";return}
+    if(roleKey==="superadmin") return;
+    const currentPage="/" + window.location.pathname.split("/").pop();
+    const response=await fetch(`/api/auth/can-access?roleKey=${roleKey}&pageUrl=${currentPage}`);
+    const data=await response.json();
+    if(!data.canAccess){
+      appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+      window.location.href="anasayfa.html";
+    }
+  }catch(e){}
+}
+
+document.addEventListener("DOMContentLoaded", async ()=>{
+  document.getElementById("entryDate").value=today();
+  initUser();
+  loadNotifications();
+  await loadStocks();
+  await loadSuppliers();
+  await loadWorkOrders();
+  await refreshAll();
+  checkPagePermission();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

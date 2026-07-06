@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>CNC ERP - Kullanıcılar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow:hidden}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .logo-icon{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#1464ff,#3f8cff);display:flex;align-items:center;justify-content:center;font-size:20px}
+    .logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer;font-size:18px}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}
+    .page-head{background:#fff;border:1px solid #e5eaf2;border-radius:22px;padding:24px;box-shadow:0 12px 32px rgba(31,54,91,.06);display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:16px}
+    .page-head h2{font-size:24px;margin-bottom:6px}.page-head p{color:#7a8799;font-size:14px}
+    .primary-btn{height:46px;padding:0 18px;border-radius:12px;border:none;background:#2f7cff;color:#fff;font-weight:700;cursor:pointer}
+    .secondary-btn{height:44px;padding:0 16px;border-radius:12px;border:1px solid #dce3ee;background:#fff;font-weight:700;cursor:pointer}
+    .filter-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:18px;margin-bottom:20px;display:grid;grid-template-columns:1fr 220px 180px;gap:14px;box-shadow:0 12px 32px rgba(31,54,91,.05)}
+    .input{height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;font-size:14px;width:100%}
+    .input:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+    .panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between}
+    .table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:16px 24px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}
+    th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}td{color:#263548}
+    .mini-user{display:flex;align-items:center;gap:12px}
+    .mini-avatar{width:38px;height:38px;border-radius:12px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .mini-user strong{display:block;margin-bottom:3px}.mini-user span{font-size:12px;color:#7a8799}
+    .status{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+    .active{background:#eaf8ef;color:#15803d}.passive{background:#fee2e2;color:#dc2626}.admin{background:#eef5ff;color:#2563eb}.user{background:#f5f3ff;color:#6d28d9}.manager{background:#fff7e6;color:#b76b00}
+    .action-btn{width:34px;height:34px;border:none;border-radius:10px;background:#eef5ff;color:#2f7cff;cursor:pointer;margin-right:6px}.action-btn.danger{background:#fee2e2;color:#dc2626}.action-btn.success{background:#eaf8ef;color:#15803d}.action-btn.warning{background:#fff7e6;color:#b76b00}
+    .empty-row{text-align:center;color:#7a8799;padding:26px}
+    .modal{position:fixed;inset:0;background:rgba(7,20,40,.55);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+    .modal.show{display:flex}.modal-card{width:100%;max-width:860px;max-height:92vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}
+    .modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between}.modal-header h3{font-size:20px}
+    .close-btn{width:38px;height:38px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+    .modal-body{padding:24px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}
+    .full{grid-column:1 / -1}
+    .modal-footer{padding:18px 24px;border-top:1px solid #edf1f7;display:flex;justify-content:flex-end;gap:10px}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.page-head{flex-direction:column;align-items:flex-start}.filter-card{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+
+    /* USER PROFILE PHOTO */
+    .photo-upload-box{
+      grid-column:1 / -1;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      padding:16px;
+      border:1px dashed #cfd8e6;
+      border-radius:18px;
+      background:#f8fbff;
+    }
+    .photo-preview-wrap{
+      width:92px;
+      height:92px;
+      border-radius:24px;
+      overflow:hidden;
+      background:linear-gradient(135deg,#eef5ff,#f8fbff);
+      border:3px solid #e5eaf2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      color:#2f7cff;
+      font-size:28px;
+      font-weight:800;
+    }
+    .photo-preview-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:none;
+    }
+    .photo-upload-content{
+      flex:1;
+      min-width:0;
+    }
+    .photo-upload-content h4{
+      font-size:15px;
+      margin-bottom:5px;
+    }
+    .photo-upload-content p{
+      color:#7a8799;
+      font-size:12px;
+      line-height:1.45;
+      margin-bottom:12px;
+    }
+    .photo-upload-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .photo-select-btn{
+      height:38px;
+      padding:0 14px;
+      border-radius:11px;
+      border:none;
+      background:#2f7cff;
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+    }
+    .photo-remove-btn{
+      height:38px;
+      padding:0 14px;
+      border-radius:11px;
+      border:1px solid #fecaca;
+      background:#fff1f2;
+      color:#dc2626;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+    }
+    .photo-file-input{
+      display:none;
+    }
+    .mini-avatar{
+      overflow:hidden;
+    }
+    .mini-avatar img,
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+      <div class="logo-text"><h2>CNC <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+    </div>
+
+    <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+    </div>
+      </nav>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title">
+          <h1>Kullanıcılar</h1>
+          <p>Sistem kullanıcılarını ve aktif/pasif durumlarını yönetin.</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">0</span></button>
+        <div class="user-menu">
+          <div class="avatar" id="userAvatar">-</div>
+          <div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h2>Kullanıcı Yönetimi</h2>
+          <p>Kullanıcı oluştur, düzenle, yetki rolü ver ve aktif/pasif durumunu değiştir.</p>
+        </div>
+        <button class="primary-btn" onclick="openUserModal()"><i class="fa-solid fa-plus"></i> Yeni Kullanıcı</button>
+      </div>
+
+      <div class="filter-card">
+        <input class="input" id="searchInput" placeholder="Ad soyad, kullanıcı adı, rol ara..." oninput="filterUsers()">
+        <select class="input" id="statusFilter" onchange="filterUsers()">
+          <option value="">Tüm Durumlar</option>
+          <option value="1">Aktif</option>
+          <option value="0">Pasif</option>
+        </select>
+        <button class="primary-btn" onclick="loadUsers()">Yenile</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Kullanıcı Listesi</h3>
+          <span id="userTotal">0 kayıt</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Kullanıcı</th>
+                <th>Kullanıcı Adı</th>
+                <th>Rol</th>
+                <th>Durum</th>
+                <th>Oluşturulma</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable">
+              <tr><td colspan="6" class="empty-row">Veriler yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="userModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="modalTitle">Yeni Kullanıcı Oluştur</h3>
+      <button class="close-btn" onclick="closeUserModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <form onsubmit="saveUser(event)">
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Ad Soyad *</label>
+            <input class="input" id="fullName" required placeholder="Örn: Eray Henden">
+          </div>
+
+          <div class="form-group">
+            <label>Kullanıcı Adı *</label>
+            <input class="input" id="username" required placeholder="Örn: eray">
+          </div>
+
+          <div class="form-group">
+            <label>Şifre *</label>
+            <input class="input" id="password" type="password" placeholder="Yeni kullanıcı için zorunlu">
+          </div>
+
+          <div class="form-group">
+            <label>Rol</label>
+            <select class="input" id="role">
+              <option value="admin">Admin</option>
+              <option value="manager">Yönetici</option>
+              <option value="user">Kullanıcı</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Durum</label>
+            <select class="input" id="active">
+              <option value="1">Aktif</option>
+              <option value="0">Pasif</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>E-posta</label>
+            <input class="input" id="email" type="email" placeholder="mail@firma.com">
+          </div>
+
+          <div class="photo-upload-box">
+            <div class="photo-preview-wrap" id="profilePreviewBox">
+              <img id="profilePreview" src="" alt="Profil fotoğrafı">
+              <i id="profilePreviewIcon" class="fa-regular fa-user"></i>
+            </div>
+
+            <div class="photo-upload-content">
+              <h4>Profil Fotoğrafı</h4>
+              <p>JPG, PNG veya WEBP formatında fotoğraf seçebilirsin. Fotoğraf Base64 olarak users tablosundaki profile_photo alanına kaydedilir.</p>
+
+              <div class="photo-upload-actions">
+                <label class="photo-select-btn" for="profilePhoto">
+                  <i class="fa-solid fa-image"></i>
+                  Fotoğraf Seç
+                </label>
+
+                <button type="button" class="photo-remove-btn" onclick="removeProfilePhoto()">
+                  <i class="fa-solid fa-trash"></i>
+                  Kaldır
+                </button>
+
+                <input
+                  class="photo-file-input"
+                  type="file"
+                  id="profilePhoto"
+                  accept="image/*"
+                  onchange="previewProfilePhoto(event)"
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="secondary-btn" onclick="closeUserModal()">Vazgeç</button>
+        <button type="submit" class="primary-btn">Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let users = [];
+  let roles = [];
+  let editingUserId = null;
+  let profilePhotoBase64 = "";
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const main = document.getElementById("main");
+
+    if (window.innerWidth <= 850) {
+      sidebar.classList.toggle("mobile-open");
+    } else {
+      sidebar.classList.toggle("collapsed");
+      main.classList.toggle("expanded");
+    }
+  }
+
+  function getCurrentRole() {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    return String(localStorage.getItem("userRole") || user.role || "")
+      .trim()
+      .toLowerCase()
+      .replace("yönetici", "admin")
+      .replace("yonetici", "admin")
+      .replace("süper admin", "superadmin")
+      .replace("super admin", "superadmin");
+  }
+
+  function loadUserInfo() {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!user || !user.username) {
+      window.location.href = "giris.html";
+      return;
+    }
+
+    document.getElementById("topUserName").textContent =
+      user.fullName || user.username || "-";
+
+    document.getElementById("topUserRole").textContent =
+      roleText(user.role) || user.role || "-";
+
+    const avatarEl = document.getElementById("userAvatar");
+    const photo = user.profilePhoto || user.profile_photo || "";
+
+    if (photo) {
+      avatarEl.innerHTML = `<img src="${photo}" alt="Profil">`;
+    } else {
+      avatarEl.textContent =
+        (user.fullName || user.username || "-").charAt(0).toUpperCase();
+    }
+  }
+
+  function formatDate(value) {
+    if (!value) return "-";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+    return d.toLocaleDateString("tr-TR");
+  }
+
+  function roleText(role) {
+    const roleKey = String(role || "").trim().toLowerCase();
+    const found = roles.find(r => String(r.role_key).toLowerCase() === roleKey);
+
+    if (found) return found.role_name;
+
+    return {
+      superadmin: "Süper Admin",
+      admin: "Admin",
+      user: "Kullanıcı",
+      manager: "Yönetici"
+    }[roleKey] || role || "Kullanıcı";
+  }
+
+  function safeRoleClass(role) {
+    return String(role || "user")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, "_");
+  }
+
+  function firstLetter(value) {
+    return (value || "-").trim().charAt(0).toUpperCase();
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function getUserPhoto(user) {
+    return user.profilePhoto || user.profile_photo || "";
+  }
+
+  function setProfilePreview(photo) {
+    const img = document.getElementById("profilePreview");
+    const icon = document.getElementById("profilePreviewIcon");
+
+    profilePhotoBase64 = photo || "";
+
+    if (profilePhotoBase64) {
+      img.src = profilePhotoBase64;
+      img.style.display = "block";
+      icon.style.display = "none";
+    } else {
+      img.src = "";
+      img.style.display = "none";
+      icon.style.display = "block";
+    }
+  }
+
+  function previewProfilePhoto(event) {
+    const file = event.target.files && event.target.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      appAlert("Lütfen sadece resim dosyası seç.");
+      event.target.value = "";
+      return;
+    }
+
+    const maxSizeMb = 2;
+    if (file.size > maxSizeMb * 1024 * 1024) {
+      appAlert("Profil fotoğrafı en fazla 2 MB olabilir.");
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      setProfilePreview(e.target.result);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function removeProfilePhoto() {
+    document.getElementById("profilePhoto").value = "";
+    setProfilePreview("");
+  }
+
+
+  async function loadRoles() {
+    try {
+      const response = await fetch("/api/admin/roles", {
+        headers: {
+          "x-user-role": getCurrentRole()
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        console.warn("Roller alınamadı:", data.message);
+        roles = [
+          { role_key: "superadmin", role_name: "Süper Admin" },
+          { role_key: "admin", role_name: "Admin" },
+          { role_key: "user", role_name: "Kullanıcı" }
+        ];
+      } else {
+        roles = data.roles || [];
+      }
+
+      fillRoleSelect();
+
+    } catch (err) {
+      console.error("Roller alınamadı:", err);
+
+      roles = [
+        { role_key: "superadmin", role_name: "Süper Admin" },
+        { role_key: "admin", role_name: "Admin" },
+        { role_key: "user", role_name: "Kullanıcı" }
+      ];
+
+      fillRoleSelect();
+    }
+  }
+
+  function fillRoleSelect(selectedValue = "user") {
+    const roleSelect = document.getElementById("role");
+
+    if (!roleSelect) return;
+
+    roleSelect.innerHTML = roles.map(role => `
+      <option value="${role.role_key}">
+        ${role.role_name}
+      </option>
+    `).join("");
+
+    if ([...roleSelect.options].some(opt => opt.value === selectedValue)) {
+      roleSelect.value = selectedValue;
+    } else {
+      roleSelect.value = "user";
+    }
+  }
+
+  async function loadUsers() {
+    try {
+      const response = await fetch("/api/users");
+      const data = await response.json();
+
+      users = Array.isArray(data)
+        ? data
+        : Array.isArray(data.users)
+          ? data.users
+          : [];
+
+      renderUsers(users);
+
+    } catch (error) {
+      console.error(error);
+      users = [];
+      renderUsers([]);
+    }
+  }
+
+  function renderUsers(list) {
+    const tbody = document.getElementById("usersTable");
+    document.getElementById("userTotal").textContent = `${list.length} kayıt`;
+
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-row">Kullanıcı kaydı bulunamadı.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    list.forEach(u => {
+      const active = Number(u.active ?? 1);
+      const fullName = u.fullName || u.full_name || "-";
+      const username = u.username || "-";
+      const role = u.role || "user";
+      const roleClass = safeRoleClass(role);
+
+      tbody.innerHTML += `
+        <tr>
+          <td>
+            <div class="mini-user">
+              <div class="mini-avatar">
+                ${
+                  getUserPhoto(u)
+                    ? `<img src="${escapeHtml(getUserPhoto(u))}" alt="${escapeHtml(fullName)}">`
+                    : firstLetter(fullName)
+                }
+              </div>
+              <div>
+                <strong>${escapeHtml(fullName)}</strong>
+                <span>${escapeHtml(u.email || "-")}</span>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(username)}</td>
+          <td><span class="status ${roleClass}">${roleText(role)}</span></td>
+          <td><span class="status ${active === 1 ? "active" : "passive"}">${active === 1 ? "Aktif" : "Pasif"}</span></td>
+          <td>${formatDate(u.createdAt || u.created_at)}</td>
+          <td>
+            <button class="action-btn" onclick="editUser(${u.id})">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="action-btn ${active === 1 ? "warning" : "success"}" onclick="toggleUserStatus(${u.id}, ${active === 1 ? 0 : 1})">
+              <i class="fa-solid ${active === 1 ? "fa-ban" : "fa-check"}"></i>
+            </button>
+            <button class="action-btn danger" onclick="deleteUser(${u.id})">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function filterUsers() {
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const statusFilter = document.getElementById("statusFilter").value;
+
+    const filtered = users.filter(u => {
+      const active = String(Number(u.active ?? 1));
+      const role = u.role || "";
+      const roleName = roleText(role);
+
+      const text = `
+        ${u.fullName || u.full_name || ""}
+        ${u.username || ""}
+        ${role}
+        ${roleName}
+        ${u.email || ""}
+      `.toLowerCase();
+
+      return text.includes(search) && (!statusFilter || active === statusFilter);
+    });
+
+    renderUsers(filtered);
+  }
+
+  function openUserModal() {
+    editingUserId = null;
+
+    document.getElementById("modalTitle").textContent = "Yeni Kullanıcı Oluştur";
+    document.querySelector("#userModal form").reset();
+    setProfilePreview("");
+    document.getElementById("profilePhoto").value = "";
+
+    document.getElementById("password").required = true;
+    fillRoleSelect("user");
+    document.getElementById("active").value = "1";
+
+    document.getElementById("userModal").classList.add("show");
+  }
+
+  function closeUserModal() {
+    document.getElementById("userModal").classList.remove("show");
+    editingUserId = null;
+  }
+
+  async function saveUser(event) {
+    event.preventDefault();
+
+    const payload = {
+      fullName: document.getElementById("fullName").value.trim(),
+      username: document.getElementById("username").value.trim(),
+      password: document.getElementById("password").value,
+      role: document.getElementById("role").value,
+      active: Number(document.getElementById("active").value),
+      email: document.getElementById("email").value.trim(),
+      profilePhoto: profilePhotoBase64
+    };
+
+    const url = editingUserId ? `/api/users/${editingUserId}` : "/api/users";
+    const method = editingUserId ? "PUT" : "POST";
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-role": getCurrentRole()
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        appAlert(data.message || "İşlem başarısız.");
+        return;
+      }
+
+      closeUserModal();
+      await loadUsers();
+
+    } catch (error) {
+      console.error(error);
+      appAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function editUser(id) {
+    try {
+      const response = await fetch(`/api/users/${id}`);
+      const data = await response.json();
+      const u = data.user || data;
+
+      editingUserId = id;
+
+      document.getElementById("modalTitle").textContent = "Kullanıcı Düzenle";
+      document.getElementById("fullName").value = u.fullName || u.full_name || "";
+      document.getElementById("username").value = u.username || "";
+      document.getElementById("password").value = "";
+      document.getElementById("password").required = false;
+
+      fillRoleSelect(u.role || "user");
+
+      document.getElementById("active").value = String(Number(u.active ?? 1));
+      document.getElementById("email").value = u.email || "";
+      document.getElementById("profilePhoto").value = "";
+      setProfilePreview(getUserPhoto(u));
+
+      document.getElementById("userModal").classList.add("show");
+
+    } catch (error) {
+      console.error(error);
+      appAlert("Kullanıcı detayı alınamadı.");
+    }
+  }
+
+  async function toggleUserStatus(id, active) {
+    const text = active === 1 ? "aktif" : "pasif";
+    if (!(await appConfirm(`Bu kullanıcıyı ${text} yapmak istiyor musun?`))) return;
+
+    try {
+      const response = await fetch(`/api/users/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-role": getCurrentRole()
+        },
+        body: JSON.stringify({ active })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        appAlert(data.message || "Durum değiştirilemedi.");
+        return;
+      }
+
+      await loadUsers();
+
+    } catch (error) {
+      console.error(error);
+      appAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function deleteUser(id) {
+    if (!(await appConfirm("Bu kullanıcıyı silmek istiyor musun?"))) return;
+
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        method: "DELETE",
+        headers: {
+          "x-user-role": getCurrentRole()
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        appAlert(data.message || "Kullanıcı silinemedi.");
+        return;
+      }
+
+      await loadUsers();
+
+    } catch (error) {
+      console.error(error);
+      appAlert("Sunucu bağlantı hatası.");
+    }
+  }
+
+  async function checkPagePermission() {
+    const roleKey = getCurrentRole();
+
+    if (!roleKey) {
+      window.location.href = "giris.html";
+      return;
+    }
+
+    if (roleKey === "superadmin") {
+      return;
+    }
+
+    const currentPage = "/" + window.location.pathname.split("/").pop();
+
+    const response = await fetch(
+      `/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(currentPage)}`
+    );
+
+    const data = await response.json();
+
+    if (!data.canAccess) {
+      appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+      window.location.href = "anasayfa.html";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    await checkPagePermission();
+    await loadRoles();
+    loadUserInfo();
+    await loadUsers();
+  });
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

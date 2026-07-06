@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>CNC ERP - Özel Ekran</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .logo-icon{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#1464ff,#3f8cff);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
+    .logo-text h2{font-size:21px;letter-spacing:.5px}
+    .logo-text span{color:#3f8cff}
+    .logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px}
+    .menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}
+    .menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+    .menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:static;margin:14px 0 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}
+    .sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}
+    .main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}
+    .menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}
+    .page-title h1{font-size:23px;margin-bottom:4px}
+    .page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .user-info h4{font-size:13px;margin-bottom:2px}
+    .user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden;margin-bottom:22px}
+    .panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .panel-header h3{font-size:18px}
+    .panel-body{padding:24px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .form-group{display:flex;flex-direction:column;gap:7px}
+    label{font-size:13px;font-weight:800;color:#48576b}
+    input,select,textarea{height:44px;border:1px solid #dbe5f2;border-radius:12px;padding:0 13px;outline:none;font-size:14px;background:#fff}
+    textarea{height:90px;padding:12px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:#2f7cff;box-shadow:0 0 0 3px rgba(47,124,255,.12)}
+    .primary-btn,.secondary-btn,.danger-btn{height:44px;padding:0 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;transition:.25s}
+    .primary-btn{background:#2f7cff;color:#fff}
+    .secondary-btn{background:#eef5ff;color:#2f7cff}
+    .danger-btn{background:#fee2e2;color:#dc2626}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:15px 18px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}
+    th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}
+    td{color:#263548}
+    .empty-row{text-align:center;color:#7a8799;padding:26px}
+    @media(max-width:1000px){.form-grid{grid-template-columns:1fr}.main,.main.expanded{margin-left:0;width:100%}.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+      <div class="logo-text">
+        <h2>CNC <span>ERP</span></h2>
+        <p>AKILLI ÜRETİM</p>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <div class="menu-title">GENEL</div>
+      <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+      <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+      <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+      <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+
+      <div class="menu-title">ÜRETİM</div>
+      <a href="uretim.html"><i class="fa-solid fa-gears"></i><span>Üretim</span></a>
+      <a href="uretimtakip.html"><i class="fa-solid fa-chart-line"></i><span>Üretim Takip</span></a>
+      <a href="stokyonetimi.html"><i class="fa-solid fa-boxes-stacked"></i><span>Stok Yönetimi</span></a>
+      <a href="bom.html"><i class="fa-solid fa-sitemap"></i><span>Ürün Reçeteleri (BOM)</span></a>
+      <a href="mrp.html"><i class="fa-solid fa-calculator"></i><span>MRP</span></a>
+      <a href="makinebakim.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Makine Bakım</span></a>
+      <a href="kalite.html"><i class="fa-solid fa-award"></i><span>Kalite</span></a>
+      <a href="kalitekontrol.html"><i class="fa-solid fa-clipboard-check"></i><span>Kalite Kontrol</span></a>
+
+      <div class="menu-title">SATIN ALMA</div>
+      <a href="tedarikciler.html"><i class="fa-solid fa-truck"></i><span>Tedarikçiler</span></a>
+      <a href="satinalmatalepleri.html"><i class="fa-solid fa-file-circle-plus"></i><span>Satın Alma Talepleri</span></a>
+      <a href="satinalmaonay.html"><i class="fa-solid fa-circle-check"></i><span>Satın Alma Onayları</span></a>
+      <a href="satinalmasiparisleri.html"><i class="fa-solid fa-cart-shopping"></i><span>Satın Alma Siparişleri</span></a>
+
+      <div class="menu-title">FİNANS</div>
+      <a href="cariler.html"><i class="fa-solid fa-address-book"></i><span>Cariler</span></a>
+      <a href="carihareketler.html"><i class="fa-solid fa-money-bill-transfer"></i><span>Cari Hareketleri</span></a>
+      <a href="tahsilatlar.html"><i class="fa-solid fa-wallet"></i><span>Tahsilatlar</span></a>
+
+      <div class="menu-title">YÖNETİM</div>
+      <a href="kullanicilar.html"><i class="fa-solid fa-users-gear"></i><span>Kullanıcılar</span></a>
+      <a href="roller.html"><i class="fa-solid fa-user-shield"></i><span>Rol Yönetimi</span></a>
+      <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+
+      <div class="menu-title">GELİŞTİRMELER</div>
+      <a href="ekran-tasarimcisi.html"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Ekran Tasarımcısı</span></a>
+      <div id="customScreensMenu"></div>
+
+      <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title">
+          <h1 id="pageTitle">Özel Ekran</h1>
+          <p>Geliştirmeler altında oluşturulan dinamik ekran.</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">0</span></button>
+        <div class="user-menu">
+          <div class="avatar" id="userAvatar">E</div>
+          <div class="user-info">
+            <h4 id="topUserName">Eray</h4>
+            <p id="topUserRole">Admin</p>
+          </div>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 id="formTitle">Yeni Kayıt</h3>
+          <button class="primary-btn" onclick="saveRecord()">
+            <i class="fa-solid fa-floppy-disk"></i> Kaydet
+          </button>
+        </div>
+
+        <div class="panel-body">
+          <div class="form-grid" id="dynamicForm"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Kayıtlar</h3>
+          <button class="secondary-btn" onclick="loadRecords()">
+            <i class="fa-solid fa-rotate-right"></i> Yenile
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody">
+              <tr><td class="empty-row">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const screenId = params.get("id");
+
+  let currentScreen = null;
+  let currentFields = [];
+  let editingId = null;
+
+  function authHeaders() {
+    return {
+      "Content-Type": "application/json",
+      "x-user-id": localStorage.getItem("userId") || "",
+      "x-user-name": localStorage.getItem("fullName") || "",
+      "x-user-role": localStorage.getItem("userRole") || ""
+    };
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const main = document.getElementById("main");
+
+    if (window.innerWidth <= 1000) {
+      sidebar.classList.toggle("mobile-open");
+    } else {
+      sidebar.classList.toggle("collapsed");
+      main.classList.toggle("expanded");
+    }
+  }
+
+  async function loadCustomScreensMenu() {
+    const menuBox = document.getElementById("customScreensMenu");
+    if (!menuBox) return;
+
+    try {
+      const response = await fetch("/api/custom-screens", { headers: authHeaders() });
+      const data = await response.json();
+      const rows = Array.isArray(data.data) ? data.data : [];
+
+      menuBox.innerHTML = rows.map(screen => `
+        <a href="custom-ekran.html?id=${screen.id}" class="${String(screen.id) === String(screenId) ? "active" : ""}">
+          <i class="${screen.icon || "fa-solid fa-layer-group"}"></i>
+          <span>${escapeHtml(screen.screen_name)}</span>
+        </a>
+      `).join("");
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function loadListOptions(field) {
+    if (field.field_type === "customer") return fetchList("customers");
+    if (field.field_type === "supplier") return fetchList("suppliers");
+    if (field.field_type === "stock") return fetchList("stocks");
+    if (field.field_type === "employee") return fetchList("employees");
+
+    if (field.field_type === "select") {
+      return String(field.list_source || "")
+        .split(",")
+        .filter(Boolean)
+        .map((x, index) => ({
+          id: x.trim(),
+          name: x.trim()
+        }));
+    }
+
+    return [];
+  }
+
+  async function fetchList(source) {
+    try {
+      const response = await fetch("/api/custom-list/" + source, { headers: authHeaders() });
+      const data = await response.json();
+      return Array.isArray(data.data) ? data.data : [];
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  }
+
+  async function fieldInput(field, value = "") {
+    const id = field.field_name;
+    const label = escapeHtml(field.field_label);
+    const required = field.is_required ? "required" : "";
+
+    if (field.field_type === "textarea") {
+      return `<textarea id="${id}" ${required} placeholder="${label}">${escapeHtml(value)}</textarea>`;
+    }
+
+    if (field.field_type === "date") {
+      return `<input id="${id}" type="date" ${required} value="${escapeHtml(value)}">`;
+    }
+
+    if (field.field_type === "number" || field.field_type === "money") {
+      return `<input id="${id}" type="number" step="0.01" ${required} value="${escapeHtml(value)}" placeholder="${label}">`;
+    }
+
+    if (field.field_type === "checkbox") {
+      return `<input id="${id}" type="checkbox" ${Number(value) === 1 ? "checked" : ""} style="width:20px;height:20px">`;
+    }
+
+    if (["select", "customer", "supplier", "stock", "employee"].includes(field.field_type)) {
+      const options = await loadListOptions(field);
+
+      return `
+        <select id="${id}" ${required}>
+          <option value="">Seçiniz</option>
+          ${options.map(opt => `
+            <option value="${escapeHtml(opt.id)}" ${String(opt.id) === String(value) ? "selected" : ""}>
+              ${escapeHtml(opt.name)}
+            </option>
+          `).join("")}
+        </select>
+      `;
+    }
+
+    return `<input id="${id}" ${required} value="${escapeHtml(value)}" placeholder="${label}">`;
+  }
+
+  async function renderForm(record = {}) {
+    const box = document.getElementById("dynamicForm");
+    let html = "";
+
+    for (const field of currentFields) {
+      html += `
+        <div class="form-group">
+          <label>${escapeHtml(field.field_label)} ${field.is_required ? "*" : ""}</label>
+          ${await fieldInput(field, record[field.field_name] ?? "")}
+        </div>
+      `;
+    }
+
+    box.innerHTML = html;
+  }
+
+  function getFormData() {
+    const body = {};
+
+    for (const field of currentFields) {
+      const el = document.getElementById(field.field_name);
+      if (!el) continue;
+
+      if (field.field_type === "checkbox") {
+        body[field.field_name] = el.checked ? 1 : 0;
+      } else {
+        body[field.field_name] = el.value;
+      }
+    }
+
+    return body;
+  }
+
+  async function saveRecord() {
+    const body = getFormData();
+
+    try {
+      const url = editingId
+        ? `/api/custom-data/${screenId}/${editingId}`
+        : `/api/custom-data/${screenId}`;
+
+      const method = editingId ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: authHeaders(),
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        alert(data.message || "Kayıt kaydedilemedi");
+        return;
+      }
+
+      editingId = null;
+      document.getElementById("formTitle").textContent = "Yeni Kayıt";
+      await renderForm();
+      await loadRecords();
+
+      alert("Kayıt kaydedildi");
+    } catch (err) {
+      console.error(err);
+      alert("Sunucu hatası");
+    }
+  }
+
+  async function loadScreen() {
+    if (!screenId) {
+      alert("Ekran ID yok");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/custom-screens/" + screenId, {
+        headers: authHeaders()
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        alert(data.message || "Ekran bulunamadı");
+        return;
+      }
+
+      currentScreen = data.data.screen;
+      currentFields = data.data.fields;
+
+      document.getElementById("pageTitle").textContent = currentScreen.screen_name;
+      document.getElementById("formTitle").textContent = currentScreen.screen_name + " - Yeni Kayıt";
+
+      await renderForm();
+      await loadRecords();
+
+    } catch (err) {
+      console.error(err);
+      alert("Ekran yüklenemedi");
+    }
+  }
+
+  async function loadRecords() {
+    try {
+      const response = await fetch("/api/custom-data/" + screenId, {
+        headers: authHeaders()
+      });
+
+      const data = await response.json();
+      const rows = Array.isArray(data.data) ? data.data : [];
+
+      document.getElementById("tableHead").innerHTML = `
+        <tr>
+          ${currentFields.map(f => `<th>${escapeHtml(f.field_label)}</th>`).join("")}
+          <th>İşlem</th>
+        </tr>
+      `;
+
+      const tbody = document.getElementById("tableBody");
+
+      if (rows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="${currentFields.length + 1}" class="empty-row">
+              Henüz kayıt bulunmuyor.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(row => `
+        <tr>
+          ${currentFields.map(f => `<td>${escapeHtml(row[f.field_name] ?? "-")}</td>`).join("")}
+          <td>
+            <button class="secondary-btn" onclick='editRecord(${JSON.stringify(row).replaceAll("'", "&#039;")})'>
+              Düzenle
+            </button>
+            <button class="danger-btn" onclick="deleteRecord(${row.id})">
+              Sil
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function editRecord(row) {
+    editingId = row.id;
+    document.getElementById("formTitle").textContent = currentScreen.screen_name + " - Kayıt Düzenle";
+    await renderForm(row);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function deleteRecord(id) {
+    if (!confirm("Kayıt silinsin mi?")) return;
+
+    try {
+      const response = await fetch(`/api/custom-data/${screenId}/${id}`, {
+        method: "DELETE",
+        headers: authHeaders()
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        alert(data.message || "Silinemedi");
+        return;
+      }
+
+      await loadRecords();
+    } catch (err) {
+      console.error(err);
+      alert("Sunucu hatası");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (user.fullName) {
+      document.getElementById("topUserName").textContent = user.fullName;
+      document.getElementById("topUserRole").textContent = user.role || "-";
+      document.getElementById("userAvatar").textContent = user.fullName.charAt(0).toUpperCase();
+    }
+
+    loadCustomScreensMenu();
+    loadScreen();
+  });
+</script>
+</body>
+</html>

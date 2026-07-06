@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Bildirim Merkezi</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=kCKhg2twlE_smUeIXz_-oZW92MJ6d6Q_ORIlIqiu30cDo8XeMkUqlPGvjkhXnvuAQ1289q7U4pzhd2TZ_SF10jrXi2sSkyKnmQSUTGytWoARSg10n7RSa2WW86AzR2EXboOomA7HGTGIwFIUDmllI51tfgJMzvQwMcB59RW_cj00lMOv3ID9Sy3_R4SmWtR6V6AwngEEwRNKS1PH7O0jy8vRz2mxM19yyCvebPuqcZnUMcvwIsZMooIHz_QkZV-Q42bd2WYskE4Ea0AliGRB32rapLMcijXWjJQ3jewhY7BA6QkTNM5SuetGTVFASf1J60gPmGB3PbkZd5exT96igA" charset="UTF-8"></script><style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #172033;
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #071428;
+      color: #fff;
+      transition: .3s;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-track { background: #071428; }
+    .sidebar::-webkit-scrollbar-thumb { background: #2f7cff; border-radius: 10px; }
+    .sidebar::-webkit-scrollbar-thumb:hover { background: #4b8cff; }
+
+    .sidebar.collapsed { width: 82px; }
+
+    .sidebar-header {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}
+
+    .logo-text h2 { font-size: 21px; letter-spacing: .5px; }
+    .logo-text span { color: #3f8cff; }
+    .logo-text p {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #9ca8ba;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .sidebar.collapsed .logo-text,
+    .sidebar.collapsed .menu-title,
+    .sidebar.collapsed .menu a span,
+    .sidebar.collapsed .sidebar-footer-info { display: none; }
+
+    .menu { padding: 22px 14px 120px 14px; }
+
+    .menu-title {
+      color: #7f8da3;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      margin: 14px 12px 10px;
+    }
+
+    .menu a {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #c9d2e3;
+      text-decoration: none;
+      padding: 0 15px;
+      border-radius: 13px;
+      margin-bottom: 7px;
+      transition: .25s;
+      white-space: nowrap;
+    }
+
+    .menu a i {
+      width: 22px;
+      text-align: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: rgba(47,124,255,.16);
+      color: #fff;
+    }
+
+    .menu a.active { border: 1px solid rgba(47,124,255,.45); }
+
+    .sidebar-footer {
+      position: fixed;
+      left: 14px;
+      bottom: 18px;
+      width: 252px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: .3s;
+    }
+
+    .sidebar.collapsed .sidebar-footer {
+      width: 54px;
+      padding: 8px;
+      justify-content: center;
+    }
+
+    .sidebar-footer i {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(47,124,255,.18);
+      color: #3f8cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer-info h4 { font-size: 13px; margin-bottom: 4px; }
+    .sidebar-footer-info p { color: #9ca8ba; font-size: 12px; }
+
+    .main {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      transition: .3s;
+      min-height: 100vh;
+    }
+
+    .main.expanded {
+      margin-left: 82px;
+      width: calc(100% - 82px);
+    }
+
+    .topbar {
+      height: 78px;
+      background: #fff;
+      border-bottom: 1px solid #e5eaf2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .menu-toggle {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      background: #f1f5fb;
+      color: #172033;
+      cursor: pointer;
+      font-size: 18px;
+      transition: .25s;
+    }
+
+    .menu-toggle:hover { background: #e8eef7; }
+
+    .page-title h1 { font-size: 23px; margin-bottom: 4px; }
+    .page-title p { color: #7a8799; font-size: 13px; }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .search-box {
+      width: 320px;
+      height: 44px;
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+    }
+
+    .search-box i { color: #8793a6; margin-right: 10px; }
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      border-radius: 13px;
+      cursor: pointer;
+      color: #48576b;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f5f8fc;
+      border: 1px solid #e2e8f2;
+      border-radius: 16px;
+      padding: 7px 12px 7px 7px;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1464ff, #3f8cff);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .user-info h4 { font-size: 13px; margin-bottom: 2px; }
+    .user-info p { font-size: 12px; color: #7a8799; }
+
+    .content { padding: 28px; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+    }
+
+    .summary-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .summary-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .summary-card h3 { font-size: 28px; margin-bottom: 6px; }
+    .summary-card p { color: #7a8799; font-size: 14px; }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e5eaf2;
+      border-radius: 22px;
+      box-shadow: 0 12px 32px rgba(31,54,91,.06);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .panel-header h3 { font-size: 18px; }
+    .panel-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn {
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .25s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .primary-btn { background: #2f7cff; color: #fff; }
+    .secondary-btn { background: #f1f5fb; color: #172033; border: 1px solid #e2e8f2; }
+    .danger-btn { background: #fee2e2; color: #b91c1c; }
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover { transform: translateY(-1px); }
+
+    .filters {
+      padding: 18px 24px;
+      border-bottom: 1px solid #edf1f7;
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, .8fr);
+      gap: 12px;
+      background: #fbfcfe;
+    }
+
+    .filter-box {
+      height: 44px;
+      background: #fff;
+      border: 1px solid #e2e8f2;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+    }
+
+    .filter-box i { color: #8793a6; margin-right: 10px; }
+    .filter-box input,
+    .filter-box select {
+      border: none;
+      outline: none;
+      width: 100%;
+      background: transparent;
+      font-size: 14px;
+      color: #172033;
+    }
+
+    .notification-list { padding: 18px; }
+
+    .notification-card {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px;
+      margin-bottom: 12px;
+      border-radius: 18px;
+      border: 1px solid #e5eaf2;
+      background: #fff;
+      transition: .25s;
+    }
+
+    .notification-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(31,54,91,.08);
+    }
+
+    .notification-card.unread {
+      border-left: 5px solid #2f7cff;
+      background: #f4f8ff;
+    }
+
+    .notification-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: #eef5ff;
+      color: #2f7cff;
+    }
+
+    .notification-icon.warning { background: #fff7e6; color: #b76b00; }
+    .notification-icon.danger { background: #fee2e2; color: #dc2626; }
+    .notification-icon.success { background: #eaf8ef; color: #15803d; }
+    .notification-icon.info { background: #eef5ff; color: #2563eb; }
+
+    .notification-content h4 {
+      font-size: 15px;
+      margin-bottom: 6px;
+      color: #172033;
+    }
+
+    .notification-content p {
+      font-size: 14px;
+      color: #66758a;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .notification-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 12px;
+      color: #8a95a6;
+    }
+
+    .pill {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f1f5fb;
+      color: #536176;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .pill.unread { background: #dbeafe; color: #1d4ed8; }
+    .pill.read { background: #eaf8ef; color: #15803d; }
+
+    .notification-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .small-btn {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      cursor: pointer;
+      color: #48576b;
+      font-weight: 700;
+      transition: .25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .small-btn:hover { background: #f5f8fc; }
+    .small-btn.blue { background: #2f7cff; border-color: #2f7cff; color: #fff; }
+    .small-btn.green { background: #16a34a; border-color: #16a34a; color: #fff; }
+
+    .empty-state {
+      padding: 52px 20px;
+      text-align: center;
+      color: #7a8799;
+    }
+
+    .empty-state i {
+      font-size: 42px;
+      color: #b8c3d4;
+      margin-bottom: 14px;
+    }
+
+    .empty-state h3 {
+      color: #172033;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 20, 40, .55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      padding: 18px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 560px;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 28px 80px rgba(7, 20, 40, .25);
+      overflow: hidden;
+      border: 1px solid #e5eaf2;
+    }
+
+    .modal-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid #edf1f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .modal-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-title i {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: #eef5ff;
+      color: #2f7cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-title h3 {
+      font-size: 18px;
+      margin-bottom: 3px;
+    }
+
+    .modal-title p {
+      color: #7a8799;
+      font-size: 13px;
+    }
+
+    .modal-close {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #e2e8f2;
+      background: #fff;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #48576b;
+      font-size: 16px;
+    }
+
+    .modal-body {
+      padding: 22px 24px;
+      display: grid;
+      gap: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: #172033;
+      margin-bottom: 7px;
+    }
+
+    .form-control {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #e2e8f2;
+      border-radius: 13px;
+      padding: 0 14px;
+      outline: none;
+      color: #172033;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    textarea.form-control {
+      min-height: 104px;
+      padding: 13px 14px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .form-control:focus {
+      border-color: #2f7cff;
+      box-shadow: 0 0 0 4px rgba(47,124,255,.10);
+    }
+
+    .modal-footer {
+      padding: 18px 24px;
+      border-top: 1px solid #edf1f7;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fbfcfe;
+    }
+
+    @media (max-width: 1200px) {
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .search-box { display: none; }
+      .filters { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 850px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .sidebar.collapsed { width: 280px; }
+      .main, .main.expanded { margin-left: 0; width: 100%; }
+      .user-info { display: none; }
+      .notification-card { grid-template-columns: 48px 1fr; }
+      .notification-actions { grid-column: 1 / -1; justify-content: flex-start; }
+      .sidebar-footer { position: absolute; }
+    }
+
+    @media (max-width: 560px) {
+      .content { padding: 18px; }
+      .topbar { padding: 0 18px; }
+      .page-title p { display: none; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
+      .panel-header { align-items: flex-start; flex-direction: column; }
+    }
+  /* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+        <div class="logo-text">
+          <h2>OBES <span>ERP</span></h2>
+          <p>AKILLI ÜRETİM</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="sidebar-footer-info">
+          <h4>Güvenli Sistem</h4>
+          <p>Aktif oturum</p>
+        </div>
+      </div>
+      </nav>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title">
+            <h1>Bildirim Merkezi</h1>
+            <p>Sistem uyarılarını ve iş akışı bildirimlerini takip edin.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="topSearch" placeholder="Bildirim ara..." oninput="applyFilters()">
+          </div>
+
+          <button class="icon-btn" onclick="loadNotifications()">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge" id="notificationCount">0</span>
+          </button>
+
+          <div class="user-menu">
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <h4 id="topUserName">Yükleniyor...</h4>
+              <p id="topUserRole">-</p>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-top">
+              <div class="summary-icon"><i class="fa-solid fa-bell"></i></div>
+            </div>
+            <h3 id="totalCount">0</h3>
+            <p>Toplam Bildirim</p>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-top">
+              <div class="summary-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+            </div>
+            <h3 id="unreadCount">0</h3>
+            <p>Okunmamış Bildirim</p>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-top">
+              <div class="summary-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <h3 id="warningCount">0</h3>
+            <p>Uyarı Bildirimi</p>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-top">
+              <div class="summary-icon"><i class="fa-solid fa-calendar-day"></i></div>
+            </div>
+            <h3 id="todayCount">0</h3>
+            <p>Bugünkü Bildirim</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Bildirim Listesi</h3>
+            <div class="panel-actions">
+              <button class="secondary-btn" onclick="loadNotifications()">
+                <i class="fa-solid fa-rotate-right"></i> Yenile
+              </button>
+              <button class="primary-btn" onclick="markAllAsRead()">
+                <i class="fa-solid fa-check-double"></i> Tümünü Okundu Yap
+              </button>
+              <button class="primary-btn" onclick="openCreateNotificationModal()">
+                <i class="fa-solid fa-plus"></i> Bildirim Oluştur
+              </button>
+            </div>
+          </div>
+
+          <div class="filters">
+            <div class="filter-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="searchInput" placeholder="Başlık, açıklama veya modül ara..." oninput="applyFilters()">
+            </div>
+            <div class="filter-box">
+              <i class="fa-solid fa-filter"></i>
+              <select id="statusFilter" onchange="applyFilters()">
+                <option value="all">Tüm Durumlar</option>
+                <option value="unread">Okunmamış</option>
+                <option value="read">Okunmuş</option>
+              </select>
+            </div>
+            <div class="filter-box">
+              <i class="fa-solid fa-layer-group"></i>
+              <select id="typeFilter" onchange="applyFilters()">
+                <option value="all">Tüm Tipler</option>
+                <option value="info">Bilgi</option>
+                <option value="warning">Uyarı</option>
+                <option value="danger">Kritik</option>
+                <option value="success">Başarılı</option>
+              </select>
+            </div>
+            <div class="filter-box">
+              <i class="fa-solid fa-cubes"></i>
+              <select id="moduleFilter" onchange="applyFilters()">
+                <option value="all">Tüm Modüller</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="notification-list" id="notificationList">
+            <div class="empty-state">
+              <i class="fa-regular fa-bell"></i>
+              <h3>Bildirimler yükleniyor...</h3>
+              <p>Lütfen bekleyin.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <div class="modal-overlay" id="notificationModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-bell"></i>
+          <div>
+            <h3>Bildirim Oluştur</h3>
+            <p>Manuel test veya sistem uyarısı ekleyin.</p>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeCreateNotificationModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="notificationTitle">Bildirim Başlığı</label>
+          <input class="form-control" id="notificationTitle" type="text" placeholder="Örn: Stok Seviyesi Kritik">
+        </div>
+
+        <div class="form-group">
+          <label for="notificationMessage">Bildirim Mesajı</label>
+          <textarea class="form-control" id="notificationMessage" placeholder="Örn: ALM-001 minimum stok seviyesinin altına düştü."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="notificationType">Bildirim Tipi</label>
+          <select class="form-control" id="notificationType">
+            <option value="info">Bilgi</option>
+            <option value="warning">Uyarı</option>
+            <option value="danger">Kritik</option>
+            <option value="success">Başarılı</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notificationModule">Modül</label>
+          <select class="form-control" id="notificationModule">
+            <option value="Genel">Genel</option>
+            <option value="Stok Yönetimi">Stok Yönetimi</option>
+            <option value="İş Emirleri">İş Emirleri</option>
+            <option value="Satın Alma">Satın Alma</option>
+            <option value="Makine Bakım">Makine Bakım</option>
+            <option value="Kalite">Kalite</option>
+            <option value="Finans">Finans</option>
+            <option value="İnsan Kaynakları">İnsan Kaynakları</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notificationTargetUrl">Hedef Sayfa URL</label>
+          <input class="form-control" id="notificationTargetUrl" type="text" placeholder="Örn: stokyonetimi.html veya isemirleri.html">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="secondary-btn" onclick="closeCreateNotificationModal()">
+          Vazgeç
+        </button>
+        <button class="primary-btn" onclick="createNotification()">
+          <i class="fa-solid fa-floppy-disk"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    let allNotifications = [];
+    let filteredNotifications = [];
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+
+      if (window.innerWidth <= 850) {
+        sidebar.classList.toggle("mobile-open");
+      } else {
+        sidebar.classList.toggle("collapsed");
+        main.classList.toggle("expanded");
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      const sidebar = document.getElementById("sidebar");
+      const toggle = document.querySelector(".menu-toggle");
+
+      if (
+        window.innerWidth <= 850 &&
+        sidebar.classList.contains("mobile-open") &&
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)
+      ) {
+        sidebar.classList.remove("mobile-open");
+      }
+    });
+
+    function authHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "x-user-id": localStorage.getItem("userId") || "",
+        "x-user-name": localStorage.getItem("fullName") || "",
+        "x-user-role": localStorage.getItem("userRole") || ""
+      };
+    }
+
+    function getUser() {
+      return JSON.parse(localStorage.getItem("user") || "{}");
+    }
+
+    function getFirstLetter(fullName) {
+      if (!fullName) return "-";
+      return fullName.trim().charAt(0).toUpperCase();
+    }
+
+    function setUserInfo() {
+      const user = getUser();
+      const fullName = user.fullName || localStorage.getItem("fullName") || "Kullanıcı";
+      const role = user.role || localStorage.getItem("userRole") || "-";
+
+      document.getElementById("topUserName").textContent = fullName;
+      document.getElementById("topUserRole").textContent = role;
+      document.getElementById("userAvatar").textContent = getFirstLetter(fullName);
+    }
+
+    async function checkPagePermission() {
+      const user = getUser();
+      const roleKey = user.role || localStorage.getItem("userRole");
+
+      if (!roleKey) {
+        window.location.href = "giris.html";
+        return false;
+      }
+
+      if (roleKey === "superadmin") return true;
+
+      const currentPage = "/" + window.location.pathname.split("/").pop();
+
+      try {
+        const response = await fetch(
+          `/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent(currentPage)}`
+        );
+        const data = await response.json();
+
+        if (!data.canAccess) {
+          appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+          window.location.href = "anasayfa.html";
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Sayfa yetki kontrol hatası:", error);
+        window.location.href = "anasayfa.html";
+        return false;
+      }
+    }
+
+    async function applyRoleMenuPermissions() {
+      const user = getUser();
+      const roleKey = user.role || localStorage.getItem("userRole");
+
+      if (!roleKey || roleKey === "superadmin") return;
+
+      const links = document.querySelectorAll(".menu a");
+
+      for (const link of links) {
+        const href = link.getAttribute("href");
+        if (!href || href === "#") continue;
+
+        try {
+          const response = await fetch(
+            `/api/auth/can-access?roleKey=${encodeURIComponent(roleKey)}&pageUrl=${encodeURIComponent("/" + href)}`
+          );
+          const data = await response.json();
+
+          if (!data.success || !data.canAccess) {
+            link.style.display = "none";
+          }
+        } catch (error) {
+          link.style.display = "none";
+        }
+      }
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      const normalized = String(value).replace(" ", "T");
+      const date = new Date(normalized);
+
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+
+      return date.toLocaleString("tr-TR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function isToday(value) {
+      if (!value) return false;
+      const normalized = String(value).replace(" ", "T");
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return false;
+
+      const today = new Date();
+      return date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth() &&
+        date.getDate() === today.getDate();
+    }
+
+    function getNotificationIcon(type) {
+      const icons = {
+        warning: "fa-triangle-exclamation",
+        danger: "fa-circle-exclamation",
+        success: "fa-circle-check",
+        info: "fa-circle-info"
+      };
+
+      return icons[type] || icons.info;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function loadNotifications() {
+      const list = document.getElementById("notificationList");
+      list.innerHTML = `
+        <div class="empty-state">
+          <i class="fa-regular fa-bell"></i>
+          <h3>Bildirimler yükleniyor...</h3>
+          <p>Lütfen bekleyin.</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch("/api/notifications", {
+          headers: authHeaders()
+        });
+
+        const text = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch (jsonError) {
+          throw new Error("API JSON dönmedi. Endpoint veya server yönlendirmesini kontrol et.");
+        }
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Bildirimler alınamadı.");
+        }
+
+        allNotifications = data.notifications || [];
+        document.getElementById("notificationCount").textContent = data.unreadCount || 0;
+        fillModuleFilter();
+        applyFilters();
+      } catch (error) {
+        console.error("Bildirim listeleme hatası:", error);
+        list.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h3>Bildirimler yüklenemedi</h3>
+            <p>${escapeHtml(error.message)}</p>
+          </div>
+        `;
+      }
+    }
+
+    function fillModuleFilter() {
+      const select = document.getElementById("moduleFilter");
+      const current = select.value;
+      const modules = [...new Set(allNotifications.map(x => x.module_name || x.moduleName || "Genel"))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b, "tr"));
+
+      select.innerHTML = `<option value="all">Tüm Modüller</option>`;
+      modules.forEach(moduleName => {
+        select.innerHTML += `<option value="${escapeHtml(moduleName)}">${escapeHtml(moduleName)}</option>`;
+      });
+
+      if ([...select.options].some(opt => opt.value === current)) {
+        select.value = current;
+      }
+    }
+
+    function applyFilters() {
+      const search = (
+        document.getElementById("searchInput").value ||
+        document.getElementById("topSearch").value ||
+        ""
+      ).toLowerCase().trim();
+      const status = document.getElementById("statusFilter").value;
+      const type = document.getElementById("typeFilter").value;
+      const moduleName = document.getElementById("moduleFilter").value;
+
+      filteredNotifications = allNotifications.filter(item => {
+        const isRead = Number(item.is_read || item.isRead || 0) === 1;
+        const itemType = item.type || "info";
+        const itemModule = item.module_name || item.moduleName || "Genel";
+        const haystack = `${item.title || ""} ${item.message || ""} ${itemModule}`.toLowerCase();
+
+        if (search && !haystack.includes(search)) return false;
+        if (status === "read" && !isRead) return false;
+        if (status === "unread" && isRead) return false;
+        if (type !== "all" && itemType !== type) return false;
+        if (moduleName !== "all" && itemModule !== moduleName) return false;
+
+        return true;
+      });
+
+      renderNotifications();
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const unread = allNotifications.filter(x => Number(x.is_read || x.isRead || 0) === 0).length;
+      const warning = allNotifications.filter(x => ["warning", "danger"].includes(x.type || "info")).length;
+      const today = allNotifications.filter(x => isToday(x.created_at || x.createdAt)).length;
+
+      document.getElementById("totalCount").textContent = allNotifications.length;
+      document.getElementById("unreadCount").textContent = unread;
+      document.getElementById("warningCount").textContent = warning;
+      document.getElementById("todayCount").textContent = today;
+      document.getElementById("notificationCount").textContent = unread;
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById("notificationList");
+
+      if (!filteredNotifications.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-bell-slash"></i>
+            <h3>Bildirim bulunamadı</h3>
+            <p>Seçili filtrelere uygun bildirim yok.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = filteredNotifications.map(item => {
+        const id = item.id;
+        const isRead = Number(item.is_read || item.isRead || 0) === 1;
+        const type = item.type || "info";
+        const moduleName = item.module_name || item.moduleName || "Genel";
+        const targetUrl = item.target_url || item.targetUrl || "";
+        const icon = getNotificationIcon(type);
+
+        return `
+          <div class="notification-card ${isRead ? "" : "unread"}">
+            <div class="notification-icon ${escapeHtml(type)}">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+
+            <div class="notification-content">
+              <h4>${escapeHtml(item.title || "Bildirim")}</h4>
+              <p>${escapeHtml(item.message || "")}</p>
+              <div class="notification-meta">
+                <span class="pill">${escapeHtml(moduleName)}</span>
+                <span class="pill ${isRead ? "read" : "unread"}">${isRead ? "Okundu" : "Okunmadı"}</span>
+                <span><i class="fa-regular fa-clock"></i> ${formatDate(item.created_at || item.createdAt)}</span>
+              </div>
+            </div>
+
+            <div class="notification-actions">
+              ${!isRead ? `
+                <button class="small-btn green" onclick="markAsRead(${id})">
+                  <i class="fa-solid fa-check"></i> Okundu
+                </button>
+              ` : ""}
+
+              ${targetUrl ? `
+                <button class="small-btn blue" onclick="openNotification(${id}, '${escapeHtml(targetUrl)}')">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> Aç
+                </button>
+              ` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function markAsRead(id) {
+      try {
+        const response = await fetch(`/api/notifications/${id}/read`, {
+          method: "PUT",
+          headers: authHeaders()
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Bildirim okundu yapılamadı.");
+        }
+
+        await loadNotifications();
+      } catch (error) {
+        appAlert(error.message);
+      }
+    }
+
+    async function markAllAsRead() {
+      try {
+        const response = await fetch("/api/notifications/read-all", {
+          method: "PUT",
+          headers: authHeaders()
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Bildirimler okundu yapılamadı.");
+        }
+
+        await loadNotifications();
+      } catch (error) {
+        appAlert(error.message);
+      }
+    }
+
+    async function openNotification(id, url) {
+      try {
+        await fetch(`/api/notifications/${id}/read`, {
+          method: "PUT",
+          headers: authHeaders()
+        });
+      } catch (error) {
+        console.warn("Bildirim okundu yapılamadı:", error);
+      }
+
+      window.location.href = url;
+    }
+
+
+    function openCreateNotificationModal() {
+      document.getElementById("notificationTitle").value = "";
+      document.getElementById("notificationMessage").value = "";
+      document.getElementById("notificationType").value = "info";
+      document.getElementById("notificationModule").value = "Genel";
+      document.getElementById("notificationTargetUrl").value = "";
+
+      document.getElementById("notificationModal").classList.add("show");
+
+      setTimeout(() => {
+        document.getElementById("notificationTitle").focus();
+      }, 100);
+    }
+
+    function closeCreateNotificationModal() {
+      document.getElementById("notificationModal").classList.remove("show");
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        closeCreateNotificationModal();
+      }
+    });
+
+    document.addEventListener("click", function(e) {
+      const modalOverlay = document.getElementById("notificationModal");
+      if (modalOverlay && e.target === modalOverlay) {
+        closeCreateNotificationModal();
+      }
+    });
+
+    async function createNotification() {
+      const title = document.getElementById("notificationTitle").value.trim();
+      const message = document.getElementById("notificationMessage").value.trim();
+      const type = document.getElementById("notificationType").value;
+      const moduleName = document.getElementById("notificationModule").value;
+      const targetUrl = document.getElementById("notificationTargetUrl").value.trim();
+
+      if (!title) {
+        appAlert("Bildirim başlığı zorunludur.");
+        document.getElementById("notificationTitle").focus();
+        return;
+      }
+
+      if (!message) {
+        appAlert("Bildirim mesajı zorunludur.");
+        document.getElementById("notificationMessage").focus();
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/notifications", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({
+            title: title,
+            message: message,
+            type: type,
+            module_name: moduleName,
+            moduleName: moduleName,
+            target_url: targetUrl,
+            targetUrl: targetUrl,
+            related_type: moduleName,
+            related_id: null
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Bildirim oluşturulamadı.");
+        }
+
+        closeCreateNotificationModal();
+        await loadNotifications();
+
+        appAlert("Bildirim oluşturuldu.");
+      } catch (error) {
+        console.error("Bildirim oluşturma hatası:", error);
+        appAlert(error.message || "Bildirim oluşturulurken hata oluştu.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      setUserInfo();
+      const allowed = await checkPagePermission();
+      if (!allowed) return;
+      await applyRoleMenuPermissions();
+      await loadNotifications();
+    });
+  </script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

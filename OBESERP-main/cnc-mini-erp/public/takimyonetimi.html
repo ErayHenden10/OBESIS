@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBES ERP - Takım Yönetimi</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+body{background:#f4f7fb;color:#172033;overflow-x:hidden}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto}
+.sidebar.collapsed{width:82px}
+.sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}.logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba}
+.sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+.menu{padding:22px 14px 120px}
+.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+.menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+.menu a i{width:22px;text-align:center}
+.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+.menu a.active{border:1px solid rgba(47,124,255,.45)}
+.sidebar-footer{position:fixed;left:14px;bottom:18px;width:252px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;gap:12px}
+.sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+.sidebar-footer-info h4{font-size:13px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+.main{margin-left:280px;width:calc(100% - 280px);transition:.3s}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+.topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-left,.topbar-right{display:flex;align-items:center;gap:18px}
+.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer;font-size:18px}
+.page-title h1{font-size:23px}.page-title p{color:#7a8799;font-size:13px}
+.search-box{width:320px;height:44px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:13px;display:flex;align-items:center;padding:0 14px}
+.search-box i{color:#8793a6;margin-right:10px}.search-box input{border:none;outline:none;background:transparent;width:100%}
+.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;position:relative}
+.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.user-info h4{font-size:13px}.user-info p{font-size:12px;color:#7a8799}
+.content{padding:28px}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+.summary-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:22px;box-shadow:0 12px 32px rgba(31,54,91,.06)}
+.summary-icon{width:48px;height:48px;border-radius:15px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px}
+.summary-card.warning .summary-icon{background:#fff7e6;color:#b76b00}
+.summary-card.danger .summary-icon{background:#fee2e2;color:#dc2626}
+.summary-card.success .summary-icon{background:#eaf8ef;color:#15803d}
+.summary-card h3{font-size:28px;margin-bottom:6px}.summary-card p{color:#7a8799;font-size:14px}
+.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden;margin-bottom:22px}
+.panel-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.panel-actions{display:flex;gap:10px;flex-wrap:wrap}
+.primary-btn,.secondary-btn,.danger-btn{min-height:42px;padding:0 16px;border-radius:12px;border:none;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.primary-btn{background:#2f7cff;color:#fff}.secondary-btn{background:#f1f5fb;color:#172033;border:1px solid #e2e8f2}.danger-btn{background:#fee2e2;color:#b91c1c}
+.filters{padding:18px 24px;border-bottom:1px solid #edf1f7;display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:12px;background:#fbfcfe}
+.filter-box{height:44px;background:#fff;border:1px solid #e2e8f2;border-radius:13px;display:flex;align-items:center;padding:0 14px}
+.filter-box i{color:#8793a6;margin-right:10px}.filter-box input,.filter-box select{border:none;outline:none;width:100%;background:transparent}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th,td{padding:15px 20px;text-align:left;border-bottom:1px solid #edf1f7;font-size:14px;white-space:nowrap}
+th{color:#7a8799;font-size:12px;text-transform:uppercase;background:#fbfcfe}
+.tool-name{display:flex;align-items:center;gap:12px}.tool-icon{width:42px;height:42px;border-radius:13px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center}
+.tool-title h4{font-size:14px;margin-bottom:4px}.tool-title p{font-size:12px;color:#7a8799}
+.status{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.st-active{background:#eaf8ef;color:#15803d}.st-critical{background:#fff7e6;color:#b76b00}.st-expired{background:#fee2e2;color:#dc2626}.st-passive{background:#f1f5fb;color:#64748b}
+.life-wrap{width:150px}.life-text{font-size:12px;margin-bottom:6px;color:#64748b}.life-bar{height:8px;background:#e5eaf2;border-radius:999px;overflow:hidden}.life-fill{height:100%;background:#2f7cff;border-radius:999px}.life-fill.warning{background:#f59e0b}.life-fill.danger{background:#ef4444}
+.small-btn{height:35px;padding:0 11px;border-radius:10px;border:1px solid #e2e8f2;background:#fff;cursor:pointer;font-weight:700;color:#48576b}.small-btn.blue{background:#2f7cff;color:#fff}.small-btn.green{background:#16a34a;color:#fff}.small-btn.red{background:#fee2e2;color:#b91c1c}
+.empty-row{text-align:center;color:#7a8799;padding:30px}
+.modal-overlay{position:fixed;inset:0;background:rgba(7,20,40,.58);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}.modal-overlay.show{display:flex}
+.modal{width:100%;max-width:780px;background:#fff;border-radius:24px;overflow:hidden}.modal.large{max-width:1080px}
+.modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;justify-content:space-between;align-items:center}
+.modal-body{padding:24px}.modal-footer{padding:18px 24px;border-top:1px solid #edf1f7;display:flex;justify-content:flex-end;gap:10px}
+.modal-close{width:38px;height:38px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-group{display:flex;flex-direction:column;gap:8px}.form-group.full{grid-column:1/-1}
+.form-group label{font-size:13px;font-weight:800;color:#48576b}.form-group input,.form-group select,.form-group textarea{border:1px solid #dbe5f2;border-radius:13px;padding:12px;outline:none}.form-group textarea{min-height:90px}
+@media(max-width:1200px){.summary-grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.search-box{display:none}}
+@media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}}
+@media(max-width:560px){.content{padding:18px}.summary-grid,.form-grid{grid-template-columns:1fr}.panel-header{flex-direction:column;align-items:flex-start}}
+/* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div><div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div></div>
+  <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer"><i class="fa-solid fa-shield-halved"></i><div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div></div>
+      </nav>
+</aside>
+
+<main class="main" id="main">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="page-title"><h1>Takım Yönetimi</h1><p>Kesici takım ömrü, kullanım ve değişim hareketlerini takip edin.</p></div>
+  </div>
+  <div class="topbar-right">
+    <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="topSearch" placeholder="Takım ara..." oninput="loadTools()"></div>
+    <button class="icon-btn" onclick="window.location.href='bildirimler.html'"><i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span></button>
+    <div class="user-menu"><div class="avatar" id="userAvatar">-</div><div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div></div>
+  </div>
+</header>
+
+<section class="content">
+  <div class="summary-grid">
+    <div class="summary-card"><div class="summary-icon"><i class="fa-solid fa-screwdriver"></i></div><h3 id="totalTools">0</h3><p>Toplam Takım</p></div>
+    <div class="summary-card success"><div class="summary-icon"><i class="fa-solid fa-circle-check"></i></div><h3 id="activeTools">0</h3><p>Aktif Takım</p></div>
+    <div class="summary-card warning"><div class="summary-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 id="criticalTools">0</h3><p>Kritik Ömür</p></div>
+    <div class="summary-card danger"><div class="summary-icon"><i class="fa-solid fa-circle-xmark"></i></div><h3 id="expiredTools">0</h3><p>Ömrü Biten</p></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3>Takım Listesi</h3>
+      <div class="panel-actions">
+        <button class="secondary-btn" onclick="loadTools()"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
+        <button class="primary-btn" onclick="openToolModal()"><i class="fa-solid fa-plus"></i> Takım Ekle</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-box"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" placeholder="Kod, ad, marka, model ara..." oninput="loadTools()"></div>
+      <div class="filter-box"><i class="fa-solid fa-layer-group"></i>
+        <select id="typeFilter" onchange="loadTools()">
+          <option value="all">Tüm Tipler</option>
+          <option value="Freze">Freze</option>
+          <option value="Matkap">Matkap</option>
+          <option value="Torna Kalemi">Torna Kalemi</option>
+          <option value="Rayba">Rayba</option>
+          <option value="Kılavuz">Kılavuz</option>
+          <option value="Genel">Genel</option>
+        </select>
+      </div>
+      <div class="filter-box"><i class="fa-solid fa-toggle-on"></i>
+        <select id="statusFilter" onchange="loadTools()">
+          <option value="all">Tüm Durumlar</option>
+          <option value="Aktif">Aktif</option>
+          <option value="Kritik">Kritik</option>
+          <option value="Ömrü Bitti">Ömrü Bitti</option>
+          <option value="Pasif">Pasif</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Takım</th><th>Tip</th><th>Marka/Model</th><th>Çap</th><th>Ömür</th><th>Konum</th><th>Durum</th><th>İşlem</th></tr></thead>
+        <tbody id="toolsTable"><tr><td colspan="8" class="empty-row">Takımlar yükleniyor...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal-overlay" id="toolModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="toolModalTitle">Takım Ekle</h3><button class="modal-close" onclick="closeToolModal()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <input type="hidden" id="tool_id">
+        <div class="form-group"><label>Takım Kodu</label><input id="tool_code" placeholder="Boş bırakılırsa otomatik"></div>
+        <div class="form-group"><label>Takım Adı *</label><input id="tool_name" placeholder="Örn: Ø16 Freze Ucu"></div>
+        <div class="form-group"><label>Takım Tipi</label><select id="tool_type"><option>Freze</option><option>Matkap</option><option>Torna Kalemi</option><option>Rayba</option><option>Kılavuz</option><option>Genel</option></select></div>
+        <div class="form-group"><label>Çap</label><input type="number" id="diameter" placeholder="Örn: 16"></div>
+        <div class="form-group"><label>Marka</label><input id="brand"></div>
+        <div class="form-group"><label>Model</label><input id="model"></div>
+        <div class="form-group"><label>Toplam Ömür (Dakika)</label><input type="number" id="total_life_minutes" value="0"></div>
+        <div class="form-group"><label>Kullanılan Süre (Dakika)</label><input type="number" id="used_life_minutes" value="0"></div>
+        <div class="form-group"><label>Konum</label><input id="location" placeholder="Örn: Raf A3"></div>
+        <div class="form-group"><label>Durum</label><select id="status"><option>Aktif</option><option>Kritik</option><option>Ömrü Bitti</option><option>Pasif</option></select></div>
+        <div class="form-group"><label>Son Değişim Tarihi</label><input type="date" id="last_change_date"></div>
+        <div class="form-group full"><label>Açıklama</label><textarea id="description"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="secondary-btn" onclick="closeToolModal()">Vazgeç</button><button class="primary-btn" onclick="saveTool()">Kaydet</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="movementModal">
+  <div class="modal large">
+    <div class="modal-header"><h3 id="movementTitle">Takım Hareketleri</h3><button class="modal-close" onclick="closeMovementModal()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid" style="margin-bottom:18px">
+        <div class="form-group"><label>Hareket Tipi</label><select id="movement_type"><option>Kullanım</option><option>Değişim</option><option>Bakım</option><option>Hurda</option></select></div>
+        <div class="form-group"><label>Kullanım Süresi (Dakika)</label><input type="number" id="used_minutes" value="0"></div>
+        <div class="form-group"><label>Makine Adı</label><input id="machine_name" placeholder="Örn: OBES-01"></div>
+        <div class="form-group"><label>İş Emri No</label><input id="work_order_no" placeholder="Örn: IE-2026-001"></div>
+        <div class="form-group full"><label>Açıklama</label><textarea id="movement_description"></textarea></div>
+      </div>
+
+      <div class="panel-actions" style="margin-bottom:16px">
+        <button class="primary-btn" onclick="saveMovement()"><i class="fa-solid fa-plus"></i> Hareket Kaydet</button>
+        <button class="secondary-btn" onclick="loadToolDetail(currentToolId)"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tip</th><th>Tarih</th><th>Makine</th><th>İş Emri</th><th>Kullanım</th><th>Önce/Sonra</th><th>Açıklama</th></tr></thead>
+          <tbody id="movementsTable"><tr><td colspan="7" class="empty-row">Hareketler yükleniyor...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="secondary-btn" onclick="closeMovementModal()">Kapat</button></div>
+  </div>
+</div>
+
+<script>
+let tools = [];
+let currentToolId = null;
+
+function toggleSidebar(){
+  const sidebar=document.getElementById("sidebar");
+  const main=document.getElementById("main");
+  if(window.innerWidth<=850) sidebar.classList.toggle("mobile-open");
+  else{sidebar.classList.toggle("collapsed");main.classList.toggle("expanded")}
+}
+
+function authHeaders(){
+  return {
+    "Content-Type":"application/json",
+    "x-user-id":localStorage.getItem("userId") || "",
+    "x-user-name":localStorage.getItem("fullName") || "",
+    "x-user-role":localStorage.getItem("userRole") || ""
+  };
+}
+
+function setUserInfo(){
+  const user=JSON.parse(localStorage.getItem("user") || "{}");
+  const fullName=user.fullName || localStorage.getItem("fullName") || "Kullanıcı";
+  const role=user.role || localStorage.getItem("userRole") || "-";
+  document.getElementById("topUserName").textContent=fullName;
+  document.getElementById("topUserRole").textContent=role;
+  document.getElementById("userAvatar").textContent=fullName.charAt(0).toUpperCase();
+}
+
+function escapeHtml(v){return String(v || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function formatDate(v){if(!v)return "-";const d=new Date(String(v).replace(" ","T"));if(isNaN(d.getTime()))return v;return d.toLocaleDateString("tr-TR")+" "+d.toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}
+function statusClass(s){if(s==="Kritik")return"st-critical";if(s==="Ömrü Bitti")return"st-expired";if(s==="Pasif")return"st-passive";return"st-active"}
+
+async function loadNotificationsCount(){
+  try{
+    const r=await fetch("/api/notifications",{headers:authHeaders()});
+    const d=await r.json();
+    document.getElementById("notificationCount").textContent=d.unreadCount || 0;
+  }catch(e){}
+}
+
+async function loadTools(){
+  const tbody=document.getElementById("toolsTable");
+  try{
+    const search=document.getElementById("searchInput").value || document.getElementById("topSearch").value || "";
+    const type=document.getElementById("typeFilter").value;
+    const status=document.getElementById("statusFilter").value;
+    const params=new URLSearchParams();
+    if(search) params.append("search",search);
+    if(type!=="all") params.append("tool_type",type);
+    if(status!=="all") params.append("status",status);
+
+    const r=await fetch("/api/tools?"+params.toString(),{headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Takımlar alınamadı");
+    tools=d.tools || [];
+    renderTools();
+    updateSummary();
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="8" class="empty-row">${escapeHtml(e.message)}</td></tr>`;
+  }
+}
+
+function updateSummary(){
+  document.getElementById("totalTools").textContent=tools.length;
+  document.getElementById("activeTools").textContent=tools.filter(x=>x.status==="Aktif").length;
+  document.getElementById("criticalTools").textContent=tools.filter(x=>x.status==="Kritik").length;
+  document.getElementById("expiredTools").textContent=tools.filter(x=>x.status==="Ömrü Bitti").length;
+}
+
+function lifePercent(t){
+  const total=Number(t.total_life_minutes || 0);
+  const remain=Number(t.remaining_life_minutes || 0);
+  if(total<=0) return 0;
+  return Math.max(Math.min((remain / total) * 100,100),0);
+}
+
+function lifeClass(p){if(p<=10)return"danger";if(p<=25)return"warning";return""}
+
+function renderTools(){
+  const tbody=document.getElementById("toolsTable");
+  if(!tools.length){
+    tbody.innerHTML=`<tr><td colspan="8" class="empty-row">Henüz takım kaydı yok.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML=tools.map(t=>{
+    const p=lifePercent(t);
+    return `
+      <tr>
+        <td>
+          <div class="tool-name">
+            <div class="tool-icon"><i class="fa-solid fa-screwdriver"></i></div>
+            <div class="tool-title">
+              <h4>${escapeHtml(t.tool_name)}</h4>
+              <p>${escapeHtml(t.tool_code || "-")}</p>
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(t.tool_type || "-")}</td>
+        <td>${escapeHtml((t.brand || "-") + " / " + (t.model || "-"))}</td>
+        <td>${t.diameter || "-"}</td>
+        <td>
+          <div class="life-wrap">
+            <div class="life-text">${Number(t.remaining_life_minutes || 0)} dk / ${Number(t.total_life_minutes || 0)} dk</div>
+            <div class="life-bar"><div class="life-fill ${lifeClass(p)}" style="width:${p}%"></div></div>
+          </div>
+        </td>
+        <td>${escapeHtml(t.location || "-")}</td>
+        <td><span class="status ${statusClass(t.status)}">${escapeHtml(t.status || "Aktif")}</span></td>
+        <td>
+          <button class="small-btn blue" onclick="openMovementModal(${t.id})">Hareket</button>
+          <button class="small-btn" onclick="editTool(${t.id})">Düzenle</button>
+          <button class="small-btn red" onclick="deleteTool(${t.id})">Sil</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function openToolModal(){
+  document.getElementById("toolModalTitle").textContent="Takım Ekle";
+  ["tool_id","tool_code","tool_name","brand","model","diameter","location","last_change_date","description"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("tool_type").value="Freze";
+  document.getElementById("total_life_minutes").value=0;
+  document.getElementById("used_life_minutes").value=0;
+  document.getElementById("status").value="Aktif";
+  document.getElementById("toolModal").classList.add("show");
+}
+
+function closeToolModal(){document.getElementById("toolModal").classList.remove("show")}
+
+function editTool(id){
+  const t=tools.find(x=>Number(x.id)===Number(id));
+  if(!t)return;
+  document.getElementById("toolModalTitle").textContent="Takım Düzenle";
+  document.getElementById("tool_id").value=t.id;
+  document.getElementById("tool_code").value=t.tool_code || "";
+  document.getElementById("tool_name").value=t.tool_name || "";
+  document.getElementById("tool_type").value=t.tool_type || "Genel";
+  document.getElementById("brand").value=t.brand || "";
+  document.getElementById("model").value=t.model || "";
+  document.getElementById("diameter").value=t.diameter || "";
+  document.getElementById("total_life_minutes").value=t.total_life_minutes || 0;
+  document.getElementById("used_life_minutes").value=t.used_life_minutes || 0;
+  document.getElementById("location").value=t.location || "";
+  document.getElementById("status").value=t.status || "Aktif";
+  document.getElementById("last_change_date").value=t.last_change_date || "";
+  document.getElementById("description").value=t.description || "";
+  document.getElementById("toolModal").classList.add("show");
+}
+
+async function saveTool(){
+  const id=document.getElementById("tool_id").value;
+  const payload={
+    tool_code:document.getElementById("tool_code").value || null,
+    tool_name:document.getElementById("tool_name").value,
+    tool_type:document.getElementById("tool_type").value,
+    brand:document.getElementById("brand").value,
+    model:document.getElementById("model").value,
+    diameter:document.getElementById("diameter").value || null,
+    total_life_minutes:document.getElementById("total_life_minutes").value || 0,
+    used_life_minutes:document.getElementById("used_life_minutes").value || 0,
+    location:document.getElementById("location").value,
+    status:document.getElementById("status").value,
+    last_change_date:document.getElementById("last_change_date").value || null,
+    description:document.getElementById("description").value
+  };
+  if(!payload.tool_name){appAlert("Takım adı zorunlu.");return;}
+
+  try{
+    const r=await fetch(id ? `/api/tools/${id}` : "/api/tools",{
+      method:id ? "PUT" : "POST",
+      headers:authHeaders(),
+      body:JSON.stringify(payload)
+    });
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Kayıt yapılamadı");
+    closeToolModal();
+    await loadTools();
+  }catch(e){appAlert(e.message)}
+}
+
+async function deleteTool(id){
+  if (!(await appConfirm("Takımı ve hareketlerini silmek istiyor musun?"))) return;
+  try{
+    const r=await fetch(`/api/tools/${id}`,{method:"DELETE",headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Silinemedi");
+    await loadTools();
+  }catch(e){appAlert(e.message)}
+}
+
+async function openMovementModal(id){
+  currentToolId=id;
+  document.getElementById("movementModal").classList.add("show");
+  await loadToolDetail(id);
+}
+
+function closeMovementModal(){document.getElementById("movementModal").classList.remove("show");currentToolId=null}
+
+async function loadToolDetail(id){
+  const tbody=document.getElementById("movementsTable");
+  try{
+    const r=await fetch(`/api/tools/${id}`,{headers:authHeaders()});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Detay alınamadı");
+    document.getElementById("movementTitle").textContent=`Takım Hareketleri - ${d.tool.tool_code} / ${d.tool.tool_name}`;
+    const rows=d.movements || [];
+    if(!rows.length){
+      tbody.innerHTML=`<tr><td colspan="7" class="empty-row">Henüz hareket yok.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML=rows.map(m=>`
+      <tr>
+        <td>${escapeHtml(m.movement_type)}</td>
+        <td>${formatDate(m.created_at)}</td>
+        <td>${escapeHtml(m.machine_name || "-")}</td>
+        <td>${escapeHtml(m.work_order_no || "-")}</td>
+        <td>${Number(m.used_minutes || 0)} dk</td>
+        <td>${Number(m.before_remaining_minutes || 0)} → ${Number(m.after_remaining_minutes || 0)} dk</td>
+        <td>${escapeHtml(m.description || "-")}</td>
+      </tr>
+    `).join("");
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-row">${escapeHtml(e.message)}</td></tr>`;
+  }
+}
+
+async function saveMovement(){
+  if(!currentToolId)return;
+  const payload={
+    movement_type:document.getElementById("movement_type").value,
+    used_minutes:document.getElementById("used_minutes").value || 0,
+    machine_name:document.getElementById("machine_name").value,
+    work_order_no:document.getElementById("work_order_no").value,
+    description:document.getElementById("movement_description").value
+  };
+  try{
+    const r=await fetch(`/api/tools/${currentToolId}/movements`,{
+      method:"POST",
+      headers:authHeaders(),
+      body:JSON.stringify(payload)
+    });
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.message || "Hareket kaydedilemedi");
+    document.getElementById("used_minutes").value=0;
+    document.getElementById("machine_name").value="";
+    document.getElementById("work_order_no").value="";
+    document.getElementById("movement_description").value="";
+    await loadToolDetail(currentToolId);
+    await loadTools();
+  }catch(e){appAlert(e.message)}
+}
+
+document.addEventListener("DOMContentLoaded",async()=>{
+  setUserInfo();
+  await loadNotificationsCount();
+  await loadTools();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

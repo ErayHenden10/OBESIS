@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBES ERP - Doküman Yönetimi</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=m-zuULx9uQzB2pfpOobQTad40feB4SwcpHw9bJoumR3JPtMxb-tS8he7BPXXFZqA8klbfrfpYx8D2tHmmGkFnJFoo2gpwT5XLzB0N-YFFrNl7QvVDBRKWqNYh1qy9AztIkhcnWtKiT-1PdPEsfOZ6ulgrcpQ_jFN6nOS1PPys2eAMJYGI8TvEGwvULb3xCLM61uqZF0W3S6JuhbqZtLRLpgPvk5O5jTK-eKF31ZJG7L8T8y3EOzmTv_qC61tNmOgegUD-UV7I6FnrA5n5Rj07wT5yAbK3Qq-2vp-rbO_e0wmosF1ZwlueY5-f0kpmvS8" charset="UTF-8"></script><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+.app{display:flex;min-height:100vh}
+.sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+.sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-track{background:#071428}.sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+.sidebar.collapsed{width:82px}
+.sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}.logo-text h2{font-size:21px;letter-spacing:.5px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+.sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+.menu{padding:22px 14px 110px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+.menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+.menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+.sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+.sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+.main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+.topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}.menu-toggle:hover{background:#e8eef7}
+.page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+.topbar-right{display:flex;align-items:center;gap:14px}.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}
+.avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+.content{padding:28px}
+.hero{background:linear-gradient(135deg,#071428,#10305f);border-radius:24px;padding:30px;color:#fff;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.hero h2{font-size:28px;margin-bottom:8px}.hero p{color:#c9d2e3;line-height:1.5;max-width:760px}
+.primary-btn,.secondary-btn,.danger-btn{height:44px;padding:0 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px}
+.primary-btn{background:#2f7cff;color:#fff}.secondary-btn{background:#eef5ff;color:#2563eb}.danger-btn{background:#fee2e2;color:#dc2626}
+.primary-btn:hover,.secondary-btn:hover,.danger-btn:hover{transform:translateY(-2px)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+.stat-card{background:#fff;border:1px solid #e5eaf2;border-radius:20px;padding:20px;box-shadow:0 12px 32px rgba(31,54,91,.06)}
+.stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.stat-icon{width:46px;height:46px;border-radius:15px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;font-size:19px}
+.stat-card h3{font-size:26px;margin-bottom:5px}.stat-card p{color:#7a8799;font-size:13px}
+.grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px}
+.panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden}
+.panel-header{padding:20px 22px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-header h3{font-size:18px}.panel-body{padding:20px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form-group{display:flex;flex-direction:column;gap:7px}.form-group.full{grid-column:1/-1}
+label{font-size:12px;color:#64748b;font-weight:800}
+input,select,textarea{width:100%;height:44px;border:1px solid #e2e8f2;border-radius:13px;background:#f8fafc;padding:0 13px;outline:none;font-size:14px;color:#172033}
+textarea{height:88px;padding-top:12px;resize:none}
+.file-box{border:2px dashed #cfe0ff;border-radius:18px;background:#f8fbff;padding:18px;text-align:center;cursor:pointer;transition:.25s}
+.file-box:hover{background:#eef5ff}.file-box i{font-size:28px;color:#2f7cff;margin-bottom:8px}.file-box p{font-size:13px;color:#64748b}
+.table-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.table-tools input,.table-tools select{width:180px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:14px 18px;text-align:left;border-bottom:1px solid #edf1f7;font-size:13px;white-space:nowrap}th{color:#7a8799;font-size:12px;letter-spacing:.6px;text-transform:uppercase;background:#fbfcfe}td{color:#263548}
+.status{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}.status.active{background:#eaf8ef;color:#15803d}.status.passive{background:#fee2e2;color:#dc2626}
+.doc-type{padding:6px 10px;border-radius:10px;background:#eef5ff;color:#2563eb;font-weight:800;font-size:12px}
+.file-icon{width:34px;height:34px;border-radius:10px;background:#eef5ff;color:#2563eb;display:flex;align-items:center;justify-content:center}
+.action-btn{width:35px;height:35px;border:none;border-radius:10px;cursor:pointer;margin-right:5px;background:#eef5ff;color:#2563eb}.action-btn.green{background:#eaf8ef;color:#15803d}.action-btn.red{background:#fee2e2;color:#dc2626}.action-btn.gray{background:#f1f5f9;color:#475569}
+.empty-row{text-align:center;color:#7a8799;padding:26px}
+.modal{position:fixed;inset:0;background:rgba(7,20,40,.58);display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+.modal.open{display:flex}.modal-card{width:min(850px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.modal-header{padding:22px 24px;border-bottom:1px solid #edf1f7;display:flex;justify-content:space-between;align-items:center}.modal-header h3{font-size:20px}
+.close-btn{width:40px;height:40px;border:none;border-radius:12px;background:#f1f5fb;cursor:pointer}
+.toast{position:fixed;right:24px;bottom:24px;background:#071428;color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 16px 40px rgba(7,20,40,.25);display:none;z-index:999}.toast.show{display:block}
+@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.content{padding:18px}.topbar{padding:0 18px}.page-title p{display:none}.stats-grid{grid-template-columns:1fr}.hero h2{font-size:23px}.table-tools input,.table-tools select{width:100%}}
+/* unified scrollable sidebar */
+
+    .sidebar{
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .sidebar::-webkit-scrollbar{width:6px}
+    .sidebar::-webkit-scrollbar-track{background:#071428}
+    .sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .menu{padding-bottom:120px !important}
+    .sidebar-footer{
+      position:sticky !important;
+      bottom:18px;
+      left:auto !important;
+      right:auto !important;
+      margin:0 14px 18px;
+    }
+
+  /* fixed sidebar footer */
+
+    .sidebar-footer{
+      position:fixed !important;
+      left:14px !important;
+      right:auto !important;
+      bottom:18px !important;
+      width:252px;
+      margin:0 !important;
+      z-index:101;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:54px;
+      padding:12px 8px;
+      justify-content:center;
+    }
+    @media(max-width:850px){
+      .sidebar-footer{width:252px}
+    }
+
+  /* sidebar footer below scroll area */
+
+    .sidebar{
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+    .sidebar-header{
+      flex-shrink:0 !important;
+    }
+    .menu{
+      flex:1 1 auto !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-bottom:22px !important;
+    }
+    .menu::-webkit-scrollbar{width:6px}
+    .menu::-webkit-scrollbar-track{background:#071428}
+    .menu::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:0 14px 18px !important;
+      flex-shrink:0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  /* footer as last menu item */
+
+    .sidebar{
+      display:block !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+    }
+    .menu{
+      overflow:visible !important;
+      padding-bottom:22px !important;
+    }
+    .sidebar-footer{
+      position:static !important;
+      left:auto !important;
+      right:auto !important;
+      bottom:auto !important;
+      width:auto !important;
+      margin:14px 0 0 !important;
+      z-index:auto !important;
+    }
+    .sidebar.collapsed .sidebar-footer{
+      width:auto !important;
+      padding:12px 8px;
+      justify-content:center;
+    }
+
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+    <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+  </div>
+
+  <nav class="menu">
+        <div class="menu-title">GENEL</div>
+
+
+
+<a href="anasayfa.html">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Anasayfa</span>
+</a>
+
+<a href="musteriler.html">
+    <i class="fa-solid fa-users"></i>
+    <span>Müşteriler</span>
+</a>
+
+<a href="teklifler.html">
+    <i class="fa-solid fa-file-signature"></i>
+    <span>Teklifler</span>
+</a>
+
+<a href="isemirleri.html">
+    <i class="fa-solid fa-industry"></i>
+    <span>İş Emirleri</span>
+</a>
+
+<div class="menu-title">ÜRETİM</div>
+
+<a href="uretim.html">
+    <i class="fa-solid fa-gears"></i>
+    <span>Üretim</span>
+</a>
+
+<a href="uretimtakip.html">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Üretim Takip</span>
+</a>
+
+<a href="stokyonetimi.html">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stok Yönetimi</span>
+</a>
+
+<a href="bom.html">
+    <i class="fa-solid fa-sitemap"></i>
+    <span>Ürün Reçeteleri (BOM)</span>
+</a>
+
+<a href="mrp.html">
+    <i class="fa-solid fa-calculator"></i>
+    <span>MRP</span>
+</a>
+
+<a href="makinebakim.html">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <span>Makine Bakım</span>
+</a>
+
+<a href="kalite.html">
+    <i class="fa-solid fa-award"></i>
+    <span>Kalite</span>
+</a>
+
+<a href="kalitekontrol.html">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>Kalite Kontrol</span>
+</a>
+
+<div class="menu-title">SATIN ALMA</div>
+
+<a href="tedarikciler.html">
+    <i class="fa-solid fa-truck"></i>
+    <span>Tedarikçiler</span>
+</a>
+
+<a href="satinalmatalepleri.html">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    <span>Satın Alma Talepleri</span>
+</a>
+
+<a href="satinalmaonay.html">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Satın Alma Onayları</span>
+</a>
+
+<a href="satinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Satın Alma Siparişleri</span>
+</a>
+
+<a href="mrpsatinalmatalebi.html">
+    <i class="fa-solid fa-list-check"></i>
+    <span>MRP Satın Alma Talebi</span>
+</a>
+
+<a href="mrpsatinalmasiparisleri.html">
+    <i class="fa-solid fa-cart-arrow-down"></i>
+    <span>MRP Satın Alma Siparişleri</span>
+</a>
+
+<div class="menu-title">FİNANS</div>
+
+<a href="cariler.html">
+    <i class="fa-solid fa-address-book"></i>
+    <span>Cariler</span>
+</a>
+
+<a href="carihareketler.html">
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    <span>Cari Hareketleri</span>
+</a>
+
+<a href="cariekstre.html">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    <span>Cari Ekstre</span>
+</a>
+
+<a href="kasa.html">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Kasalar</span>
+</a>
+
+<a href="kasahareketleri.html">
+    <i class="fa-solid fa-money-check-dollar"></i>
+    <span>Kasa Hareketleri</span>
+</a>
+
+<a href="kasaekstreleri.html">
+    <i class="fa-solid fa-receipt"></i>
+    <span>Kasa Ekstreleri</span>
+</a>
+
+<a href="bankalar.html">
+    <i class="fa-solid fa-building-columns"></i>
+    <span>Bankalar</span>
+</a>
+
+<a href="bankahareketleri.html">
+    <i class="fa-solid fa-building-circle-check"></i>
+    <span>Banka Hareketleri</span>
+</a>
+
+<a href="bankaekstre.html">
+    <i class="fa-solid fa-file-lines"></i>
+    <span>Banka Ekstre</span>
+</a>
+
+<a href="tahsilatlar.html">
+    <i class="fa-solid fa-wallet"></i>
+    <span>Tahsilatlar</span>
+</a>
+
+<div class="menu-title">İNSAN KAYNAKLARI</div>
+
+<a href="calisanlar.html">
+    <i class="fa-solid fa-user-group"></i>
+    <span>Çalışanlar</span>
+</a>
+
+<a href="ikizinler.html">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>İzin Yönetimi</span>
+</a>
+
+<a href="ikmaas.html">
+    <i class="fa-solid fa-money-check"></i>
+    <span>Maaş & Avans</span>
+</a>
+
+<a href="ikmesai.html">
+    <i class="fa-solid fa-business-time"></i>
+    <span>Mesai Takibi</span>
+</a>
+
+<a href="ikevrak.html">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Evrak Yönetimi</span>
+</a>
+
+<div class="menu-title">LOJİSTİK</div>
+
+<a href="sevkiyat.html">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Sevkiyat</span>
+</a>
+
+<div class="menu-title">YÖNETİM</div>
+
+<a href="kullanicilar.html">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Kullanıcılar</span>
+</a>
+
+<a href="roller.html">
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Rol Yönetimi</span>
+</a>
+
+<a href="ayarlar.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Ayarlar</span>
+</a>
+        <div class="sidebar-footer">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div>
+  </div>
+      </nav>
+</aside>
+
+<main class="main" id="main">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="page-title"><h1>Doküman Yönetimi</h1><p>İş emirlerine teknik resim, DXF, STEP ve revizyon dosyaları bağlayın.</p></div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="window.location.href='bildirimler.html'"><i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span></button>
+    <div class="user-menu">
+      <div class="avatar" id="userAvatar">-</div>
+      <div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </div>
+</header>
+
+<section class="content">
+  <div class="hero">
+    <div>
+      <h2>İş Emri Doküman Arşivi</h2>
+      <p>PDF teknik resim, DXF, STEP, fotoğraf ve revizyon dosyalarını iş emri bazında sakla. Üretim ekibi tek ekrandan doğru revizyona ulaşsın.</p>
+    </div>
+    <button class="primary-btn" onclick="uploadDocument()"><i class="fa-solid fa-cloud-arrow-up"></i> Doküman Yükle</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div></div><h3 id="totalDocs">0</h3><p>Toplam Doküman</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-file-pdf"></i></div></div><h3 id="pdfDocs">0</h3><p>PDF / Teknik Resim</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-drafting-compass"></i></div></div><h3 id="cadDocs">0</h3><p>DXF / STEP</p></div>
+    <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-code-branch"></i></div></div><h3 id="revDocs">0</h3><p>Revizyonlu Dosya</p></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-header"><h3>Yeni Doküman</h3></div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>İş Emri</label>
+            <select id="workOrderId">
+              <option value="">İş emri seçilmedi</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Doküman Tipi</label>
+            <select id="documentType">
+              <option value="Teknik Resim">Teknik Resim</option>
+              <option value="DXF">DXF</option>
+              <option value="STEP">STEP</option>
+              <option value="Fotoğraf">Fotoğraf</option>
+              <option value="Kalite Dokümanı">Kalite Dokümanı</option>
+              <option value="Genel">Genel</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Revizyon No</label>
+            <input id="revisionNo" value="R0" placeholder="R0">
+          </div>
+
+          <div class="form-group full">
+            <label>Başlık</label>
+            <input id="title" placeholder="Örn: Flanş Teknik Resim R1">
+          </div>
+
+          <div class="form-group full">
+            <label>Açıklama</label>
+            <textarea id="description" placeholder="Dosya ile ilgili açıklama"></textarea>
+          </div>
+
+          <div class="form-group full">
+            <label>Dosya</label>
+            <div class="file-box" onclick="document.getElementById('fileInput').click()">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <h4 id="fileNameText">Dosya seç</h4>
+              <p>PDF, DXF, DWG, STEP, STP, JPG, PNG, Excel veya Word yükleyebilirsin.</p>
+            </div>
+            <input type="file" id="fileInput" style="display:none" onchange="fileChanged()">
+          </div>
+
+          <div class="form-group full">
+            <button class="primary-btn" onclick="uploadDocument()"><i class="fa-solid fa-floppy-disk"></i> Dokümanı Kaydet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Doküman Listesi</h3>
+        <div class="table-tools">
+          <input id="searchInput" placeholder="Ara..." oninput="loadDocuments()">
+          <select id="typeFilter" onchange="loadDocuments()">
+            <option value="">Tüm Tipler</option>
+            <option value="Teknik Resim">Teknik Resim</option>
+            <option value="DXF">DXF</option>
+            <option value="STEP">STEP</option>
+            <option value="Fotoğraf">Fotoğraf</option>
+            <option value="Kalite Dokümanı">Kalite Dokümanı</option>
+            <option value="Genel">Genel</option>
+          </select>
+          <button class="secondary-btn" onclick="loadDocuments()"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Dosya</th>
+              <th>Doküman No</th>
+              <th>Başlık</th>
+              <th>İş Emri</th>
+              <th>Tip</th>
+              <th>Rev.</th>
+              <th>Durum</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody id="documentsTable"><tr><td colspan="8" class="empty-row">Veriler yükleniyor...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Doküman Düzenle</h3>
+      <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="panel-body">
+      <input type="hidden" id="editId">
+
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>İş Emri</label>
+          <select id="editWorkOrderId"></select>
+        </div>
+
+        <div class="form-group">
+          <label>Doküman Tipi</label>
+          <select id="editDocumentType">
+            <option value="Teknik Resim">Teknik Resim</option>
+            <option value="DXF">DXF</option>
+            <option value="STEP">STEP</option>
+            <option value="Fotoğraf">Fotoğraf</option>
+            <option value="Kalite Dokümanı">Kalite Dokümanı</option>
+            <option value="Genel">Genel</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Revizyon No</label>
+          <input id="editRevisionNo">
+        </div>
+
+        <div class="form-group full">
+          <label>Başlık</label>
+          <input id="editTitle">
+        </div>
+
+        <div class="form-group">
+          <label>Durum</label>
+          <select id="editStatus">
+            <option value="Aktif">Aktif</option>
+            <option value="Pasif">Pasif</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label>Açıklama</label>
+          <textarea id="editDescription"></textarea>
+        </div>
+
+        <div class="form-group full">
+          <button class="primary-btn" onclick="updateDocument()"><i class="fa-solid fa-check"></i> Güncelle</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let documents = [];
+let workOrders = [];
+
+function toggleSidebar(){
+  const sidebar=document.getElementById("sidebar");
+  const main=document.getElementById("main");
+  if(window.innerWidth<=850){sidebar.classList.toggle("mobile-open")}
+  else{sidebar.classList.toggle("collapsed");main.classList.toggle("expanded")}
+}
+
+function authHeaders(json=true){
+  const user=JSON.parse(localStorage.getItem("user") || "{}");
+  const headers = {
+    "x-user-id": localStorage.getItem("userId") || user.id || "",
+    "x-user-name": localStorage.getItem("fullName") || user.fullName || "",
+    "x-user-role": localStorage.getItem("userRole") || user.role || ""
+  };
+  if(json) headers["Content-Type"] = "application/json";
+  return headers;
+}
+
+function initUser(){
+  const user=JSON.parse(localStorage.getItem("user") || "{}");
+  const fullName=user.fullName || localStorage.getItem("fullName") || "Kullanıcı";
+  const role=user.role || localStorage.getItem("userRole") || "-";
+  document.getElementById("topUserName").textContent=fullName;
+  document.getElementById("topUserRole").textContent=role;
+  document.getElementById("userAvatar").textContent=fullName.trim().charAt(0).toUpperCase();
+}
+
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2600);
+}
+
+function fileChanged(){
+  const file = document.getElementById("fileInput").files[0];
+  document.getElementById("fileNameText").textContent = file ? file.name : "Dosya seç";
+}
+
+function iconByExt(ext){
+  ext = (ext || "").toLowerCase();
+  if(ext === ".pdf") return "fa-file-pdf";
+  if([".dxf",".dwg",".step",".stp"].includes(ext)) return "fa-drafting-compass";
+  if([".jpg",".jpeg",".png"].includes(ext)) return "fa-image";
+  if([".xlsx",".xls"].includes(ext)) return "fa-file-excel";
+  if([".docx",".doc"].includes(ext)) return "fa-file-word";
+  return "fa-file";
+}
+
+function statusClass(status){
+  return status === "Pasif" ? "passive" : "active";
+}
+
+async function loadNotifications(){
+  try{
+    const r=await fetch("/api/notifications",{headers:authHeaders(false)});
+    const d=await r.json();
+    document.getElementById("notificationCount").textContent=d.unreadCount || 0;
+  }catch(e){}
+}
+
+async function loadWorkOrders(){
+  try{
+    const r=await fetch("/api/documents/work-orders",{headers:authHeaders(false)});
+    const data=await r.json();
+    workOrders = data.workOrders || [];
+
+    const select = document.getElementById("workOrderId");
+    const editSelect = document.getElementById("editWorkOrderId");
+
+    const options = [`<option value="">İş emri seçilmedi</option>`].concat(
+      workOrders.map(w => `
+        <option value="${w.id}">
+          ${w.work_order_no || "-"} - ${w.part_name || w.title || "-"}
+        </option>
+      `)
+    ).join("");
+
+    select.innerHTML = options;
+    editSelect.innerHTML = options;
+  }catch(err){
+    console.error("İş emirleri alınamadı:", err);
+  }
+}
+
+async function loadDocuments(){
+  try{
+    const q=document.getElementById("searchInput").value || "";
+    const type=document.getElementById("typeFilter").value || "";
+
+    const params = new URLSearchParams();
+    if(q) params.append("q", q);
+    if(type) params.append("type", type);
+
+    const r=await fetch("/api/documents?" + params.toString(),{headers:authHeaders(false)});
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    documents = data.documents || [];
+    renderDocuments();
+    updateStats();
+  }catch(err){
+    console.error(err);
+    document.getElementById("documentsTable").innerHTML = `<tr><td colspan="8" class="empty-row">Dokümanlar alınamadı.</td></tr>`;
+  }
+}
+
+function renderDocuments(){
+  const tbody=document.getElementById("documentsTable");
+  tbody.innerHTML="";
+
+  if(!documents.length){
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-row">Henüz doküman yok.</td></tr>`;
+    return;
+  }
+
+  documents.forEach(d=>{
+    tbody.innerHTML += `
+      <tr>
+        <td><div class="file-icon"><i class="fa-solid ${iconByExt(d.file_ext)}"></i></div></td>
+        <td><b>${d.document_no || "-"}</b></td>
+        <td>
+          <b>${d.title || "-"}</b><br>
+          <span style="color:#7a8799;font-size:12px">${d.original_file_name || "-"}</span>
+        </td>
+        <td>${d.work_order_no || "-"}</td>
+        <td><span class="doc-type">${d.document_type || "Genel"}</span></td>
+        <td>${d.revision_no || "R0"}</td>
+        <td><span class="status ${statusClass(d.status)}">${d.status || "Aktif"}</span></td>
+        <td>
+          <button class="action-btn green" title="İndir" onclick="downloadDocument(${d.id})"><i class="fa-solid fa-download"></i></button>
+          <button class="action-btn" title="Düzenle" onclick="openEdit(${d.id})"><i class="fa-solid fa-pen"></i></button>
+          <button class="action-btn gray" title="Pasifleştir" onclick="archiveDocument(${d.id})"><i class="fa-solid fa-box-archive"></i></button>
+          <button class="action-btn red" title="Sil" onclick="deleteDocument(${d.id})"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function updateStats(){
+  document.getElementById("totalDocs").textContent = documents.length;
+  document.getElementById("pdfDocs").textContent = documents.filter(d => (d.file_ext || "").toLowerCase() === ".pdf" || d.document_type === "Teknik Resim").length;
+  document.getElementById("cadDocs").textContent = documents.filter(d => [".dxf",".dwg",".step",".stp"].includes((d.file_ext || "").toLowerCase()) || ["DXF","STEP"].includes(d.document_type)).length;
+  document.getElementById("revDocs").textContent = documents.filter(d => (d.revision_no || "R0") !== "R0").length;
+}
+
+async function uploadDocument(){
+  try{
+    const file = document.getElementById("fileInput").files[0];
+
+    if(!file){
+      appAlert("Dosya seçmelisin.");
+      return;
+    }
+
+    const user=JSON.parse(localStorage.getItem("user") || "{}");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("work_order_id", document.getElementById("workOrderId").value || "");
+    formData.append("document_type", document.getElementById("documentType").value || "Genel");
+    formData.append("title", document.getElementById("title").value || file.name);
+    formData.append("revision_no", document.getElementById("revisionNo").value || "R0");
+    formData.append("description", document.getElementById("description").value || "");
+    formData.append("uploaded_by", user.fullName || localStorage.getItem("fullName") || "Sistem");
+
+    const r=await fetch("/api/documents",{
+      method:"POST",
+      headers: authHeaders(false),
+      body: formData
+    });
+
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    showToast("Doküman yüklendi.");
+    document.getElementById("fileInput").value="";
+    document.getElementById("fileNameText").textContent="Dosya seç";
+    document.getElementById("title").value="";
+    document.getElementById("description").value="";
+    document.getElementById("revisionNo").value="R0";
+
+    loadDocuments();
+  }catch(err){
+    appAlert("Doküman yüklenemedi: " + err.message);
+  }
+}
+
+function downloadDocument(id){
+  window.location.href = `/api/documents/${id}/download`;
+}
+
+function openEdit(id){
+  const d = documents.find(x => Number(x.id) === Number(id));
+  if(!d) return;
+
+  document.getElementById("editId").value = d.id;
+  document.getElementById("editWorkOrderId").value = d.work_order_id || "";
+  document.getElementById("editDocumentType").value = d.document_type || "Genel";
+  document.getElementById("editRevisionNo").value = d.revision_no || "R0";
+  document.getElementById("editTitle").value = d.title || "";
+  document.getElementById("editStatus").value = d.status || "Aktif";
+  document.getElementById("editDescription").value = d.description || "";
+
+  document.getElementById("editModal").classList.add("open");
+}
+
+function closeModal(){
+  document.getElementById("editModal").classList.remove("open");
+}
+
+async function updateDocument(){
+  try{
+    const id=document.getElementById("editId").value;
+
+    const body={
+      work_order_id: document.getElementById("editWorkOrderId").value || null,
+      document_type: document.getElementById("editDocumentType").value,
+      revision_no: document.getElementById("editRevisionNo").value || "R0",
+      title: document.getElementById("editTitle").value,
+      status: document.getElementById("editStatus").value,
+      description: document.getElementById("editDescription").value || ""
+    };
+
+    const r=await fetch(`/api/documents/${id}`,{
+      method:"PUT",
+      headers:authHeaders(true),
+      body:JSON.stringify(body)
+    });
+
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    showToast("Doküman güncellendi.");
+    closeModal();
+    loadDocuments();
+  }catch(err){
+    appAlert("Güncelleme hatası: " + err.message);
+  }
+}
+
+async function archiveDocument(id){
+  if (!(await appConfirm("Doküman pasifleştirilsin mi?"))) return;
+
+  try{
+    const r=await fetch(`/api/documents/${id}/archive`,{
+      method:"PUT",
+      headers:authHeaders(true)
+    });
+
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    showToast("Doküman pasifleştirildi.");
+    loadDocuments();
+  }catch(err){
+    appAlert("Pasifleştirme hatası: " + err.message);
+  }
+}
+
+async function deleteDocument(id){
+  if (!(await appConfirm("Doküman kalıcı olarak silinsin mi?"))) return;
+
+  try{
+    const r=await fetch(`/api/documents/${id}`,{
+      method:"DELETE",
+      headers:authHeaders(true)
+    });
+
+    const data=await r.json();
+    if(!data.success) throw new Error(data.message);
+
+    showToast("Doküman silindi.");
+    loadDocuments();
+  }catch(err){
+    appAlert("Silme hatası: " + err.message);
+  }
+}
+
+async function checkPagePermission(){
+  try{
+    const user=JSON.parse(localStorage.getItem("user") || "{}");
+    const roleKey=user.role || localStorage.getItem("userRole");
+    if(!roleKey){window.location.href="giris.html";return}
+    if(roleKey==="superadmin") return;
+    const currentPage="/" + window.location.pathname.split("/").pop();
+    const response=await fetch(`/api/auth/can-access?roleKey=${roleKey}&pageUrl=${currentPage}`);
+    const data=await response.json();
+    if(!data.canAccess){
+      appAlert("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+      window.location.href="anasayfa.html";
+    }
+  }catch(e){}
+}
+
+document.addEventListener("DOMContentLoaded", async ()=>{
+  initUser();
+  loadNotifications();
+  await loadWorkOrders();
+  await loadDocuments();
+  checkPagePermission();
+});
+</script>
+  <script>
+    (function markActiveMenuItem() {
+      const currentPage = decodeURIComponent((window.location.pathname.split("/").pop() || "anasayfa.html").toLowerCase());
+      document.querySelectorAll(".menu a").forEach((link) => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        if (href === currentPage) {
+          link.classList.add("active");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

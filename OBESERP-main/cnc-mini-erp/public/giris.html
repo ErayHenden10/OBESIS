@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - Giriş</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f5f8fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .login-wrapper {
+      width: 94%;
+      max-width: 1280px;
+      height: 86vh;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      border-radius: 28px;
+    }
+
+    .left-panel {
+      position: relative;
+      padding: 70px;
+      border-radius: 28px 0 0 28px;
+      overflow: hidden;
+      color: #fff;
+      background:
+        linear-gradient(90deg, rgba(4, 13, 30, .98), rgba(4, 13, 30, .82)),
+        url("https://images.unsplash.com/photo-1565439371132-2f7c8f4c55ec?auto=format&fit=crop&w=1400&q=80");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 70px;
+    }
+
+    .logo-icon{
+    width:80px;
+    height:80px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    overflow:hidden;
+}
+
+.logo-icon img{
+    width:180px;
+    height:140px;
+    object-fit:contain;
+    image-rendering:auto;
+}
+
+    .logo h2 {
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .logo h2 span {
+      color: #2f7cff;
+    }
+
+    .logo p {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #9ca8ba;
+      margin-top: 4px;
+    }
+
+    .hero-title {
+      font-size: 48px;
+      line-height: 1.18;
+      margin-bottom: 24px;
+      font-weight: 800;
+    }
+
+    .hero-title span {
+      color: #2f7cff;
+    }
+
+    .hero-desc {
+      max-width: 460px;
+      color: #c9d2e3;
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .feature {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 28px;
+      align-items: center;
+    }
+
+    .feature i {
+      width: 56px;
+      height: 56px;
+      border: 1px solid #2f7cff;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2f7cff;
+      font-size: 22px;
+      background: rgba(47, 124, 255, .08);
+    }
+
+    .feature h4 {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .feature p {
+      color: #aeb9ca;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 42px;
+      left: 70px;
+      right: 70px;
+      border-top: 1px solid rgba(255,255,255,.16);
+      padding-top: 18px;
+      color: #9ca8ba;
+      font-size: 13px;
+    }
+
+    .right-panel {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f8fc;
+      border-radius: 0 28px 28px 0;
+      overflow: hidden;
+    }
+
+    .right-panel::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -80px;
+      top: 35px;
+      background: radial-gradient(#2f7cff 1.5px, transparent 1.5px);
+      background-size: 14px 14px;
+      opacity: .22;
+    }
+
+    .login-card {
+      position: relative;
+      z-index: 2;
+      width: 480px;
+      background: #fff;
+      padding: 58px 52px;
+      border-radius: 22px;
+      box-shadow: 0 24px 70px rgba(31, 54, 91, .14);
+    }
+
+    .login-card h1 {
+      font-size: 30px;
+      color: #142033;
+      margin-bottom: 12px;
+    }
+
+    .login-card .subtitle {
+      color: #68758a;
+      margin-bottom: 36px;
+      font-size: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      color: #172033;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .input-box {
+      height: 54px;
+      border: 1px solid #dce3ee;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      transition: .25s;
+    }
+
+    .input-box:focus-within {
+      border-color: #2f7cff;
+      box-shadow: 0 0 0 4px rgba(47,124,255,.12);
+    }
+
+    .input-box i {
+      color: #7c899c;
+      margin-right: 13px;
+      font-size: 16px;
+    }
+
+    .input-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 15px;
+      color: #142033;
+    }
+
+    .input-box input::placeholder {
+      color: #99a4b5;
+    }
+
+    .password-toggle {
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 4px 0 30px;
+      font-size: 14px;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #4b5568;
+    }
+
+    .remember input {
+      width: 16px;
+      height: 16px;
+      accent-color: #2f7cff;
+    }
+
+    .forgot {
+      color: #2f7cff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 56px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1262f3, #3182ff);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(47,124,255,.28);
+      transition: .25s;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(47,124,255,.36);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 30px 0;
+      color: #8a95a6;
+      font-size: 14px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #e5eaf2;
+    }
+
+    .company-btn {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #ccd6e4;
+      background: #fff;
+      border-radius: 10px;
+      color: #216be8;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .company-btn:hover {
+      background: #f4f8ff;
+      border-color: #2f7cff;
+    }
+
+    .secure-text {
+      margin-top: 34px;
+      text-align: center;
+      color: #697589;
+      font-size: 13px;
+    }
+
+    .secure-text i {
+      color: #6e7d91;
+      margin-right: 6px;
+    }
+
+    @media (max-width: 950px) {
+      body {
+        overflow: auto;
+      }
+
+      .login-wrapper {
+        grid-template-columns: 1fr;
+        height: auto;
+        margin: 24px 0;
+      }
+
+      .left-panel {
+        display: none;
+      }
+
+      .right-panel {
+        min-height: 100vh;
+        border-radius: 24px;
+      }
+
+      .login-card {
+        width: 92%;
+        padding: 42px 28px;
+      }
+    }
+  </style>
+  <script src="site-popups.js?v=professional-1"></script>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+
+  <div class="login-wrapper">
+
+    <section class="left-panel">
+      <div class="logo">
+        <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+        <div>
+          <h2>OBES <span>ERP</span></h2>
+          <p>AKILLI ÜRETİM YÖNETİMİ</p>
+        </div>
+      </div>
+
+      <h1 class="hero-title">
+        Üretiminizi<br>
+        Yönetin,<br>
+        <span>İşinizi Büyütün.</span>
+      </h1>
+
+      <p class="hero-desc">
+        OBES ERP ile tekliften tahsilata, üretimden stok yönetimine tüm süreçlerinizi tek yerden yönetin.
+      </p>
+
+      <div class="feature">
+        <i class="fa-solid fa-chart-line"></i>
+        <div>
+          <h4>Verimliliğinizi Artırın</h4>
+          <p>Tüm süreçlerinizi dijitalleştirin, zaman kazanın.</p>
+        </div>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <h4>Hataları Azaltın</h4>
+          <p>Otomasyon ile hataları minimize edin, kaliteyi artırın.</p>
+        </div>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div>
+          <h4>Güvenle Yönetin</h4>
+          <p>Verileriniz güvende, işiniz kontrolünüzde.</p>
+        </div>
+      </div>
+
+      <div class="copyright">
+        © 2026 OBES ERP. Tüm hakları saklıdır.
+      </div>
+    </section>
+
+    <section class="right-panel">
+      <div class="login-card">
+        <h1>Hoş Geldiniz</h1>
+        <p class="subtitle">Hesabınıza giriş yaparak devam edin.</p>
+
+        <form onsubmit="login(event)">
+          <div class="form-group">
+            <label>Kullanıcı Adı</label>
+            <div class="input-box">
+              <i class="fa-regular fa-user"></i>
+              <input type="text" id="username" placeholder="Kullanıcı adınızı giriniz" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Şifre</label>
+            <div class="input-box">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="password" placeholder="Şifrenizi giriniz" required>
+              <i class="fa-regular fa-eye-slash password-toggle" onclick="togglePassword()"></i>
+            </div>
+          </div>
+
+          <div class="options">
+            <label class="remember">
+              <input type="checkbox">
+              Beni hatırla
+            </label>
+
+            <a href="#" class="forgot">Şifremi unuttum?</a>
+          </div>
+
+          <button class="login-btn" type="submit">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Giriş Yap
+          </button>
+
+          <div class="divider">veya</div>
+
+          <button type="button" class="company-btn">
+            <i class="fa-regular fa-building"></i>
+            Firma Kodu ile Giriş
+          </button>
+
+          <div class="secure-text">
+            <i class="fa-solid fa-shield-halved"></i>
+            Güvenli bağlantı ile korunmaktadır
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </div>
+<script>
+  function togglePassword() {
+    const password = document.getElementById("password");
+    const icon = document.querySelector(".password-toggle");
+
+    if (password.type === "password") {
+      password.type = "text";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    } else {
+      password.type = "password";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    }
+  }
+
+  async function login(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          password
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("userRole", data.user.role);
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("username", data.user.username);
+        localStorage.setItem("fullName", data.user.fullName);
+
+        window.location.href = "anasayfa.html";
+      } else {
+        appAlert(data.message || "Giriş başarısız.");
+      }
+
+    } catch (error) {
+      console.error(error);
+      appAlert("Sunucu bağlantı hatası.");
+    }
+  }
+</script>
+<!-- <script>
+async function checkPagePermission() {
+
+    const user =
+        JSON.parse(localStorage.getItem("user") || "{}");
+
+    const roleKey =
+        user.role || localStorage.getItem("userRole");
+
+    if (!roleKey) {
+        window.location.href = "giris.html";
+        return;
+    }
+
+    if (roleKey === "superadmin") {
+        return;
+    }
+
+    const currentPage =
+        "/" +
+        window.location.pathname.split("/").pop();
+
+    const response = await fetch(
+        `/api/auth/can-access?roleKey=${roleKey}&pageUrl=${currentPage}`
+    );
+
+    const data = await response.json();
+
+    if (!data.canAccess) {
+
+        appAlert(
+            "Bu sayfaya erişim yetkiniz bulunmamaktadır."
+        );
+
+        window.location.href = "anasayfa.html";
+    }
+}
+
+checkPagePermission();
+</script> -->
+</body>
+</html>

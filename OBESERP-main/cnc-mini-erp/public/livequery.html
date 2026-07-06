@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>OBES ERP - Live Query Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;transition:.3s}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px 120px}
+    .menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s}
+    .menu a i{width:22px;text-align:center;font-size:17px}
+    .menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}
+    .menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}
+    .main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}
+    .menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+
+    .content{padding:28px}
+    .hero-card{background:linear-gradient(135deg,rgba(7,20,40,.96),rgba(16,48,95,.92)),url("https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1400&q=80");background-size:cover;background-position:center;color:#fff;border-radius:24px;padding:30px 34px;display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:24px}
+    .hero-card h2{font-size:28px;margin-bottom:10px}
+    .hero-card p{color:#c9d2e3;max-width:790px;line-height:1.6;font-size:14px}
+    .hero-badge{height:46px;padding:0 18px;border-radius:999px;background:rgba(47,124,255,.18);border:1px solid rgba(47,124,255,.38);display:flex;align-items:center;gap:10px;font-weight:800}
+
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:20px}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden;margin-bottom:20px}
+    .panel-header{padding:21px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .panel-header h3{font-size:18px}.panel-header p{font-size:12px;color:#7a8799;margin-top:4px}
+    .panel-body{padding:22px 24px}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:13px;font-weight:800;color:#27364a;margin-bottom:8px}
+    .form-control{width:100%;height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;color:#172033;font-size:14px}
+    textarea.form-control{height:245px;padding:14px;font-family:Consolas,monospace;resize:vertical;line-height:1.5}
+    .form-control:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+    .primary-btn,.secondary-btn,.danger-btn{height:44px;padding:0 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;white-space:nowrap}
+    .primary-btn{background:#2f7cff;color:#fff;box-shadow:0 12px 24px rgba(47,124,255,.24)}
+    .secondary-btn{background:#f1f5fb;color:#263548;border:1px solid #e2e8f2}
+    .danger-btn{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+    .button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+    .query-card,.table-card{border:1px solid #e5eaf2;background:#fbfcfe;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;transition:.25s}
+    .query-card:hover,.table-card:hover{border-color:rgba(47,124,255,.45);background:#eef5ff}
+    .query-card h4,.table-card h4{font-size:14px;margin-bottom:5px}
+    .query-card p,.table-card p{font-size:12px;color:#7a8799;line-height:1.5}
+    .table-wrap{overflow:auto;border:1px solid #e5eaf2;border-radius:18px;max-height:570px}
+    table{width:100%;border-collapse:collapse;min-width:900px}
+    th,td{padding:13px 15px;border-bottom:1px solid #edf1f7;text-align:left;font-size:13px;white-space:nowrap}
+    th{background:#fbfcfe;color:#7a8799;text-transform:uppercase;font-size:11px;letter-spacing:.6px;position:sticky;top:0}
+    .empty-state{padding:28px;text-align:center;color:#7a8799;border:1px dashed #cbd5e1;border-radius:18px;background:#fbfcfe}
+    .pill{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;background:#dcfce7;color:#15803d}
+    .toast{position:fixed;right:24px;bottom:24px;z-index:999;background:#071428;color:#fff;border-radius:16px;padding:15px 18px;box-shadow:0 18px 40px rgba(7,20,40,.24);display:none;max-width:380px;font-size:14px}
+    .toast.show{display:block}
+
+    @media(max-width:1200px){.grid{grid-template-columns:1fr}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero-card{flex-direction:column;align-items:flex-start}}
+  </style>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div>
+      <div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div>
+    </div>
+
+    <nav class="menu">
+      <div class="menu-title">GENEL</div>
+      <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+      <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+      <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+      <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+
+      <div class="menu-title">YÖNETİM</div>
+      <a href="eventcenter.html"><i class="fa-solid fa-bolt"></i><span>Event Center</span></a>
+      <a href="erpreplay.html"><i class="fa-solid fa-film"></i><span>ERP Replay</span></a>
+      <a href="livequerystudio.html" class="active"><i class="fa-solid fa-database"></i><span>Live Query Studio</span></a>
+      <a href="kpidesigner.html"><i class="fa-solid fa-gauge-high"></i><span>KPI Designer</span></a>
+      <a href="reportdesigner.html"><i class="fa-solid fa-file-lines"></i><span>Report Designer</span></a>
+      <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Read Only SQL</p></div>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title"><h1>Live Query Studio</h1><p>ERP veritabanında güvenli SELECT sorguları çalıştır.</p></div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="loadSavedQueries()" title="Yenile"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">0</span></button>
+        <div class="user-menu">
+          <div class="avatar" id="userAvatar">E</div>
+          <div class="user-info"><h4 id="topUserName">Eray</h4><p id="topUserRole">Admin</p></div>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="hero-card">
+        <div>
+          <h2>Live Query Studio</h2>
+          <p>SQL Studio gibi çalışır. Sadece SELECT sorgularına izin verir, sonucu gridde gösterir, CSV dışa aktarır ve sık kullanılan sorguları kaydeder.</p>
+        </div>
+        <div class="hero-badge"><i class="fa-solid fa-terminal"></i> Query Engine</div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <div><h3>Tablolar</h3><p>Tablo adına tıklayınca örnek sorgu gelir.</p></div>
+            </div>
+            <div class="panel-body" id="tableList">
+              <div class="empty-state">Tablolar yükleniyor...</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div><h3>Kayıtlı Sorgular</h3><p>Hazır sorguları tekrar çalıştır.</p></div>
+            </div>
+            <div class="panel-body" id="savedQueries">
+              <div class="empty-state">Sorgular yükleniyor...</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <div><h3>SQL Editör</h3><p>Güvenlik için yalnızca SELECT kabul edilir.</p></div>
+              <span class="pill">READ ONLY</span>
+            </div>
+
+            <div class="panel-body">
+              <textarea class="form-control" id="sqlEditor">SELECT * FROM work_orders LIMIT 50</textarea>
+
+              <div class="button-row">
+                <button class="primary-btn" onclick="runQuery()"><i class="fa-solid fa-play"></i> Çalıştır</button>
+                <button class="secondary-btn" onclick="saveQuery()"><i class="fa-solid fa-floppy-disk"></i> Kaydet</button>
+                <button class="secondary-btn" onclick="exportCsv()"><i class="fa-solid fa-file-export"></i> CSV</button>
+                <button class="danger-btn" onclick="clearEditor()"><i class="fa-solid fa-xmark"></i> Temizle</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div><h3>Sorgu Sonucu</h3><p id="resultInfo">Henüz sorgu çalıştırılmadı.</p></div>
+            </div>
+
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table>
+                  <thead id="resultHead"><tr><th>Sonuç</th></tr></thead>
+                  <tbody id="resultBody"><tr><td>Hazır.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let lastColumns = [];
+  let lastRows = [];
+
+  function toggleSidebar() {
+    const s = document.getElementById("sidebar");
+    const m = document.getElementById("main");
+    if (window.innerWidth <= 850) s.classList.toggle("mobile-open");
+    else {
+      s.classList.toggle("collapsed");
+      m.classList.toggle("expanded");
+    }
+  }
+
+  function showToast(message) {
+    const t = document.getElementById("toast");
+    t.textContent = message;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  function escapeHtml(v) {
+    return String(v ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  async function runQuery() {
+    const sql = document.getElementById("sqlEditor").value.trim();
+
+    try {
+      const r = await fetch("/api/live-query/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sql })
+      });
+
+      const d = await r.json();
+      if (!d.success) throw new Error(d.message || d.error);
+
+      lastColumns = d.columns || [];
+      lastRows = d.data || [];
+
+      renderResult(lastColumns, lastRows);
+      document.getElementById("resultInfo").textContent = `${d.rowCount} satır döndü.`;
+      showToast("Sorgu çalıştırıldı.");
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  function renderResult(columns, rows) {
+    const head = document.getElementById("resultHead");
+    const body = document.getElementById("resultBody");
+
+    if (!columns.length) {
+      head.innerHTML = `<tr><th>Sonuç</th></tr>`;
+      body.innerHTML = `<tr><td>Kayıt bulunamadı.</td></tr>`;
+      return;
+    }
+
+    head.innerHTML = `<tr>${columns.map(c => `<th>${escapeHtml(c)}</th>`).join("")}</tr>`;
+
+    body.innerHTML = rows.map(row => `
+      <tr>${columns.map(c => `<td>${escapeHtml(row[c])}</td>`).join("")}</tr>
+    `).join("");
+  }
+
+  async function saveQuery() {
+    const sql = document.getElementById("sqlEditor").value.trim();
+    const name = prompt("Sorgu adı:", "Yeni Sorgu");
+
+    if (!name) return;
+
+    try {
+      const r = await fetch("/api/live-query/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-user-name": "eray" },
+        body: JSON.stringify({
+          query_name: name,
+          description: "",
+          sql_query: sql
+        })
+      });
+
+      const d = await r.json();
+      if (!d.success) throw new Error(d.message || d.error);
+
+      showToast("Sorgu kaydedildi.");
+      loadSavedQueries();
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  async function loadSavedQueries() {
+    const area = document.getElementById("savedQueries");
+    area.innerHTML = `<div class="empty-state">Sorgular yükleniyor...</div>`;
+
+    try {
+      const r = await fetch("/api/live-query/saved");
+      const d = await r.json();
+
+      if (!d.success) throw new Error(d.error);
+
+      if (!d.data.length) {
+        area.innerHTML = `<div class="empty-state">Kayıtlı sorgu yok.</div>`;
+        return;
+      }
+
+      area.innerHTML = d.data.map(q => `
+        <div class="query-card">
+          <h4>${escapeHtml(q.query_name)}</h4>
+          <p>${escapeHtml(q.sql_query)}</p>
+          <div class="button-row">
+            <button class="secondary-btn" style="height:34px" onclick="useQuery(${q.id})">Aç</button>
+            <button class="danger-btn" style="height:34px" onclick="deleteQuery(${q.id})">Sil</button>
+          </div>
+        </div>
+      `).join("");
+
+      window.savedQueryData = d.data;
+    } catch (err) {
+      area.innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function useQuery(id) {
+    const q = (window.savedQueryData || []).find(x => Number(x.id) === Number(id));
+    if (!q) return;
+    document.getElementById("sqlEditor").value = q.sql_query;
+    showToast("Sorgu editöre alındı.");
+  }
+
+  async function deleteQuery(id) {
+    if (!confirm("Sorgu silinsin mi?")) return;
+
+    try {
+      await fetch(`/api/live-query/saved/${id}`, { method: "DELETE" });
+      showToast("Sorgu silindi.");
+      loadSavedQueries();
+    } catch {
+      showToast("Sorgu silinemedi.");
+    }
+  }
+
+  async function loadTables() {
+    const area = document.getElementById("tableList");
+
+    try {
+      const r = await fetch("/api/live-query/tables");
+      const d = await r.json();
+
+      if (!d.success) throw new Error(d.error);
+
+      area.innerHTML = d.data.map(t => `
+        <div class="table-card" onclick="sampleTable('${escapeHtml(t.name)}')">
+          <h4><i class="fa-solid fa-table"></i> ${escapeHtml(t.name)}</h4>
+          <p>SELECT * FROM ${escapeHtml(t.name)} LIMIT 50</p>
+        </div>
+      `).join("");
+    } catch (err) {
+      area.innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function sampleTable(name) {
+    document.getElementById("sqlEditor").value = `SELECT * FROM ${name} LIMIT 50`;
+  }
+
+  function exportCsv() {
+    if (!lastColumns.length) {
+      showToast("Önce sorgu çalıştır.");
+      return;
+    }
+
+    const csv = [
+      lastColumns.join(";"),
+      ...lastRows.map(row => lastColumns.map(c => `"${String(row[c] ?? "").replaceAll('"','""')}"`).join(";"))
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "live-query-result.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function clearEditor() {
+    document.getElementById("sqlEditor").value = "";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadTables();
+    loadSavedQueries();
+  });
+</script>
+
+<script src="/js/universal-search.js"></script>
+</body>
+</html>

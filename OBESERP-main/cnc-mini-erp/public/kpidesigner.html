@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBES ERP - KPI Designer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7fb;color:#172033;overflow-x:hidden}
+    .app{display:flex;min-height:100vh}
+    .sidebar{width:280px;background:#071428;color:#fff;transition:.3s;position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden}
+    .sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-track{background:#071428}.sidebar::-webkit-scrollbar-thumb{background:#2f7cff;border-radius:10px}
+    .sidebar.collapsed{width:82px}
+    .sidebar-header{height:78px;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:none;
+    border-radius:0;
+}
+
+.logo-icon img{
+    width:110px;
+    height:100px;
+    display:block;
+    object-fit:contain;
+}    .logo-text h2{font-size:21px;letter-spacing:.5px}.logo-text span{color:#3f8cff}.logo-text p{font-size:10px;letter-spacing:2px;color:#9ca8ba;margin-top:3px;white-space:nowrap}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .menu-title,.sidebar.collapsed .menu a span,.sidebar.collapsed .sidebar-footer-info{display:none}
+    .menu{padding:22px 14px 120px}.menu-title{color:#7f8da3;font-size:11px;font-weight:700;letter-spacing:1.6px;margin:14px 12px 10px}
+    .menu a{height:48px;display:flex;align-items:center;gap:14px;color:#c9d2e3;text-decoration:none;padding:0 15px;border-radius:13px;margin-bottom:7px;transition:.25s;white-space:nowrap}
+    .menu a i{width:22px;text-align:center;font-size:17px;flex-shrink:0}.menu a:hover,.menu a.active{background:rgba(47,124,255,.16);color:#fff}.menu a.active{border:1px solid rgba(47,124,255,.45)}
+    .sidebar-footer{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px}
+    .sidebar-footer i{width:38px;height:38px;border-radius:12px;background:rgba(47,124,255,.18);color:#3f8cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sidebar-footer-info h4{font-size:13px;margin-bottom:4px}.sidebar-footer-info p{color:#9ca8ba;font-size:12px}
+    .main{margin-left:280px;width:calc(100% - 280px);transition:.3s;min-height:100vh}.main.expanded{margin-left:82px;width:calc(100% - 82px)}
+    .topbar{height:78px;background:#fff;border-bottom:1px solid #e5eaf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:18px}.menu-toggle{width:44px;height:44px;border:none;border-radius:12px;background:#f1f5fb;color:#172033;cursor:pointer;font-size:18px;transition:.25s}.menu-toggle:hover{background:#e8eef7}
+    .page-title h1{font-size:23px;margin-bottom:4px}.page-title p{color:#7a8799;font-size:13px}
+    .topbar-right{display:flex;align-items:center;gap:14px}.icon-btn{width:44px;height:44px;border:1px solid #e2e8f2;background:#fff;border-radius:13px;cursor:pointer;color:#48576b;font-size:16px;position:relative}
+    .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+    .user-menu{display:flex;align-items:center;gap:12px;background:#f5f8fc;border:1px solid #e2e8f2;border-radius:16px;padding:7px 12px 7px 7px;cursor:pointer}
+    .avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1464ff,#3f8cff);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}.user-info h4{font-size:13px;margin-bottom:2px}.user-info p{font-size:12px;color:#7a8799}
+    .content{padding:28px}
+    .hero-card{background:linear-gradient(135deg,rgba(7,20,40,.96),rgba(16,48,95,.92)),url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=1400&q=80");background-size:cover;background-position:center;color:#fff;border-radius:24px;padding:30px 34px;display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:24px;overflow:hidden}
+    .hero-card h2{font-size:28px;margin-bottom:10px}.hero-card p{color:#c9d2e3;max-width:760px;line-height:1.6;font-size:14px}.hero-badge{height:46px;padding:0 18px;border-radius:999px;background:rgba(47,124,255,.18);border:1px solid rgba(47,124,255,.38);display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;white-space:nowrap}
+    .grid{display:grid;grid-template-columns:420px 1fr;gap:20px}
+    .panel{background:#fff;border:1px solid #e5eaf2;border-radius:22px;box-shadow:0 12px 32px rgba(31,54,91,.06);overflow:hidden;margin-bottom:20px}
+    .panel-header{padding:21px 24px;border-bottom:1px solid #edf1f7;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.panel-header h3{font-size:18px}.panel-header p{margin-top:4px;font-size:12px;color:#7a8799}.panel-body{padding:22px 24px}
+    .form-group{margin-bottom:14px}.form-group label{display:block;font-size:13px;font-weight:800;color:#27364a;margin-bottom:8px}
+    .form-control{width:100%;height:44px;border:1px solid #dce3ee;border-radius:12px;padding:0 14px;outline:none;background:#fff;color:#172033;font-size:14px;transition:.25s}
+    textarea.form-control{height:112px;padding:12px 14px;resize:vertical;font-family:Consolas,monospace}
+    .form-control:focus{border-color:#2f7cff;box-shadow:0 0 0 4px rgba(47,124,255,.12)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .primary-btn,.secondary-btn,.danger-btn{height:44px;padding:0 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-size:13px;white-space:nowrap}
+    .primary-btn{background:#2f7cff;color:#fff;box-shadow:0 12px 24px rgba(47,124,255,.24)}.secondary-btn{background:#f1f5fb;color:#263548;border:1px solid #e2e8f2}.danger-btn{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}.primary-btn:hover,.secondary-btn:hover,.danger-btn:hover{transform:translateY(-1px)}
+    .button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .result-box{border:1px solid #e5eaf2;border-radius:18px;background:#fbfcfe;padding:18px;margin-top:14px}
+    .result-value{font-size:38px;font-weight:900;color:#172033}.result-status{font-size:12px;font-weight:900;border-radius:999px;padding:6px 10px;display:inline-flex;margin-top:8px}
+    .status-success{background:#dcfce7;color:#15803d}.status-warning{background:#fef3c7;color:#b45309}.status-danger{background:#fee2e2;color:#dc2626}
+    .kpi-list{display:flex;flex-direction:column;gap:10px;max-height:680px;overflow:auto;padding-right:4px}
+    .kpi-card{border:1px solid #e5eaf2;background:#fbfcfe;border-radius:16px;padding:15px;transition:.25s;cursor:pointer}
+    .kpi-card:hover{border-color:rgba(47,124,255,.45);background:#eef5ff}
+    .kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+    .kpi-title{display:flex;gap:12px}.kpi-title i{width:42px;height:42px;border-radius:13px;background:#eef5ff;color:#2f7cff;display:flex;align-items:center;justify-content:center;flex-shrink:0}.kpi-title h4{font-size:14px;margin-bottom:4px}.kpi-title p{font-size:12px;color:#7a8799}
+    .pill{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;background:#f1f5f9;color:#475569}
+    .pill.active{background:#dcfce7;color:#15803d}.pill.passive{background:#fee2e2;color:#b91c1c}
+    .kpi-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.mini-btn{height:34px;padding:0 10px;border-radius:11px;border:1px solid #e2e8f2;background:#fff;color:#48576b;cursor:pointer;font-size:12px;font-weight:800}.mini-btn:hover{background:#eef5ff;color:#2f7cff}.mini-btn.danger:hover{background:#fee2e2;color:#dc2626;border-color:#fecaca}
+    .empty-state{padding:28px;text-align:center;color:#7a8799;border:1px dashed #cbd5e1;border-radius:18px;background:#fbfcfe}
+    .toast{position:fixed;right:24px;bottom:24px;z-index:999;background:#071428;color:#fff;border-radius:16px;padding:15px 18px;box-shadow:0 18px 40px rgba(7,20,40,.24);display:none;max-width:380px;font-size:14px}.toast.show{display:block;animation:slideIn .2s ease-out}@keyframes slideIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+    @media(max-width:1200px){.grid{grid-template-columns:1fr}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.sidebar.collapsed{width:280px}.main,.main.expanded{margin-left:0;width:100%}.user-info{display:none}.hero-card{flex-direction:column;align-items:flex-start}.row{grid-template-columns:1fr}}
+    @media(max-width:560px){.content{padding:18px}.topbar{padding:0 18px}.page-title p{display:none}.panel-header,.panel-body{padding:18px}}
+  </style>
+  <script src="module-reports.js?v=1"></script>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header"><div class="logo-icon">
+    <img src="uploads/documents/obes-logo.png.png" alt="OBES">
+</div><div class="logo-text"><h2>OBES <span>ERP</span></h2><p>AKILLI ÜRETİM</p></div></div>
+      <nav class="menu">
+        <div class="menu-title">GENEL</div>
+        <a href="anasayfa.html"><i class="fa-solid fa-chart-pie"></i><span>Anasayfa</span></a>
+        <a href="musteriler.html"><i class="fa-solid fa-users"></i><span>Müşteriler</span></a>
+        <a href="teklifler.html"><i class="fa-solid fa-file-signature"></i><span>Teklifler</span></a>
+        <a href="isemirleri.html"><i class="fa-solid fa-industry"></i><span>İş Emirleri</span></a>
+        <div class="menu-title">ÜRETİM</div>
+        <a href="uretim.html"><i class="fa-solid fa-gears"></i><span>Üretim</span></a>
+        <a href="uretimtakip.html"><i class="fa-solid fa-chart-line"></i><span>Üretim Takip</span></a>
+        <a href="stokyonetimi.html"><i class="fa-solid fa-boxes-stacked"></i><span>Stok Yönetimi</span></a>
+        <a href="kalitekontrol.html"><i class="fa-solid fa-clipboard-check"></i><span>Kalite Kontrol</span></a>
+        <div class="menu-title">YÖNETİM</div>
+        <a href="workflow.html"><i class="fa-solid fa-diagram-project"></i><span>Workflow</span></a>
+        <a href="notificationcenter.html"><i class="fa-solid fa-bell"></i><span>Notification Center</span></a>
+        <a href="dashboarddesigner.html"><i class="fa-solid fa-grip"></i><span>Dashboard Designer</span></a>
+        <a href="kpidesigner.html" class="active"><i class="fa-solid fa-gauge-high"></i><span>KPI Designer</span></a>
+        <a href="log.html"><i class="fa-solid fa-clock-rotate-left"></i><span>Sistem Logları</span></a>
+        <a href="ayarlar.html"><i class="fa-solid fa-gear"></i><span>Ayarlar</span></a>
+      </nav>
+      <div class="sidebar-footer"><i class="fa-solid fa-shield-halved"></i><div class="sidebar-footer-info"><h4>Güvenli Sistem</h4><p>Aktif oturum</p></div></div>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <div class="topbar-left"><button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button><div class="page-title"><h1>KPI Designer</h1><p>Kod yazmadan kendi KPI metriklerini oluştur.</p></div></div>
+        <div class="topbar-right">
+          <button class="icon-btn" onclick="loadKpis()" title="Yenile"><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="icon-btn" title="Bildirimler"><i class="fa-regular fa-bell"></i><span class="badge" id="notificationCount">0</span></button>
+          <div class="user-menu"><div class="avatar" id="userAvatar">-</div><div class="user-info"><h4 id="topUserName">Yükleniyor...</h4><p id="topUserRole">-</p></div><i class="fa-solid fa-chevron-down"></i></div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="hero-card">
+          <div><h2>No-Code KPI Tasarımcısı</h2><p>SQL SELECT sorgusu ile kendi KPI'ını tanımla, hedef ve uyarı limitleri belirle, sonra Dashboard Designer içinde widget olarak kullan.</p></div>
+          <div class="hero-badge"><i class="fa-solid fa-gauge-high"></i> KPI Engine</div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <div class="panel">
+              <div class="panel-header"><div><h3>KPI Tanımı</h3><p>SELECT sorgusu tek değer döndürmelidir.</p></div></div>
+              <div class="panel-body">
+                <input type="hidden" id="editingId">
+
+                <div class="form-group"><label>KPI Adı</label><input class="form-control" id="kpiName" placeholder="Örn: Günlük Üretim" required></div>
+
+                <div class="row">
+                  <div class="form-group"><label>Modül</label>
+                    <select class="form-control" id="moduleKey">
+                      <option value="uretim">Üretim</option>
+                      <option value="stokyonetimi">Stok</option>
+                      <option value="kalite">Kalite</option>
+                      <option value="workflow">Workflow</option>
+                      <option value="finans">Finans</option>
+                      <option value="bakim">Bakım</option>
+                      <option value="satis">Satış</option>
+                    </select>
+                  </div>
+                  <div class="form-group"><label>İkon</label><input class="form-control" id="icon" value="fa-gauge-high"></div>
+                </div>
+
+                <div class="form-group"><label>Açıklama</label><input class="form-control" id="description" placeholder="Bu KPI neyi ölçüyor?"></div>
+
+                <div class="form-group">
+                  <label>SQL Query</label>
+                  <textarea class="form-control" id="sqlQuery" placeholder="SELECT COUNT(*) AS value FROM work_orders"></textarea>
+                </div>
+
+                <div class="row">
+                  <div class="form-group"><label>Hedef Değer</label><input class="form-control" id="targetValue" type="number" step="0.01" value="0"></div>
+                  <div class="form-group"><label>Uyarı Değeri</label><input class="form-control" id="warningValue" type="number" step="0.01" value="0"></div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group"><label>Tehlike Değeri</label><input class="form-control" id="dangerValue" type="number" step="0.01" value="0"></div>
+                  <div class="form-group"><label>Birim</label><input class="form-control" id="unit" placeholder="%, adet, ₺"></div>
+                </div>
+
+                <div class="form-group"><label>Yön</label>
+                  <select class="form-control" id="direction">
+                    <option value="higher_better">Yüksek değer iyidir</option>
+                    <option value="lower_better">Düşük değer iyidir</option>
+                  </select>
+                </div>
+
+                <div class="button-row">
+                  <button class="secondary-btn" onclick="testKpi()"><i class="fa-solid fa-play"></i> Test Et</button>
+                  <button class="primary-btn" onclick="saveKpi()"><i class="fa-solid fa-floppy-disk"></i> Kaydet</button>
+                  <button class="danger-btn" onclick="clearForm()"><i class="fa-solid fa-xmark"></i> Temizle</button>
+                </div>
+
+                <div class="result-box" id="testResult" style="display:none;">
+                  <div class="result-value" id="resultValue">0</div>
+                  <div id="resultStatus" class="result-status">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel">
+              <div class="panel-header"><div><h3>KPI Listesi</h3><p>Tanımlı KPI'ları düzenle, test et veya sil.</p></div><button class="secondary-btn" onclick="loadKpis()"><i class="fa-solid fa-rotate"></i> Yenile</button></div>
+              <div class="panel-body">
+                <div class="kpi-list" id="kpiList">
+                  <div class="empty-state">KPI'lar yükleniyor...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let kpis = [];
+
+    function toggleSidebar(){const s=document.getElementById("sidebar");const m=document.getElementById("main");if(window.innerWidth<=850)s.classList.toggle("mobile-open");else{s.classList.toggle("collapsed");m.classList.toggle("expanded")}}
+    function showToast(message){const t=document.getElementById("toast");t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)}
+    function getUser(){try{return JSON.parse(localStorage.getItem("user")||"{}")}catch{return {}}}
+    function normalizeRole(role){return String(role||"").trim().toLowerCase().replace("yönetici","admin").replace("yonetici","admin").replace("süper admin","superadmin").replace("super admin","superadmin")}
+    function authHeaders(){const u=getUser();return{"Content-Type":"application/json","x-user-id":u.id||localStorage.getItem("userId")||"","x-user-name":u.username||u.fullName||u.full_name||localStorage.getItem("fullName")||"","x-user-role":normalizeRole(localStorage.getItem("userRole")||u.role||"")}}
+    function setTopUser(){const u=getUser();const n=u.fullName||u.full_name||u.username||localStorage.getItem("fullName")||"Kullanıcı";const r=u.role||localStorage.getItem("userRole")||"-";document.getElementById("topUserName").textContent=n;document.getElementById("topUserRole").textContent=r;document.getElementById("userAvatar").textContent=String(n).trim().charAt(0).toUpperCase()}
+    async function apiGet(url){const r=await fetch(url,{headers:authHeaders()});const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.message||"API hatası");return d}
+    async function apiPost(url,body){const r=await fetch(url,{method:"POST",headers:authHeaders(),body:JSON.stringify(body)});const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.message||"API hatası");return d}
+    async function apiPut(url,body){const r=await fetch(url,{method:"PUT",headers:authHeaders(),body:JSON.stringify(body)});const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.message||"API hatası");return d}
+    async function apiDelete(url){const r=await fetch(url,{method:"DELETE",headers:authHeaders()});const d=await r.json();if(!r.ok||d.success===false)throw new Error(d.message||"API hatası");return d}
+    function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+
+    function getFormData(){
+      return {
+        kpiName: document.getElementById("kpiName").value.trim(),
+        moduleKey: document.getElementById("moduleKey").value,
+        description: document.getElementById("description").value.trim(),
+        sqlQuery: document.getElementById("sqlQuery").value.trim(),
+        targetValue: Number(document.getElementById("targetValue").value || 0),
+        warningValue: Number(document.getElementById("warningValue").value || 0),
+        dangerValue: Number(document.getElementById("dangerValue").value || 0),
+        direction: document.getElementById("direction").value,
+        unit: document.getElementById("unit").value.trim(),
+        icon: document.getElementById("icon").value.trim() || "fa-gauge-high",
+        active: true
+      };
+    }
+
+    async function loadKpis(){
+      const list=document.getElementById("kpiList");
+      list.innerHTML=`<div class="empty-state">KPI'lar yükleniyor...</div>`;
+      try{
+        const d=await apiGet("/api/kpi-designer");
+        kpis=d.data||[];
+        renderKpis();
+      }catch(e){
+        list.innerHTML=`<div class="empty-state">${escapeHtml(e.message)}</div>`;
+      }
+    }
+
+    function renderKpis(){
+      const list=document.getElementById("kpiList");
+      if(!kpis.length){
+        list.innerHTML=`<div class="empty-state">Henüz KPI tanımı yok.</div>`;
+        return;
+      }
+
+      list.innerHTML=kpis.map(k=>`
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-title">
+              <i class="fa-solid ${escapeHtml(k.icon||"fa-gauge-high")}"></i>
+              <div>
+                <h4>${escapeHtml(k.kpi_name)}</h4>
+                <p>${escapeHtml(k.kpi_key)} • ${escapeHtml(k.module_key||"-")}</p>
+              </div>
+            </div>
+            ${Number(k.active)===1?`<span class="pill active">Aktif</span>`:`<span class="pill passive">Pasif</span>`}
+          </div>
+
+          <p style="font-size:12px;color:#64748b;line-height:1.5;">${escapeHtml(k.description||"")}</p>
+          <p style="font-size:12px;color:#64748b;margin-top:8px;">Hedef: <b>${escapeHtml(k.target_value||0)} ${escapeHtml(k.unit||"")}</b></p>
+
+          <div class="kpi-actions">
+            <button class="mini-btn" onclick="editKpi(${k.id})">Düzenle</button>
+            <button class="mini-btn" onclick="testExistingKpi(${k.id})">Test</button>
+            <button class="mini-btn danger" onclick="deleteKpi(${k.id})">Sil</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function editKpi(id){
+      const k=kpis.find(x=>Number(x.id)===Number(id));
+      if(!k)return;
+
+      document.getElementById("editingId").value=k.id;
+      document.getElementById("kpiName").value=k.kpi_name||"";
+      document.getElementById("moduleKey").value=k.module_key||"uretim";
+      document.getElementById("description").value=k.description||"";
+      document.getElementById("sqlQuery").value=k.sql_query||"";
+      document.getElementById("targetValue").value=k.target_value||0;
+      document.getElementById("warningValue").value=k.warning_value||0;
+      document.getElementById("dangerValue").value=k.danger_value||0;
+      document.getElementById("direction").value=k.direction||"higher_better";
+      document.getElementById("unit").value=k.unit||"";
+      document.getElementById("icon").value=k.icon||"fa-gauge-high";
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    async function testKpi(){
+      const body=getFormData();
+      try{
+        const d=await apiPost("/api/kpi-designer/test",body);
+        showResult(d.result);
+        showToast("KPI test edildi.");
+      }catch(e){
+        showToast(e.message);
+      }
+    }
+
+    async function testExistingKpi(id){
+      try{
+        const d=await apiGet(`/api/kpi-designer/${id}/value`);
+        showResult(d.result);
+        showToast(`${d.kpi.kpi_name}: ${d.result.value} ${d.result.unit||""}`);
+      }catch(e){
+        showToast(e.message);
+      }
+    }
+
+    function showResult(result){
+      const box=document.getElementById("testResult");
+      const value=document.getElementById("resultValue");
+      const status=document.getElementById("resultStatus");
+
+      box.style.display="";
+      value.textContent=`${result.value} ${result.unit||""}`;
+
+      status.className=`result-status status-${result.status}`;
+      status.textContent=result.status==="success"?"Başarılı":result.status==="warning"?"Uyarı":"Kritik";
+    }
+
+    async function saveKpi(){
+      const body=getFormData();
+      const id=document.getElementById("editingId").value;
+
+      if(!body.kpiName || !body.sqlQuery){
+        showToast("KPI adı ve SQL zorunlu.");
+        return;
+      }
+
+      try{
+        if(id){
+          await apiPut(`/api/kpi-designer/${id}`,body);
+          showToast("KPI güncellendi.");
+        }else{
+          await apiPost("/api/kpi-designer",body);
+          showToast("KPI oluşturuldu.");
+        }
+
+        clearForm();
+        await loadKpis();
+      }catch(e){
+        showToast(e.message);
+      }
+    }
+
+    async function deleteKpi(id){
+      if(!confirm("KPI silinsin mi?"))return;
+
+      try{
+        await apiDelete(`/api/kpi-designer/${id}`);
+        showToast("KPI silindi.");
+        await loadKpis();
+      }catch(e){
+        showToast(e.message);
+      }
+    }
+
+    function clearForm(){
+      document.getElementById("editingId").value="";
+      document.getElementById("kpiName").value="";
+      document.getElementById("moduleKey").value="uretim";
+      document.getElementById("description").value="";
+      document.getElementById("sqlQuery").value="";
+      document.getElementById("targetValue").value="0";
+      document.getElementById("warningValue").value="0";
+      document.getElementById("dangerValue").value="0";
+      document.getElementById("direction").value="higher_better";
+      document.getElementById("unit").value="";
+      document.getElementById("icon").value="fa-gauge-high";
+      document.getElementById("testResult").style.display="none";
+    }
+
+    document.addEventListener("DOMContentLoaded",async()=>{
+      setTopUser();
+      await loadKpis();
+    });
+  </script>
+</body>
+</html>
